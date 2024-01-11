@@ -18,7 +18,7 @@ export default function Sidebar() {
     <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-background px-6 pb-4">
       <Link href="/" className="flex h-16 shrink-0 items-center">
         <img className="h-16 w-auto" src="/logo.png" alt="Translinzor" />
-        <span className="text-primary font-sans text-2xl font-semibold tracking-tight">
+        <span className="font-sans text-2xl font-semibold tracking-tight text-primary">
           Translinzor
         </span>
       </Link>
@@ -32,16 +32,16 @@ export default function Sidebar() {
                     href={item.href}
                     className={cn(
                       isTabSelected(item.href)
-                        ? 'bg-card text-black'
-                        : 'border-transparent hover:bg-gray-50 hover:text-black',
+                        ? 'bg-card text-primary'
+                        : 'border-transparent hover:bg-gray-50 hover:text-primary',
                       'group flex items-center gap-x-3 rounded-md border p-2 text-sm font-semibold leading-6',
                     )}
                   >
                     <item.icon
                       className={cn(
                         isTabSelected(item.href)
-                          ? 'text-black'
-                          : 'text-gray-400 group-hover:text-black',
+                          ? 'text-primary'
+                          : 'text-gray-400 group-hover:text-primary',
                         'h-5 w-5 shrink-0',
                       )}
                       aria-hidden="true"
@@ -55,10 +55,10 @@ export default function Sidebar() {
           <li className="mt-auto">
             <a
               href="#"
-              className="group -mx-2 flex items-center gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 hover:bg-gray-50 hover:text-black"
+              className="group -mx-2 flex items-center gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 hover:bg-gray-50 hover:text-primary"
             >
               <SettingsIcon
-                className="h-5 w-5 shrink-0 text-gray-400 group-hover:text-black"
+                className="h-5 w-5 shrink-0 text-gray-400 group-hover:text-primary"
                 aria-hidden="true"
               />
               Ajustes
@@ -72,7 +72,7 @@ export default function Sidebar() {
               />
               <span className="hidden lg:flex lg:items-center">
                 <span
-                  className="ml-4 text-sm font-semibold leading-6 text-gray-900"
+                  className="ml-4 text-sm font-semibold leading-6 text-primary"
                   aria-hidden="true"
                 >
                   Tim Cook

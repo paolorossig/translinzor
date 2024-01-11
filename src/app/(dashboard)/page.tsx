@@ -1,7 +1,7 @@
 export default function Home() {
   return (
     <>
-      <h1 className="scroll-m-20 pb-2 text-2xl font-medium tracking-tight">
+      <h1 className="scroll-m-20 pb-2 text-2xl font-medium tracking-tight text-primary">
         Dashboard
       </h1>
       {[...Array(10)].map((_, i) => (
