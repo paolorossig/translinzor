@@ -19,6 +19,9 @@ export const columns: ColumnDef<Client>[] = [
     header: ({ column }) => {
       return <HeaderWithSorting column={column}>Canal</HeaderWithSorting>
     },
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id))
+    },
   },
   {
     accessorKey: 'documentNumber',

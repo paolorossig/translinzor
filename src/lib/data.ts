@@ -30,4 +30,19 @@ export const clients: Client[] = [
     district: 'Chorrillos',
     isActive: false,
   },
+  {
+    id: 3,
+    name: 'CALERO ROMERO ROBINSON',
+    channel: 'VDISTRIB',
+    documentType: 'dni',
+    documentNumber: 123456789,
+    address: 'AV. BASIL 1020 - PUEBLO LIBRE',
+    district: 'Pueblo Libre',
+    isActive: true,
+  },
+]
+
+export const channelOptions = [
+  { label: 'VCORP', value: 'VCORP' },
+  { label: 'VDISTRIB', value: 'VDISTRIB' },
 ]
