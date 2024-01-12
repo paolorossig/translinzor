@@ -1,18 +1,24 @@
 'use client'
 
-import { ColumnDef } from '@tanstack/react-table'
+import type { Column, ColumnDef } from '@tanstack/react-table'
+import { ArrowUpDownIcon } from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { type Client } from '@/lib/data'
 
 export const columns: ColumnDef<Client>[] = [
   {
     accessorKey: 'name',
-    header: 'Cliente',
+    header: ({ column }) => {
+      return <HeaderWithSorting column={column}>Cliente</HeaderWithSorting>
+    },
   },
   {
     accessorKey: 'channel',
-    header: 'Canal',
+    header: ({ column }) => {
+      return <HeaderWithSorting column={column}>Canal</HeaderWithSorting>
+    },
   },
   {
     accessorKey: 'documentNumber',
@@ -40,3 +46,25 @@ export const columns: ColumnDef<Client>[] = [
     },
   },
 ]
+
+function HeaderWithSorting<TData, TValue>({
+  column,
+  children,
+}: {
+  column: Column<TData, TValue>
+  children: React.ReactNode
+}) {
+  return (
+    <div className="flex items-center space-x-2">
+      <span>{children}</span>
+      <Button
+        size="icon"
+        variant="ghost"
+        className="hover:bg-secondary hover:text-secondary-foreground"
+        onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+      >
+        <ArrowUpDownIcon className="h-4 w-4" />
+      </Button>
+    </div>
+  )
+}
