@@ -6,7 +6,7 @@ export type Client = {
   documentNumber: number
   address: string
   district: string
-  isActive: boolean
+  status: 'active' | 'inactive'
 }
 
 export const clients: Client[] = [
@@ -18,7 +18,7 @@ export const clients: Client[] = [
     documentNumber: 20600572627,
     address: 'AV. LOS FRUTALES 220 URB. LA CAPILLA - CALLAO',
     district: 'Callao',
-    isActive: true,
+    status: 'active',
   },
   {
     id: 2,
@@ -28,7 +28,7 @@ export const clients: Client[] = [
     documentNumber: 9999999999,
     address: 'JR. LOS HUANCAS 145 - CHORRILLOS',
     district: 'Chorrillos',
-    isActive: false,
+    status: 'inactive',
   },
   {
     id: 3,
@@ -38,11 +38,16 @@ export const clients: Client[] = [
     documentNumber: 123456789,
     address: 'AV. BASIL 1020 - PUEBLO LIBRE',
     district: 'Pueblo Libre',
-    isActive: true,
+    status: 'active',
   },
 ]
 
 export const channelOptions = [
   { label: 'VCORP', value: 'VCORP' },
   { label: 'VDISTRIB', value: 'VDISTRIB' },
+]
+
+export const statusOptions = [
+  { label: 'Activo', value: 'active' },
+  { label: 'Inactivo', value: 'inactive' },
 ]

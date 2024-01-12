@@ -5,7 +5,7 @@ import { ArrowUpDownIcon } from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { type Client } from '@/lib/data'
+import { statusOptions, type Client } from '@/lib/data'
 
 export const columns: ColumnDef<Client>[] = [
   {
@@ -38,14 +38,21 @@ export const columns: ColumnDef<Client>[] = [
     },
   },
   {
-    accessorKey: 'isActive',
-    header: 'Activo',
+    accessorKey: 'status',
+    header: 'Estado',
     cell: ({ row }) => {
+      const status = statusOptions.find(
+        (status) => status.value === row.getValue('status'),
+      )
+
       return (
-        <Badge variant={row.original.isActive ? 'default' : 'destructive'}>
-          {row.original.isActive ? 'Activo' : 'Inactivo'}
+        <Badge variant={status?.value === 'active' ? 'default' : 'destructive'}>
+          {status?.label}
         </Badge>
       )
+    },
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id))
     },
   },
 ]

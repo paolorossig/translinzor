@@ -5,7 +5,7 @@ import {
   DataTableHeader,
   DataTableWrapper,
 } from '@/components/ui/data-table'
-import { channelOptions, clients, type Client } from '@/lib/data'
+import { channelOptions, clients, statusOptions, type Client } from '@/lib/data'
 import { wait } from '@/lib/utils'
 
 import { columns } from './columns'
@@ -30,11 +30,18 @@ export default async function ClientsPage() {
               columnName="name"
               placeholder="Filtrar clientes..."
             />
-            <DataTableFacetedFilter
-              columnName="channel"
-              title="Canal"
-              options={channelOptions}
-            />
+            <div className="flex w-full space-x-2">
+              <DataTableFacetedFilter
+                columnName="channel"
+                title="Canal"
+                options={channelOptions}
+              />
+              <DataTableFacetedFilter
+                columnName="status"
+                title="Estado"
+                options={statusOptions}
+              />
+            </div>
           </DataTableHeader>
           <DataTable />
         </DataTableWrapper>

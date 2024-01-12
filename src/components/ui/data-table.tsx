@@ -105,7 +105,7 @@ export function DataTableHeader({
 
   return (
     <div className="flex items-center justify-between py-4">
-      <div className="flex flex-1 items-center space-x-2">
+      <div className="flex flex-1 flex-col items-center gap-2 sm:flex-row">
         {children}
         {isFiltered && (
           <Button
@@ -139,7 +139,7 @@ export function DataTableFilterInput({
     <Input
       value={(column?.getFilterValue() as string) ?? ''}
       onChange={(event) => column?.setFilterValue(event.target.value)}
-      className={cn('h-8 max-w-sm', className)}
+      className={cn('h-8 sm:max-w-md', className)}
       {...props}
     />
   )
