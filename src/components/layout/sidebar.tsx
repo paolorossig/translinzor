@@ -17,7 +17,11 @@ export default function Sidebar() {
   return (
     <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-background px-6 pb-4">
       <Link href="/" className="flex h-16 shrink-0 items-center">
-        <img className="h-16 w-auto" src="/logo.png" alt="Translinzor" />
+        <img
+          className="h-16 w-auto"
+          src="/logo.png"
+          alt="Logo of Translinzor"
+        />
         <span className="font-sans text-2xl font-semibold tracking-tight text-primary">
           Translinzor
         </span>

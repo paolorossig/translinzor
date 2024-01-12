@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
 
+import { TailwindIndicator } from '@/components/tailwind-indicator'
+
 import Providers from './providers'
 
 import './globals.css'
@@ -20,7 +22,10 @@ export default function RootLayout({
   return (
     <html lang="es" suppressHydrationWarning className="h-full">
       <body className="h-full antialiased">
-        <Providers>{children}</Providers>
+        <Providers>
+          {children}
+          <TailwindIndicator />
+        </Providers>
       </body>
     </html>
   )

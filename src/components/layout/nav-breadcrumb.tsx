@@ -29,7 +29,7 @@ export default function NavBreadcrumb() {
                 variant="ghost"
                 className="hover:bg-secondary hover:text-secondary-foreground"
               >
-                <Link href="/">
+                <Link href="/" aria-label="Go to Dashboard">
                   <HomeIcon className="h-4 w-4 font-semibold" />
                 </Link>
               </Button>
