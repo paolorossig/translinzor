@@ -3,6 +3,7 @@ import {
   DataTableFacetedFilter,
   DataTableFilterInput,
   DataTableHeader,
+  DataTableResetFilter,
   DataTableWrapper,
 } from '@/components/ui/data-table'
 import { channelOptions, clients, statusOptions, type Client } from '@/lib/data'
@@ -30,7 +31,7 @@ export default async function ClientsPage() {
               columnName="name"
               placeholder="Filtrar clientes..."
             />
-            <div className="flex w-full space-x-2">
+            <div className="flex w-full space-x-2 sm:w-fit">
               <DataTableFacetedFilter
                 columnName="channel"
                 title="Canal"
@@ -41,6 +42,7 @@ export default async function ClientsPage() {
                 title="Estado"
                 options={statusOptions}
               />
+              <DataTableResetFilter />
             </div>
           </DataTableHeader>
           <DataTable />

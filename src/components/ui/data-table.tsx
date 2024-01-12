@@ -93,32 +93,28 @@ export function DataTableWrapper<TData, TValue>({
 
 interface DataTableHeaderProps {
   children: React.ReactNode
+  className?: string
   actionArea?: React.ReactNode
 }
 
 export function DataTableHeader({
   children,
+  className,
   actionArea,
 }: DataTableHeaderProps) {
-  const { table } = useDataTableContext()
-  const isFiltered = table.getState().columnFilters.length > 0
-
   return (
-    <div className="flex items-center justify-between py-4">
-      <div className="flex flex-1 flex-col items-center gap-2 sm:flex-row">
-        {children}
-        {isFiltered && (
-          <Button
-            variant="ghost"
-            onClick={() => table.resetColumnFilters()}
-            className="h-8 px-2 hover:bg-secondary hover:text-secondary-foreground lg:px-3"
-          >
-            Reiniciar
-            <RotateCcwIcon className="ml-2 h-4 w-4" />
-          </Button>
+    <div className="flex items-start justify-between gap-4 py-4">
+      <div
+        className={cn(
+          'flex flex-1 flex-col items-center gap-2 sm:flex-row',
+          className,
         )}
+      >
+        {children}
       </div>
-      <div className="flex items-center space-x-2">{actionArea}</div>
+      {actionArea && (
+        <div className="flex items-center space-x-2">{actionArea}</div>
+      )}
     </div>
   )
 }
@@ -272,6 +268,24 @@ export function DataTableFacetedFilter({
         </Command>
       </PopoverContent>
     </Popover>
+  )
+}
+
+export function DataTableResetFilter() {
+  const { table } = useDataTableContext()
+  const isFiltered = table.getState().columnFilters.length > 0
+
+  if (!isFiltered) return null
+
+  return (
+    <Button
+      variant="ghost"
+      onClick={() => table.resetColumnFilters()}
+      className="h-8 px-2 hover:bg-secondary hover:text-secondary-foreground lg:px-3"
+    >
+      Reiniciar
+      <RotateCcwIcon className="ml-2 h-4 w-4" />
+    </Button>
   )
 }
 
