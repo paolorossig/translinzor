@@ -19,9 +19,9 @@ export function ThemeToggle() {
   return (
     <Button
       aria-label={mounted ? `Switch to ${otherTheme} theme` : 'Toggle theme'}
-      className="group shadow-lg shadow-zinc-800/5 backdrop-blur transition"
       size="icon"
       variant="outline"
+      className="group shadow-lg shadow-zinc-800/5 backdrop-blur transition hover:bg-secondary hover:text-secondary-foreground"
       onClick={() => setTheme(otherTheme)}
     >
       <SunIcon

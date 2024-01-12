@@ -32,8 +32,8 @@ export default function Sidebar() {
                     href={item.href}
                     className={cn(
                       isTabSelected(item.href)
-                        ? 'bg-card text-primary'
-                        : 'border-transparent hover:bg-gray-50 hover:text-primary',
+                        ? 'bg-white text-primary dark:border-zinc-700 dark:bg-zinc-800'
+                        : 'border-transparent hover:text-primary',
                       'group flex items-center gap-x-3 rounded-md border p-2 text-sm font-semibold leading-6',
                     )}
                   >
@@ -55,7 +55,7 @@ export default function Sidebar() {
           <li className="mt-auto">
             <a
               href="#"
-              className="group -mx-2 flex items-center gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 hover:bg-gray-50 hover:text-primary"
+              className="group -mx-2 flex items-center gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 hover:text-primary"
             >
               <SettingsIcon
                 className="h-5 w-5 shrink-0 text-gray-400 group-hover:text-primary"

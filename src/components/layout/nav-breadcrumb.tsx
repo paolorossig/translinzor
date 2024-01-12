@@ -23,7 +23,12 @@ export default function NavBreadcrumb() {
         return (
           <Fragment key={index}>
             {index === 0 ? (
-              <Button asChild variant="ghost" size="icon">
+              <Button
+                asChild
+                size="icon"
+                variant="ghost"
+                className="hover:bg-secondary hover:text-secondary-foreground"
+              >
                 <Link href="/">
                   <HomeIcon className="h-4 w-4 font-semibold" />
                 </Link>
