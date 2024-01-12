@@ -1,4 +1,9 @@
-import { DataTable } from '@/components/ui/data-table'
+import {
+  DataTable,
+  DataTableFilterInput,
+  DataTableHeader,
+  DataTableWrapper,
+} from '@/components/ui/data-table'
 import { clients, type Client } from '@/lib/data'
 import { wait } from '@/lib/utils'
 
@@ -18,7 +23,15 @@ export default async function ClientsPage() {
         Clientes
       </h1>
       <div className="container mx-auto py-10">
-        <DataTable columns={columns} data={data} />
+        <DataTableWrapper columns={columns} data={data}>
+          <DataTableHeader>
+            <DataTableFilterInput
+              columnName="name"
+              placeholder="Filtrar clientes..."
+            />
+          </DataTableHeader>
+          <DataTable />
+        </DataTableWrapper>
       </div>
     </>
   )
