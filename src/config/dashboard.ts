@@ -19,7 +19,7 @@ export const dashboardConfig: DashboardConfig = {
   navigation: [
     { name: 'Dashboard', href: '/', icon: HomeIcon },
     { name: 'Clientes', href: '/clients', icon: ContactIcon },
-    { name: 'Envíos', href: '/shipments', icon: BaggageClaimIcon },
+    { name: 'Entregas', href: '/shipments', icon: BaggageClaimIcon },
     { name: 'Usuarios', href: '#', icon: UsersIcon },
     { name: 'Proyectos', href: '#', icon: FolderIcon },
     { name: 'Calendario', href: '#', icon: CalendarIcon },
