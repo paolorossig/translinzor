@@ -74,7 +74,6 @@ function HeaderWithSorting<TData, TValue>({
       <Button
         size="icon"
         variant="ghost"
-        className="hover:bg-secondary hover:text-secondary-foreground"
         onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
       >
         <ArrowUpDownIcon className="h-4 w-4" />

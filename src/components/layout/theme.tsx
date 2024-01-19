@@ -21,7 +21,7 @@ export function ThemeToggle() {
       aria-label={mounted ? `Switch to ${otherTheme} theme` : 'Toggle theme'}
       size="icon"
       variant="outline"
-      className="group shadow-lg shadow-zinc-800/5 backdrop-blur transition hover:bg-secondary hover:text-secondary-foreground"
+      className="group shadow-lg shadow-zinc-800/5 backdrop-blur transition"
       onClick={() => setTheme(otherTheme)}
     >
       <SunIcon
