@@ -27,6 +27,7 @@ import {
   CommandList,
   CommandSeparator,
 } from '@/components/ui/command'
+import { DatePicker } from '@/components/ui/date-picker'
 import { Input, InputProps } from '@/components/ui/input'
 import {
   Popover,
@@ -217,11 +218,9 @@ export function DataTableFacetedFilter({
                         selectedValues.add(option.value)
                       }
                       const filterValues = Array.from(selectedValues)
-                      table
-                        .getColumn(columnName)
-                        ?.setFilterValue(
-                          filterValues.length ? filterValues : undefined,
-                        )
+                      column?.setFilterValue(
+                        filterValues.length ? filterValues : undefined,
+                      )
                     }}
                   >
                     <div
@@ -264,6 +263,24 @@ export function DataTableFacetedFilter({
         </Command>
       </PopoverContent>
     </Popover>
+  )
+}
+
+interface DataTableDateFilterProps {
+  columnName: string
+}
+
+export function DataTableDateFilter({ columnName }: DataTableDateFilterProps) {
+  const { table } = useDataTableContext()
+  const column = table.getColumn(columnName)
+
+  if (!column) return null
+
+  return (
+    <DatePicker
+      date={column.getFilterValue() as Date | undefined}
+      onSelect={column.setFilterValue}
+    />
   )
 }
 

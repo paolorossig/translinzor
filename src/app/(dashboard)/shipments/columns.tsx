@@ -26,9 +26,14 @@ export const columns: ColumnDef<Shipment>[] = [
       return (
         <div className="flex items-center space-x-1 text-card-foreground">
           <CalendarIcon className="h-4 w-4" />
-          <span>{new Date(row.getValue('date')).toLocaleDateString('es')}</span>
+          <span>{(row.getValue('date') as Date).toLocaleDateString('es')}</span>
         </div>
       )
+    },
+    filterFn: (row, id, value) => {
+      const date = row.getValue(id) as Date
+      const dateStr = date.toLocaleDateString('es')
+      return (value as Date).toLocaleDateString('es').includes(dateStr)
     },
   },
   {
@@ -53,7 +58,8 @@ export const columns: ColumnDef<Shipment>[] = [
             {deliveredRate} %
           </Badge>
           <span className="text-card-foreground">
-            {deliveredOrders}/{totalOrders} órdenes entregadas
+            {deliveredOrders}/{totalOrders}{' '}
+            {totalOrders > 1 ? 'órdenes entregadas' : 'orden entregada'}
           </span>
         </div>
       )

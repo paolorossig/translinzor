@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button'
 import {
   DataTable,
+  DataTableDateFilter,
   DataTableFilterInput,
   DataTableHeader,
   DataTableResetFilter,
@@ -31,6 +32,7 @@ export default async function ShipmentsPage() {
               columnName="route"
               placeholder="Filtrar entregas..."
             />
+            <DataTableDateFilter columnName="date" />
             <DataTableResetFilter />
           </DataTableHeader>
           <DataTable />

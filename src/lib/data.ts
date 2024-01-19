@@ -134,7 +134,7 @@ export type Order = {
 export type Shipment = {
   id: number
   route: string
-  date: string
+  date: Date
   orderIds: string[]
   orders: Order[]
   transportUnitId?: number
@@ -147,7 +147,7 @@ export const shipments: Shipment[] = [
   {
     id: 1,
     route: 'Ruta 1',
-    date: '2021-02-18 11:51:40',
+    date: new Date('2023-12-24 11:51:40'),
     orderIds: [
       '0090061269',
       '0110006087',
@@ -194,5 +194,20 @@ export const shipments: Shipment[] = [
     ],
     transportUnitId: 1,
     transportUnit: transportUnits[0],
+  },
+  {
+    id: 2,
+    route: 'Ruta 2',
+    date: new Date('2024-01-14 11:51:40'),
+    orderIds: ['000123987'],
+    orders: [
+      {
+        orderId: '000123987',
+        clientId: clients[0].id,
+        client: clients[0],
+        date: '2024-01-13 11:51:40',
+        status: 'pending',
+      },
+    ],
   },
 ]
