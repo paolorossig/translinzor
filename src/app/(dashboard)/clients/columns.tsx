@@ -20,7 +20,7 @@ export const columns: ColumnDef<Client>[] = [
       return <HeaderWithSorting column={column}>Canal</HeaderWithSorting>
     },
     filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id))
+      return (value as string).includes(row.getValue(id))
     },
   },
   {
@@ -52,7 +52,7 @@ export const columns: ColumnDef<Client>[] = [
       )
     },
     filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id))
+      return (value as string).includes(row.getValue(id))
     },
   },
 ]

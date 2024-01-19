@@ -1,4 +1,4 @@
-export type Client = {
+export interface Client {
   id: number
   name: string
   channel: string
@@ -62,7 +62,7 @@ export const statusOptions = [
   { label: 'Inactivo', value: 'inactive' },
 ]
 
-export type TransportUnit = {
+export interface TransportUnit {
   id: number
   licensePlate: string
   type: string
@@ -96,7 +96,7 @@ export const transportUnits: TransportUnit[] = [
   },
 ]
 
-export type Driver = {
+export interface Driver {
   id: number
   name: string
   lastName: string
@@ -121,7 +121,7 @@ export const drivers: Driver[] = [
   },
 ]
 
-export type Order = {
+export interface Order {
   orderId: string
   clientId: number
   client: Client
@@ -131,7 +131,7 @@ export type Order = {
   proofOfDelivery?: string
 }
 
-export type Shipment = {
+export interface Shipment {
   id: number
   route: string
   date: Date
@@ -158,36 +158,36 @@ export const shipments: Shipment[] = [
     orders: [
       {
         orderId: '0090061269',
-        clientId: clients[3].id,
-        client: clients[3],
+        clientId: clients[3]!.id,
+        client: clients[3]!,
         date: '2021-02-18 11:51:40',
         status: 'delivered',
       },
       {
         orderId: '0110006087',
-        clientId: clients[0].id,
-        client: clients[0],
+        clientId: clients[0]!.id,
+        client: clients[0]!,
         date: '2021-02-18 11:51:40',
         status: 'delivered',
       },
       {
         orderId: '0110006088',
-        clientId: clients[0].id,
-        client: clients[0],
+        clientId: clients[0]!.id,
+        client: clients[0]!,
         date: '2021-02-18 11:51:40',
         status: 'delivered',
       },
       {
         orderId: '0110006089',
-        clientId: clients[0].id,
-        client: clients[0],
+        clientId: clients[0]!.id,
+        client: clients[0]!,
         date: '2021-02-18 11:51:40',
         status: 'refused',
       },
       {
         orderId: '123124533',
-        clientId: clients[2].id,
-        client: clients[2],
+        clientId: clients[2]!.id,
+        client: clients[2]!,
         date: '2021-02-18 11:51:40',
         status: 'pending',
       },
@@ -203,8 +203,8 @@ export const shipments: Shipment[] = [
     orders: [
       {
         orderId: '000123987',
-        clientId: clients[0].id,
-        client: clients[0],
+        clientId: clients[0]!.id,
+        client: clients[0]!,
         date: '2024-01-13 11:51:40',
         status: 'pending',
       },

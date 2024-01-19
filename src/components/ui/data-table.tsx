@@ -53,6 +53,7 @@ interface DataTableContext<TData, TValue> {
 }
 
 export const [DataTableProvider, useDataTableContext] = createContext<
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   DataTableContext<any, any>
 >({
   name: 'DataTableContext',

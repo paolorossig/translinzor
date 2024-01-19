@@ -28,6 +28,8 @@ export function ShipmentBulkUpload() {
   const [excelFile, setExcelFile] = useState<ArrayBuffer | null>(null)
 
   const onDrop = (acceptedFiles: File[]) => {
+    if (!acceptedFiles[0]) return
+
     const reader = new FileReader()
     reader.readAsArrayBuffer(acceptedFiles[0])
     reader.onload = (e) => setExcelFile(e.target?.result as ArrayBuffer | null)
@@ -39,7 +41,7 @@ export function ShipmentBulkUpload() {
     if (!excelFile) return
 
     const workbook = xlsx.read(excelFile, { type: 'buffer' })
-    const worksheet = workbook.Sheets[workbook.SheetNames[0]]
+    const worksheet = workbook.Sheets[workbook.SheetNames[0]!]!
     const data = xlsx.utils.sheet_to_json(worksheet)
 
     console.log(data)

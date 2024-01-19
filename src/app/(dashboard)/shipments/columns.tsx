@@ -26,12 +26,12 @@ export const columns: ColumnDef<Shipment>[] = [
       return (
         <div className="flex items-center space-x-1 text-card-foreground">
           <CalendarIcon className="h-4 w-4" />
-          <span>{(row.getValue('date') as Date).toLocaleDateString('es')}</span>
+          <span>{new Date(row.getValue('date')).toLocaleDateString('es')}</span>
         </div>
       )
     },
     filterFn: (row, id, value) => {
-      const date = row.getValue(id) as Date
+      const date = new Date(row.getValue(id))
       const dateStr = date.toLocaleDateString('es')
       return (value as Date).toLocaleDateString('es').includes(dateStr)
     },
