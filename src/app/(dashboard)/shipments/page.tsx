@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/button'
+import { ShipmentBulkUpload } from '@/components/shipment-bulk-upload'
 import {
   DataTable,
   DataTableDateFilter,
@@ -27,7 +27,7 @@ export default async function ShipmentsPage() {
       </h1>
       <div>
         <DataTableWrapper columns={columns} data={data}>
-          <DataTableHeader actionArea={<Button className="h-8">Nuevo</Button>}>
+          <DataTableHeader actionArea={<ShipmentBulkUpload />}>
             <DataTableFilterInput
               columnName="route"
               placeholder="Filtrar entregas..."
