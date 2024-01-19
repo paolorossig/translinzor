@@ -49,7 +49,7 @@ export const columns: ColumnDef<Shipment>[] = [
       return (
         <div className="flex items-center space-x-2">
           <Badge
-            className={cn({
+            className={cn('text-nowrap', {
               'bg-red-400 hover:bg-red-400': deliveredRate >= 0,
               'bg-yellow-400 hover:bg-yellow-400': deliveredRate >= 50,
               'bg-green-400 hover:bg-green-400': deliveredRate >= 80,
@@ -57,7 +57,7 @@ export const columns: ColumnDef<Shipment>[] = [
           >
             {deliveredRate} %
           </Badge>
-          <span className="text-card-foreground">
+          <span className="text-nowrap text-card-foreground">
             {deliveredOrders}/{totalOrders}{' '}
             {totalOrders > 1 ? 'órdenes entregadas' : 'orden entregada'}
           </span>

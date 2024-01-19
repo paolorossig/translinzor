@@ -106,12 +106,7 @@ export function DataTableHeader({
 }: DataTableHeaderProps) {
   return (
     <div className="flex items-start justify-between gap-4 py-4">
-      <div
-        className={cn(
-          'flex flex-1 flex-col items-center gap-2 sm:flex-row',
-          className,
-        )}
-      >
+      <div className={cn('flex flex-1 flex-col gap-2 sm:flex-row', className)}>
         {children}
       </div>
       {actionArea && (

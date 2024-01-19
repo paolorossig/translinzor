@@ -51,8 +51,8 @@ export function ShipmentBulkUpload() {
     <Drawer>
       <DrawerTrigger asChild>
         <Button className="h-8">
-          <UploadIcon className="mr-2 h-4 w-4" />
-          <span>Carga masiva</span>
+          <UploadIcon className="h-4 w-4" />
+          <span className="ml-2 hidden md:block">Carga masiva</span>
         </Button>
       </DrawerTrigger>
       <DrawerContent>
