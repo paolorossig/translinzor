@@ -1,10 +1,9 @@
 'use client'
 
-import type { Column, ColumnDef } from '@tanstack/react-table'
-import { ArrowUpDownIcon } from 'lucide-react'
+import type { ColumnDef } from '@tanstack/react-table'
 
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+import { HeaderWithSorting } from '@/components/ui/data-table'
 import { statusOptions, type Costumer } from '@/lib/data'
 
 export const columns: ColumnDef<Costumer>[] = [
@@ -56,24 +55,3 @@ export const columns: ColumnDef<Costumer>[] = [
     },
   },
 ]
-
-function HeaderWithSorting<TData, TValue>({
-  column,
-  children,
-}: {
-  column: Column<TData, TValue>
-  children: React.ReactNode
-}) {
-  return (
-    <div className="flex items-center space-x-2">
-      <span>{children}</span>
-      <Button
-        size="icon"
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-      >
-        <ArrowUpDownIcon className="h-4 w-4" />
-      </Button>
-    </div>
-  )
-}
