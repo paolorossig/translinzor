@@ -1,4 +1,4 @@
-export interface Client {
+export interface Costumer {
   id: number
   name: string
   channel: string
@@ -9,7 +9,7 @@ export interface Client {
   status: 'active' | 'inactive'
 }
 
-export const clients: Client[] = [
+export const costumers: Costumer[] = [
   {
     id: 1,
     name: 'LA PILAR DE LOS ACCESORIOS SAC',
@@ -124,7 +124,7 @@ export const drivers: Driver[] = [
 export interface Order {
   orderId: string
   clientId: number
-  client: Client
+  client: Costumer
   date: string
   status: 'pending' | 'delivered' | 'refused'
   refusedReason?: string
@@ -158,36 +158,36 @@ export const shipments: Shipment[] = [
     orders: [
       {
         orderId: '0090061269',
-        clientId: clients[3]!.id,
-        client: clients[3]!,
+        clientId: costumers[3]!.id,
+        client: costumers[3]!,
         date: '2021-02-18 11:51:40',
         status: 'delivered',
       },
       {
         orderId: '0110006087',
-        clientId: clients[0]!.id,
-        client: clients[0]!,
+        clientId: costumers[0]!.id,
+        client: costumers[0]!,
         date: '2021-02-18 11:51:40',
         status: 'delivered',
       },
       {
         orderId: '0110006088',
-        clientId: clients[0]!.id,
-        client: clients[0]!,
+        clientId: costumers[0]!.id,
+        client: costumers[0]!,
         date: '2021-02-18 11:51:40',
         status: 'delivered',
       },
       {
         orderId: '0110006089',
-        clientId: clients[0]!.id,
-        client: clients[0]!,
+        clientId: costumers[0]!.id,
+        client: costumers[0]!,
         date: '2021-02-18 11:51:40',
         status: 'refused',
       },
       {
         orderId: '123124533',
-        clientId: clients[2]!.id,
-        client: clients[2]!,
+        clientId: costumers[2]!.id,
+        client: costumers[2]!,
         date: '2021-02-18 11:51:40',
         status: 'pending',
       },
@@ -203,8 +203,8 @@ export const shipments: Shipment[] = [
     orders: [
       {
         orderId: '000123987',
-        clientId: clients[0]!.id,
-        client: clients[0]!,
+        clientId: costumers[0]!.id,
+        client: costumers[0]!,
         date: '2024-01-13 11:51:40',
         status: 'pending',
       },

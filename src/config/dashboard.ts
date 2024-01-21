@@ -18,7 +18,7 @@ interface DashboardConfig {
 export const dashboardConfig: DashboardConfig = {
   navigation: [
     { name: 'Dashboard', href: '/', icon: HomeIcon },
-    { name: 'Clientes', href: '/clients', icon: ContactIcon },
+    { name: 'Clientes', href: '/costumers', icon: ContactIcon },
     { name: 'Entregas', href: '/shipments', icon: BaggageClaimIcon },
     { name: 'Usuarios', href: '#', icon: UsersIcon },
     { name: 'Proyectos', href: '#', icon: FolderIcon },

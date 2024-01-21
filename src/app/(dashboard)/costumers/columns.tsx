@@ -5,9 +5,9 @@ import { ArrowUpDownIcon } from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { statusOptions, type Client } from '@/lib/data'
+import { statusOptions, type Costumer } from '@/lib/data'
 
-export const columns: ColumnDef<Client>[] = [
+export const columns: ColumnDef<Costumer>[] = [
   {
     accessorKey: 'name',
     header: ({ column }) => {
