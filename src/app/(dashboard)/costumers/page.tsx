@@ -6,18 +6,23 @@ import {
   DataTableResetFilter,
   DataTableWrapper,
 } from '@/components/ui/data-table'
-import { channelOptions, clients, statusOptions, type Client } from '@/lib/data'
+import {
+  channelOptions,
+  costumers,
+  statusOptions,
+  type Costumer,
+} from '@/lib/data'
 import { wait } from '@/lib/utils'
 
 import { columns } from './columns'
 
-async function getClients(): Promise<Client[]> {
+async function getCostumers(): Promise<Costumer[]> {
   await wait(1000)
-  return clients
+  return costumers
 }
 
-export default async function ClientsPage() {
-  const data = await getClients()
+export default async function CostumersPage() {
+  const data = await getCostumers()
 
   return (
     <>

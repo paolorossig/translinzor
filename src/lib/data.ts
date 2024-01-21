@@ -1,4 +1,4 @@
-export type Client = {
+export interface Costumer {
   id: number
   name: string
   channel: string
@@ -9,7 +9,7 @@ export type Client = {
   status: 'active' | 'inactive'
 }
 
-export const clients: Client[] = [
+export const costumers: Costumer[] = [
   {
     id: 1,
     name: 'LA PILAR DE LOS ACCESORIOS SAC',
@@ -40,6 +40,16 @@ export const clients: Client[] = [
     district: 'Pueblo Libre',
     status: 'active',
   },
+  {
+    id: 4,
+    name: 'CERAMICA LIMA S.A.',
+    channel: 'VDISTRIB',
+    documentType: 'ruc',
+    documentNumber: 9999999999,
+    address: 'JR. LOS HUANCAS 145 - CHORRILLOS',
+    district: 'Chorrillos',
+    status: 'active',
+  },
 ]
 
 export const channelOptions = [
@@ -50,4 +60,154 @@ export const channelOptions = [
 export const statusOptions = [
   { label: 'Activo', value: 'active' },
   { label: 'Inactivo', value: 'inactive' },
+]
+
+export interface TransportUnit {
+  id: number
+  licensePlate: string
+  type: string
+  brand: string
+  model: string
+  capacity: string
+  grossWeight: number
+  netWeight: number
+}
+
+export const transportUnits: TransportUnit[] = [
+  {
+    id: 1,
+    licensePlate: 'ABC-123',
+    type: 'CAMION FURGON',
+    brand: 'HYUNDAI',
+    model: 'H100 TRUCK',
+    capacity: '2 TN',
+    grossWeight: 7500,
+    netWeight: 3000,
+  },
+  {
+    id: 2,
+    licensePlate: 'XYZ-987',
+    type: 'AUTO',
+    brand: 'DAEWOO',
+    model: 'DAMAS II',
+    capacity: '2 TN',
+    grossWeight: 1280,
+    netWeight: 860,
+  },
+]
+
+export interface Driver {
+  id: number
+  name: string
+  lastName: string
+  dni: string
+  licenseNumber: string
+}
+
+export const drivers: Driver[] = [
+  {
+    id: 1,
+    name: 'Jhon Jairo',
+    lastName: 'Doe Smith',
+    dni: '45515398',
+    licenseNumber: 'Q45515398',
+  },
+  {
+    id: 2,
+    name: 'Juan Carlos',
+    lastName: 'Condori Quispe',
+    dni: '41430373',
+    licenseNumber: 'Q41430373',
+  },
+]
+
+export interface Order {
+  orderId: string
+  clientId: number
+  client: Costumer
+  date: string
+  status: 'pending' | 'delivered' | 'refused'
+  refusedReason?: string
+  proofOfDelivery?: string
+}
+
+export interface Shipment {
+  id: number
+  route: string
+  date: Date
+  orderIds: string[]
+  orders: Order[]
+  transportUnitId?: number
+  transportUnit?: TransportUnit
+  driverId?: number
+  driver?: Driver
+}
+
+export const shipments: Shipment[] = [
+  {
+    id: 1,
+    route: 'Ruta 1',
+    date: new Date('2023-12-24 11:51:40'),
+    orderIds: [
+      '0090061269',
+      '0110006087',
+      '0110006088',
+      '0110006089',
+      '123124533',
+    ],
+    orders: [
+      {
+        orderId: '0090061269',
+        clientId: costumers[3]!.id,
+        client: costumers[3]!,
+        date: '2021-02-18 11:51:40',
+        status: 'delivered',
+      },
+      {
+        orderId: '0110006087',
+        clientId: costumers[0]!.id,
+        client: costumers[0]!,
+        date: '2021-02-18 11:51:40',
+        status: 'delivered',
+      },
+      {
+        orderId: '0110006088',
+        clientId: costumers[0]!.id,
+        client: costumers[0]!,
+        date: '2021-02-18 11:51:40',
+        status: 'delivered',
+      },
+      {
+        orderId: '0110006089',
+        clientId: costumers[0]!.id,
+        client: costumers[0]!,
+        date: '2021-02-18 11:51:40',
+        status: 'refused',
+      },
+      {
+        orderId: '123124533',
+        clientId: costumers[2]!.id,
+        client: costumers[2]!,
+        date: '2021-02-18 11:51:40',
+        status: 'pending',
+      },
+    ],
+    transportUnitId: 1,
+    transportUnit: transportUnits[0],
+  },
+  {
+    id: 2,
+    route: 'Ruta 2',
+    date: new Date('2024-01-14 11:51:40'),
+    orderIds: ['000123987'],
+    orders: [
+      {
+        orderId: '000123987',
+        clientId: costumers[0]!.id,
+        client: costumers[0]!,
+        date: '2024-01-13 11:51:40',
+        status: 'pending',
+      },
+    ],
+  },
 ]

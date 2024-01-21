@@ -15,7 +15,7 @@ export default function Sidebar() {
     href.includes(String(segment)) || (href === '/' && !segment)
 
   return (
-    <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-background px-6 pb-4">
+    <div className="flex h-full grow flex-col gap-y-5 overflow-y-auto bg-background px-6 pb-4">
       <Link href="/" className="flex h-16 shrink-0 items-center">
         <img
           className="h-16 w-auto"
@@ -74,13 +74,11 @@ export default function Sidebar() {
                 src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
                 alt=""
               />
-              <span className="hidden lg:flex lg:items-center">
-                <span
-                  className="ml-4 text-sm font-semibold leading-6 text-primary"
-                  aria-hidden="true"
-                >
-                  Tim Cook
-                </span>
+              <span
+                className="ml-4 text-sm font-semibold leading-6 text-primary"
+                aria-hidden="true"
+              >
+                Tim Cook
               </span>
             </div>
           </li>

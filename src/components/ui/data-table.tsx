@@ -27,6 +27,7 @@ import {
   CommandList,
   CommandSeparator,
 } from '@/components/ui/command'
+import { DatePicker } from '@/components/ui/date-picker'
 import { Input, InputProps } from '@/components/ui/input'
 import {
   Popover,
@@ -52,6 +53,7 @@ interface DataTableContext<TData, TValue> {
 }
 
 export const [DataTableProvider, useDataTableContext] = createContext<
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   DataTableContext<any, any>
 >({
   name: 'DataTableContext',
@@ -104,12 +106,7 @@ export function DataTableHeader({
 }: DataTableHeaderProps) {
   return (
     <div className="flex items-start justify-between gap-4 py-4">
-      <div
-        className={cn(
-          'flex flex-1 flex-col items-center gap-2 sm:flex-row',
-          className,
-        )}
-      >
+      <div className={cn('flex flex-1 flex-col gap-2 sm:flex-row', className)}>
         {children}
       </div>
       {actionArea && (
@@ -161,11 +158,7 @@ export function DataTableFacetedFilter({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button
-          size="sm"
-          variant="outline"
-          className="h-8 border-dashed hover:bg-secondary hover:text-secondary-foreground"
-        >
+        <Button size="sm" variant="outline" className="h-8 border-dashed">
           <PlusCircleIcon className="mr-2 h-4 w-4" />
           {title}
           {selectedValues?.size > 0 && (
@@ -221,11 +214,9 @@ export function DataTableFacetedFilter({
                         selectedValues.add(option.value)
                       }
                       const filterValues = Array.from(selectedValues)
-                      table
-                        .getColumn(columnName)
-                        ?.setFilterValue(
-                          filterValues.length ? filterValues : undefined,
-                        )
+                      column?.setFilterValue(
+                        filterValues.length ? filterValues : undefined,
+                      )
                     }}
                   >
                     <div
@@ -271,6 +262,24 @@ export function DataTableFacetedFilter({
   )
 }
 
+interface DataTableDateFilterProps {
+  columnName: string
+}
+
+export function DataTableDateFilter({ columnName }: DataTableDateFilterProps) {
+  const { table } = useDataTableContext()
+  const column = table.getColumn(columnName)
+
+  if (!column) return null
+
+  return (
+    <DatePicker
+      date={column.getFilterValue() as Date | undefined}
+      onSelect={column.setFilterValue}
+    />
+  )
+}
+
 export function DataTableResetFilter() {
   const { table } = useDataTableContext()
   const isFiltered = table.getState().columnFilters.length > 0
@@ -293,14 +302,14 @@ export function DataTable() {
   const { table, columns } = useDataTableContext()
 
   return (
-    <div className="rounded-md border">
+    <div className="overflow-hidden rounded-md border">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
+            <TableRow key={headerGroup.id} className="bg-secondary/30">
               {headerGroup.headers.map((header) => {
                 return (
-                  <TableHead key={header.id}>
+                  <TableHead key={header.id} colSpan={header.colSpan}>
                     {header.isPlaceholder
                       ? null
                       : flexRender(

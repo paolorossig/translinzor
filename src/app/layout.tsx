@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 
 import { TailwindIndicator } from '@/components/tailwind-indicator'
+import { Toaster } from '@/components/ui/sonner'
 
 import Providers from './providers'
 
@@ -24,6 +25,7 @@ export default function RootLayout({
       <body className="h-full antialiased">
         <Providers>
           {children}
+          <Toaster />
           <TailwindIndicator />
         </Providers>
       </body>

@@ -5,9 +5,9 @@ import { ArrowUpDownIcon } from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { statusOptions, type Client } from '@/lib/data'
+import { statusOptions, type Costumer } from '@/lib/data'
 
-export const columns: ColumnDef<Client>[] = [
+export const columns: ColumnDef<Costumer>[] = [
   {
     accessorKey: 'name',
     header: ({ column }) => {
@@ -20,7 +20,7 @@ export const columns: ColumnDef<Client>[] = [
       return <HeaderWithSorting column={column}>Canal</HeaderWithSorting>
     },
     filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id))
+      return (value as string).includes(row.getValue(id))
     },
   },
   {
@@ -52,7 +52,7 @@ export const columns: ColumnDef<Client>[] = [
       )
     },
     filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id))
+      return (value as string).includes(row.getValue(id))
     },
   },
 ]
@@ -70,7 +70,6 @@ function HeaderWithSorting<TData, TValue>({
       <Button
         size="icon"
         variant="ghost"
-        className="hover:bg-secondary hover:text-secondary-foreground"
         onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
       >
         <ArrowUpDownIcon className="h-4 w-4" />

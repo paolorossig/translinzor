@@ -6,6 +6,7 @@ import { Fragment } from 'react'
 import { ChevronRightIcon, HomeIcon } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
+import { segmentLabelMap } from '@/lib/constants'
 
 export default function NavBreadcrumb() {
   const pathname = usePathname()
@@ -19,16 +20,12 @@ export default function NavBreadcrumb() {
       {segments.map((segment, index) => {
         const isLastSegment = index === segments.length - 1
         const pathToSegment = segments.slice(0, index + 1).join('/')
+        const label = segmentLabelMap[segment] ?? segment
 
         return (
           <Fragment key={index}>
             {index === 0 ? (
-              <Button
-                asChild
-                size="icon"
-                variant="ghost"
-                className="hover:bg-secondary hover:text-secondary-foreground"
-              >
+              <Button asChild size="icon" variant="ghost">
                 <Link href="/" aria-label="Go to Dashboard">
                   <HomeIcon className="h-4 w-4 font-semibold" />
                 </Link>
@@ -43,12 +40,12 @@ export default function NavBreadcrumb() {
                     className="text-muted-foreground hover:text-card-foreground"
                   >
                     <Link href={pathToSegment}>
-                      <span className="capitalize">{segment}</span>
+                      <span className="capitalize">{label}</span>
                     </Link>
                   </Button>
                 ) : (
                   <span className="rounded-lg bg-muted px-4 py-1 text-sm font-medium capitalize text-card-foreground">
-                    {segment}
+                    {label}
                   </span>
                 )}
               </>
