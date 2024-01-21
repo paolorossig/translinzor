@@ -1,6 +1,7 @@
 import {
   BaggageClaimIcon,
   CalendarIcon,
+  CarIcon,
   ContactIcon,
   FilesIcon,
   FolderIcon,
@@ -20,6 +21,7 @@ export const dashboardConfig: DashboardConfig = {
     { name: 'Dashboard', href: '/', icon: HomeIcon },
     { name: 'Clientes', href: '/costumers', icon: ContactIcon },
     { name: 'Entregas', href: '/shipments', icon: BaggageClaimIcon },
+    { name: 'Operaciones', href: '/operations', icon: CarIcon },
     { name: 'Usuarios', href: '#', icon: UsersIcon },
     { name: 'Proyectos', href: '#', icon: FolderIcon },
     { name: 'Calendario', href: '#', icon: CalendarIcon },
