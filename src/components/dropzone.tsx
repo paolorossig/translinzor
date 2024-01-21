@@ -31,7 +31,7 @@ export function Dropzone({
           <div
             {...getRootProps()}
             className={cn(
-              'm-4 rounded-lg border-[1.5px] border-dashed px-4 py-16 text-center',
+              'm-4 rounded-lg border border-dashed px-4 py-16 text-center',
               isDragActive && 'animate-pulse border-green-400',
             )}
           >

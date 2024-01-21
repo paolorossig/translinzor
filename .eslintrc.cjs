@@ -12,6 +12,8 @@ const config = {
   ],
   rules: {
     '@typescript-eslint/no-empty-interface': 'off',
+    '@typescript-eslint/no-unnecessary-type-assertion': 'off',
+    '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
   },
 }
 

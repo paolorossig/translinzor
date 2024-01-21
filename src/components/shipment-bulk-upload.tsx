@@ -1,11 +1,14 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { UploadIcon } from 'lucide-react'
+import { UploadIcon, XIcon } from 'lucide-react'
+import { defaultStyles, FileIcon } from 'react-file-icon'
+import { toast } from 'sonner'
 import * as xlsx from 'xlsx'
 
 import { Dropzone } from '@/components/dropzone'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
 import {
   Drawer,
   DrawerClose,
@@ -16,6 +19,10 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from '@/components/ui/drawer'
+import {
+  parseShipmentBulkUpload,
+  type ShipmentBulkUploadRow,
+} from '@/lib/validations/shipment-upload'
 
 const excelAcceptedMimeTypes = {
   'application/vnd.ms-excel': ['.xls'],
@@ -26,6 +33,7 @@ const excelAcceptedMimeTypes = {
 
 export function ShipmentBulkUpload() {
   const [excelFile, setExcelFile] = useState<ArrayBuffer | null>(null)
+  const [bulkData, setBulkData] = useState<ShipmentBulkUploadRow[] | null>(null)
 
   const onDrop = (acceptedFiles: File[]) => {
     if (!acceptedFiles[0]) return
@@ -42,10 +50,33 @@ export function ShipmentBulkUpload() {
 
     const workbook = xlsx.read(excelFile, { type: 'buffer' })
     const worksheet = workbook.Sheets[workbook.SheetNames[0]!]!
-    const data = xlsx.utils.sheet_to_json(worksheet)
+    const data = xlsx.utils.sheet_to_json(worksheet) as Record<
+      string,
+      string | number
+    >[]
 
-    console.log(data)
+    if (!data?.length) {
+      toast.error('El archivo no contiene datos válidos.')
+      return
+    }
+
+    toast.success('El archivo se ha cargado correctamente.')
+
+    const parsedData = parseShipmentBulkUpload(data)
+    setBulkData(parsedData)
   }, [excelFile])
+
+  const defaultSummary = {
+    routes: new Set<string>(),
+    vouchers: new Set<number>(),
+  }
+
+  const summary =
+    bulkData?.reduce((acc, curr) => {
+      acc.routes.add(curr.route)
+      acc.vouchers.add(curr.voucher)
+      return acc
+    }, defaultSummary) ?? defaultSummary
 
   return (
     <Drawer>
@@ -64,13 +95,41 @@ export function ShipmentBulkUpload() {
               de excel.
             </DrawerDescription>
           </DrawerHeader>
-          <Dropzone
-            maxFiles={1}
-            accept={excelAcceptedMimeTypes}
-            onDrop={onDrop}
-          />
+          {bulkData ? (
+            <div className="flex py-4">
+              <Card className="relative mx-auto pt-6">
+                <div
+                  onClick={() => setBulkData(null)}
+                  className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                >
+                  <XIcon className="h-4 w-4" />
+                  <span className="sr-only">Close</span>
+                </div>
+                <CardContent className="flex items-center">
+                  <div className="w-20">
+                    <FileIcon extension="xlsx" {...defaultStyles.xlsx} />
+                  </div>
+                  <div className="px-10 text-sm">
+                    <h3 className="font-semibold text-secondary-foreground">
+                      Resumen:
+                    </h3>
+                    <ul className="ml-4">
+                      <li>{summary.routes.size} envíos</li>
+                      <li>{summary.vouchers.size} vales</li>
+                    </ul>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          ) : (
+            <Dropzone
+              maxFiles={1}
+              accept={excelAcceptedMimeTypes}
+              onDrop={onDrop}
+            />
+          )}
           <DrawerFooter>
-            <Button>Subir</Button>
+            <Button disabled={!bulkData}>Subir</Button>
             <DrawerClose asChild>
               <Button variant="outline" className="w-full">
                 Cancelar
