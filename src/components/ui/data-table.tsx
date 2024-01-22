@@ -9,12 +9,18 @@ import {
   getFilteredRowModel,
   getSortedRowModel,
   useReactTable,
+  type Column,
   type ColumnDef,
   type ColumnFiltersState,
   type SortingState,
   type Table as TableType,
 } from '@tanstack/react-table'
-import { CheckIcon, PlusCircleIcon, RotateCcwIcon } from 'lucide-react'
+import {
+  ArrowUpDownIcon,
+  CheckIcon,
+  PlusCircleIcon,
+  RotateCcwIcon,
+} from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -298,11 +304,11 @@ export function DataTableResetFilter() {
   )
 }
 
-export function DataTable() {
+export function DataTable({ className }: { className?: string }) {
   const { table, columns } = useDataTableContext()
 
   return (
-    <div className="overflow-hidden rounded-md border">
+    <div className={cn('overflow-hidden rounded-md border', className)}>
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -345,6 +351,27 @@ export function DataTable() {
           )}
         </TableBody>
       </Table>
+    </div>
+  )
+}
+
+export function HeaderWithSorting<TData, TValue>({
+  column,
+  children,
+}: {
+  column: Column<TData, TValue>
+  children: React.ReactNode
+}) {
+  return (
+    <div className="flex items-center space-x-2">
+      <span>{children}</span>
+      <Button
+        size="icon"
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+      >
+        <ArrowUpDownIcon className="h-4 w-4" />
+      </Button>
     </div>
   )
 }
