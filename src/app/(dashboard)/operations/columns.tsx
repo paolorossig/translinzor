@@ -71,6 +71,6 @@ export const driversColumns: ColumnDef<Driver>[] = [
   },
   {
     accessorKey: 'licenseNumber',
-    header: 'Licencia de conducir',
+    header: 'Licencia',
   },
 ]
