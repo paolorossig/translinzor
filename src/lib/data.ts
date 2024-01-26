@@ -57,70 +57,6 @@ export const channelOptions = [
   { label: 'VDISTRIB', value: 'VDISTRIB' },
 ]
 
-export const statusOptions = [
-  { label: 'Activo', value: 'active' },
-  { label: 'Inactivo', value: 'inactive' },
-]
-
-export interface TransportUnit {
-  id: number
-  licensePlate: string
-  type: string
-  brand: string
-  model: string
-  capacity: string
-  grossWeight: number
-  netWeight: number
-}
-
-export const transportUnits: TransportUnit[] = [
-  {
-    id: 1,
-    licensePlate: 'ABC-123',
-    type: 'CAMION FURGON',
-    brand: 'HYUNDAI',
-    model: 'H100 TRUCK',
-    capacity: '2 TN',
-    grossWeight: 7500,
-    netWeight: 3000,
-  },
-  {
-    id: 2,
-    licensePlate: 'XYZ-987',
-    type: 'AUTO',
-    brand: 'DAEWOO',
-    model: 'DAMAS II',
-    capacity: '2 TN',
-    grossWeight: 1280,
-    netWeight: 860,
-  },
-]
-
-export interface Driver {
-  id: number
-  name: string
-  lastName: string
-  dni: string
-  licenseNumber: string
-}
-
-export const drivers: Driver[] = [
-  {
-    id: 1,
-    name: 'Jhon Jairo',
-    lastName: 'Doe Smith',
-    dni: '45515398',
-    licenseNumber: 'Q45515398',
-  },
-  {
-    id: 2,
-    name: 'Juan Carlos',
-    lastName: 'Condori Quispe',
-    dni: '41430373',
-    licenseNumber: 'Q41430373',
-  },
-]
-
 export interface Order {
   orderId: string
   clientId: number
@@ -133,19 +69,19 @@ export interface Order {
 
 export interface Shipment {
   id: number
+  clientId: number
   route: string
   date: Date
   orderIds: string[]
   orders: Order[]
   transportUnitId?: number
-  transportUnit?: TransportUnit
   driverId?: number
-  driver?: Driver
 }
 
 export const shipments: Shipment[] = [
   {
     id: 1,
+    clientId: 1,
     route: 'Ruta 1',
     date: new Date('2023-12-24 11:51:40'),
     orderIds: [
@@ -192,11 +128,10 @@ export const shipments: Shipment[] = [
         status: 'pending',
       },
     ],
-    transportUnitId: 1,
-    transportUnit: transportUnits[0],
   },
   {
     id: 2,
+    clientId: 1,
     route: 'Ruta 2',
     date: new Date('2024-01-14 11:51:40'),
     orderIds: ['000123987'],
