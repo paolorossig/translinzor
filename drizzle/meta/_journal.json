@@ -15,6 +15,13 @@
       "when": 1706222837759,
       "tag": "0001_set_up_costumers",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1706247758933,
+      "tag": "0002_use_snake_case",
+      "breakpoints": true
     }
   ]
 }
