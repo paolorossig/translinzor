@@ -1,7 +1,9 @@
 import {
+  bigint,
   boolean,
   integer,
   pgTable,
+  primaryKey,
   serial,
   text,
   timestamp,
@@ -33,3 +35,31 @@ export const drivers = pgTable('drivers', {
 })
 
 export type Driver = typeof drivers.$inferSelect
+
+export const clients = pgTable('clients', {
+  id: serial('id').primaryKey(),
+  name: text('name').notNull(),
+})
+
+export const companies = pgTable('companies', {
+  id: serial('id').primaryKey(),
+  name: text('name').unique().notNull(),
+  ruc: bigint('ruc', { mode: 'number' }).unique().notNull(),
+})
+
+export const costumers = pgTable(
+  'costumers',
+  {
+    clientId: integer('user_id')
+      .references(() => clients.id)
+      .notNull(),
+    companyId: integer('company_id')
+      .references(() => companies.id)
+      .notNull(),
+    internalCode: text('internal_code'),
+    channel: text('channel'),
+  },
+  (t) => ({
+    pk: primaryKey({ columns: [t.clientId, t.companyId] }),
+  }),
+)

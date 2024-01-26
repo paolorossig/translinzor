@@ -8,6 +8,13 @@
       "when": 1706160135858,
       "tag": "0000_add_drivers_and_transport_units",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1706222837759,
+      "tag": "0001_set_up_costumers",
+      "breakpoints": true
     }
   ]
 }
