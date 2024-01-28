@@ -2,23 +2,16 @@ import { ShipmentBulkUpload } from '@/components/shipment-bulk-upload'
 import {
   DataTable,
   DataTableDateFilter,
-  DataTableFilterInput,
   DataTableHeader,
   DataTableResetFilter,
   DataTableWrapper,
 } from '@/components/ui/data-table'
-import { Shipment, shipments } from '@/lib/data'
-import { wait } from '@/lib/utils'
+import { getShipmentsByClientId } from '@/lib/actions'
 
 import { columns } from './columns'
 
-async function getShipments(): Promise<Shipment[]> {
-  await wait(1000)
-  return shipments
-}
-
 export default async function ShipmentsPage() {
-  const data = await getShipments()
+  const shipments = await getShipmentsByClientId(1)
 
   return (
     <>
@@ -26,13 +19,9 @@ export default async function ShipmentsPage() {
         Entregas
       </h1>
       <div>
-        <DataTableWrapper columns={columns} data={data}>
+        <DataTableWrapper columns={columns} data={shipments}>
           <DataTableHeader actionArea={<ShipmentBulkUpload />}>
-            <DataTableFilterInput
-              columnName="route"
-              placeholder="Filtrar entregas..."
-            />
-            <DataTableDateFilter columnName="date" />
+            <DataTableDateFilter columnName="deliveryDate" />
             <DataTableResetFilter />
           </DataTableHeader>
           <DataTable />
