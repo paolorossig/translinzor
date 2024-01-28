@@ -1,3 +1,4 @@
+import { relations } from 'drizzle-orm'
 import {
   bigint,
   boolean,
@@ -38,11 +39,19 @@ export const clients = pgTable('clients', {
   name: text('name').notNull(),
 })
 
+export const clientsRelations = relations(clients, ({ many }) => ({
+  costumers: many(costumers),
+}))
+
 export const companies = pgTable('companies', {
   id: serial('id').primaryKey(),
   name: text('name').unique().notNull(),
   ruc: bigint('ruc', { mode: 'number' }).unique().notNull(),
 })
+
+export const companiesRelations = relations(companies, ({ many }) => ({
+  costumers: many(costumers),
+}))
 
 export const costumers = pgTable(
   'costumers',
@@ -60,3 +69,14 @@ export const costumers = pgTable(
     pk: primaryKey({ columns: [t.clientId, t.companyId] }),
   }),
 )
+
+export const costumersRelations = relations(costumers, ({ one }) => ({
+  client: one(clients, {
+    fields: [costumers.clientId],
+    references: [clients.id],
+  }),
+  company: one(companies, {
+    fields: [costumers.companyId],
+    references: [companies.id],
+  }),
+}))

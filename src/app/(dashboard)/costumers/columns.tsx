@@ -8,7 +8,7 @@ import { CostumersByClient } from '@/lib/actions'
 
 export const columns: ColumnDef<CostumersByClient[number]>[] = [
   {
-    accessorKey: 'name',
+    accessorKey: 'company.name',
     header: ({ column }) => {
       return <HeaderWithSorting column={column}>Cliente</HeaderWithSorting>
     },
@@ -23,7 +23,7 @@ export const columns: ColumnDef<CostumersByClient[number]>[] = [
     },
   },
   {
-    accessorKey: 'ruc',
+    accessorKey: 'company.ruc',
     header: 'Documento',
     cell: ({ row }) => {
       return (
@@ -31,7 +31,7 @@ export const columns: ColumnDef<CostumersByClient[number]>[] = [
           <Badge variant="outline" className="uppercase">
             RUC
           </Badge>
-          <span>{row.getValue('ruc')}</span>
+          <span>{row.original.company.ruc}</span>
         </div>
       )
     },
