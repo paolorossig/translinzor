@@ -1,5 +1,7 @@
 'use server'
 
+import { unstable_noStore as noStore } from 'next/cache'
+
 import { db } from '@/db'
 
 export async function getCostumersByClientId(clientId: number) {
@@ -20,6 +22,8 @@ export type CostumersByClient = Awaited<
 >
 
 export async function getShipmentsByClientId(clientId: number) {
+  noStore()
+
   const shipments = await db.query.shipments.findMany({
     columns: {
       id: true,
