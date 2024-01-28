@@ -3,10 +3,12 @@ import {
   bigint,
   boolean,
   integer,
+  numeric,
   pgTable,
-  primaryKey,
   serial,
   text,
+  timestamp,
+  unique,
 } from 'drizzle-orm/pg-core'
 
 export const transportUnits = pgTable('transport_units', {
@@ -41,6 +43,7 @@ export const clients = pgTable('clients', {
 
 export const clientsRelations = relations(clients, ({ many }) => ({
   costumers: many(costumers),
+  shipments: many(shipments),
 }))
 
 export const companies = pgTable('companies', {
@@ -56,6 +59,7 @@ export const companiesRelations = relations(companies, ({ many }) => ({
 export const costumers = pgTable(
   'costumers',
   {
+    id: serial('id').primaryKey(),
     clientId: integer('client_id')
       .references(() => clients.id)
       .notNull(),
@@ -66,11 +70,11 @@ export const costumers = pgTable(
     channel: text('channel'),
   },
   (t) => ({
-    pk: primaryKey({ columns: [t.clientId, t.companyId] }),
+    uniq: unique().on(t.clientId, t.companyId),
   }),
 )
 
-export const costumersRelations = relations(costumers, ({ one }) => ({
+export const costumersRelations = relations(costumers, ({ one, many }) => ({
   client: one(clients, {
     fields: [costumers.clientId],
     references: [clients.id],
@@ -79,4 +83,63 @@ export const costumersRelations = relations(costumers, ({ one }) => ({
     fields: [costumers.companyId],
     references: [companies.id],
   }),
+  orders: many(orders),
+  shipments: many(shipments),
+}))
+
+export const orders = pgTable('orders', {
+  id: serial('id').primaryKey(),
+  costumerId: integer('costumer_id')
+    .references(() => costumers.id)
+    .notNull(),
+  shipmentId: integer('shipment_id').references(() => shipments.id),
+  orderNumber: text('order_number').notNull(),
+  guideNumber: text('guide_number').notNull(),
+  destinationAddress: text('destination_address').notNull(),
+  destinationDistrict: text('destination_district').notNull(),
+  totalValue: numeric('total_value').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  deliveredAt: timestamp('delivered_at'),
+  refusedAt: timestamp('refused_at'),
+  refusedReason: text('refused_reason'),
+})
+
+export const ordersRelations = relations(orders, ({ one }) => ({
+  costumer: one(costumers, {
+    fields: [orders.costumerId],
+    references: [costumers.id],
+  }),
+  shipment: one(shipments, {
+    fields: [orders.shipmentId],
+    references: [shipments.id],
+  }),
+}))
+
+export const shipments = pgTable('shipments', {
+  id: serial('id').primaryKey(),
+  clientId: integer('client_id')
+    .references(() => clients.id)
+    .notNull(),
+  transportUnitId: integer('transport_unit_id').references(
+    () => transportUnits.id,
+  ),
+  driverId: integer('driver_id').references(() => drivers.id),
+  deliveryDate: timestamp('delivery_date').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+})
+
+export const shipmentsRelations = relations(shipments, ({ one, many }) => ({
+  client: one(clients, {
+    fields: [shipments.clientId],
+    references: [clients.id],
+  }),
+  transportUnit: one(transportUnits, {
+    fields: [shipments.transportUnitId],
+    references: [transportUnits.id],
+  }),
+  driver: one(drivers, {
+    fields: [shipments.driverId],
+    references: [drivers.id],
+  }),
+  orders: many(orders),
 }))
