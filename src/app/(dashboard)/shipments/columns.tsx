@@ -1,32 +1,61 @@
 'use client'
 
 import type { ColumnDef } from '@tanstack/react-table'
-import { CalendarIcon } from 'lucide-react'
+import { CalendarIcon, MoreHorizontalIcon, TrashIcon } from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
-import { HeaderWithSorting } from '@/components/ui/data-table'
-import { type Shipment } from '@/lib/data'
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { ShipmentsByClient } from '@/lib/actions'
 import { cn } from '@/lib/utils'
 
-export const columns: ColumnDef<Shipment>[] = [
+export const columns: ColumnDef<ShipmentsByClient[number]>[] = [
+  {
+    id: 'select',
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && 'indeterminate')
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Seleccionar todo"
+        className="translate-y-[2px]"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Seleccionar fila"
+        className="translate-y-[2px]"
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  },
   {
     accessorKey: 'id',
     header: 'ID',
   },
   {
-    accessorKey: 'route',
-    header: ({ column }) => {
-      return <HeaderWithSorting column={column}>Ruta</HeaderWithSorting>
-    },
-  },
-  {
-    accessorKey: 'date',
-    header: 'Fecha',
+    accessorKey: 'deliveryDate',
+    header: 'Fecha de entrega',
     cell: ({ row }) => {
       return (
         <div className="flex items-center space-x-1 text-card-foreground">
           <CalendarIcon className="h-4 w-4" />
-          <span>{new Date(row.getValue('date')).toLocaleDateString('es')}</span>
+          <span>
+            {new Date(row.getValue('deliveryDate')).toLocaleDateString('es')}
+          </span>
         </div>
       )
     },
@@ -37,14 +66,27 @@ export const columns: ColumnDef<Shipment>[] = [
     },
   },
   {
-    id: 'status',
-    header: 'Estado',
+    accessorKey: 'transportUnit',
+    header: 'Unidad de transporte',
     cell: ({ row }) => {
-      const totalOrders = row.original.orderIds.length
-      const deliveredOrders = row.original.orders.filter(
-        (order) => order.status === 'delivered',
-      ).length
-      const deliveredRate = (deliveredOrders / totalOrders) * 100
+      const transportUnit = row.original.transportUnit
+      return <span>{transportUnit ? transportUnit.licensePlate : '-'}</span>
+    },
+  },
+  {
+    accessorKey: 'driver',
+    header: 'Conductor',
+    cell: ({ row }) => {
+      const driver = row.original.driver
+      return <span>{driver ? driver.name : '-'}</span>
+    },
+  },
+  {
+    id: 'summary',
+    header: 'Resumen',
+    cell: ({ row }) => {
+      const { delivered, total } = row.original.ordersSummary
+      const deliveredRate = (delivered / total) * 100
 
       return (
         <div className="flex items-center space-x-2">
@@ -58,10 +100,40 @@ export const columns: ColumnDef<Shipment>[] = [
             {deliveredRate} %
           </Badge>
           <span className="text-nowrap text-card-foreground">
-            {deliveredOrders}/{totalOrders}{' '}
-            {totalOrders > 1 ? 'órdenes entregadas' : 'orden entregada'}
+            {delivered}/{total}{' '}
+            {total > 1 ? 'órdenes entregadas' : 'orden entregada'}
           </span>
         </div>
+      )
+    },
+  },
+  {
+    id: 'actions',
+    cell: ({ row }) => {
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
+            >
+              <MoreHorizontalIcon className="h-4 w-4" />
+              <span className="sr-only">Abrir el menú</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-[160px]">
+            <DropdownMenuItem>Ver</DropdownMenuItem>
+            <DropdownMenuItem>Editar</DropdownMenuItem>
+            <DropdownMenuItem>Asignar</DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="text-destructive focus:bg-destructive/20 focus:text-destructive">
+              Eliminar
+              <DropdownMenuShortcut>
+                <TrashIcon className="h-4 w-4" />
+              </DropdownMenuShortcut>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       )
     },
   },

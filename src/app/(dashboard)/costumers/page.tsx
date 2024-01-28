@@ -6,23 +6,13 @@ import {
   DataTableResetFilter,
   DataTableWrapper,
 } from '@/components/ui/data-table'
-import {
-  channelOptions,
-  costumers,
-  statusOptions,
-  type Costumer,
-} from '@/lib/data'
-import { wait } from '@/lib/utils'
+import { getCostumersByClientId } from '@/lib/actions'
+import { channelOptions } from '@/lib/data'
 
 import { columns } from './columns'
 
-async function getCostumers(): Promise<Costumer[]> {
-  await wait(1000)
-  return costumers
-}
-
 export default async function CostumersPage() {
-  const data = await getCostumers()
+  const data = await getCostumersByClientId(1)
 
   return (
     <>
@@ -41,11 +31,6 @@ export default async function CostumersPage() {
                 columnName="channel"
                 title="Canal"
                 options={channelOptions}
-              />
-              <DataTableFacetedFilter
-                columnName="status"
-                title="Estado"
-                options={statusOptions}
               />
               <DataTableResetFilter />
             </div>

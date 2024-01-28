@@ -1,22 +1,15 @@
 import { DataTable, DataTableWrapper } from '@/components/ui/data-table'
-import {
-  drivers,
-  transportUnits,
-  type Driver,
-  type TransportUnit,
-} from '@/lib/data'
-import { wait } from '@/lib/utils'
+import { db } from '@/db'
+import { drivers, transportUnits } from '@/db/schema'
 
 import { driversColumns, transportUnitsColumns } from './columns'
 
-async function getTransportUnits(): Promise<TransportUnit[]> {
-  await wait(1000)
-  return transportUnits
+async function getTransportUnits() {
+  return db.select().from(transportUnits)
 }
 
-async function getDrivers(): Promise<Driver[]> {
-  await wait(1000)
-  return drivers
+async function getDrivers() {
+  return db.select().from(drivers)
 }
 
 export default async function OperationsPage() {
