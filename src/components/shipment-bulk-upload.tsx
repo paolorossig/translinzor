@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useTransition } from 'react'
 import { UploadIcon, XIcon } from 'lucide-react'
 import { defaultStyles, FileIcon } from 'react-file-icon'
 import { toast } from 'sonner'
@@ -19,6 +19,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from '@/components/ui/drawer'
+import { createBulkShipments } from '@/lib/actions'
 import {
   parseShipmentBulkUpload,
   type ShipmentBulkUploadRow,
@@ -32,8 +33,10 @@ const excelAcceptedMimeTypes = {
 }
 
 export function ShipmentBulkUpload() {
+  const [open, setOpen] = useState(false)
   const [excelFile, setExcelFile] = useState<ArrayBuffer | null>(null)
   const [bulkData, setBulkData] = useState<ShipmentBulkUploadRow[] | null>(null)
+  const [isPending, startTransition] = useTransition()
 
   const onDrop = (acceptedFiles: File[]) => {
     if (!acceptedFiles[0]) return
@@ -60,26 +63,56 @@ export function ShipmentBulkUpload() {
       return
     }
 
-    toast.success('El archivo se ha cargado correctamente.')
-
     const parsedData = parseShipmentBulkUpload(data)
+    if (!parsedData.length) {
+      toast.error('El archivo no contiene datos válidos.')
+      return
+    }
+
     setBulkData(parsedData)
+    toast.success('El archivo se ha cargado correctamente.')
   }, [excelFile])
 
   const defaultSummary = {
-    routes: new Set<string>(),
-    vouchers: new Set<number>(),
+    shipments: new Set<string>(),
+    orders: new Set<number>(),
   }
 
   const summary =
     bulkData?.reduce((acc, curr) => {
-      acc.routes.add(curr.route)
-      acc.vouchers.add(curr.voucher)
+      acc.shipments.add(curr.route)
+      acc.orders.add(curr.clientOrderId)
       return acc
     }, defaultSummary) ?? defaultSummary
 
+  const submitBulkData = () => {
+    startTransition(() => {
+      if (!bulkData) return
+
+      toast.promise(
+        createBulkShipments({
+          clientId: 1,
+          deliveryDate: new Date(),
+          bundledOrders: bulkData,
+        }).then((result) => {
+          setBulkData(null)
+
+          if (!result.success) return Promise.reject(result.message)
+
+          setOpen(false)
+          return Promise.resolve(result)
+        }),
+        {
+          loading: 'Cargando...',
+          success: 'Carga masiva realizada exitosamente.',
+          error: (err: string) => err,
+        },
+      )
+    })
+  }
+
   return (
-    <Drawer>
+    <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
         <Button className="h-8">
           <UploadIcon className="h-4 w-4" />
@@ -114,8 +147,8 @@ export function ShipmentBulkUpload() {
                       Resumen:
                     </h3>
                     <ul className="ml-4">
-                      <li>{summary.routes.size} envíos</li>
-                      <li>{summary.vouchers.size} vales</li>
+                      <li>{summary.shipments.size} envíos</li>
+                      <li>{summary.orders.size} órdenes</li>
                     </ul>
                   </div>
                 </CardContent>
@@ -129,7 +162,12 @@ export function ShipmentBulkUpload() {
             />
           )}
           <DrawerFooter>
-            <Button disabled={!bulkData}>Subir</Button>
+            <Button
+              disabled={isPending || !bulkData}
+              onClick={() => void submitBulkData()}
+            >
+              Subir
+            </Button>
             <DrawerClose asChild>
               <Button variant="outline" className="w-full">
                 Cancelar
