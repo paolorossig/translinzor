@@ -66,7 +66,7 @@ export const costumers = pgTable(
     companyId: integer('company_id')
       .references(() => companies.id)
       .notNull(),
-    internalCode: text('internal_code'),
+    internalCode: text('internal_code').notNull(),
     channel: text('channel'),
   },
   (t) => ({
@@ -87,22 +87,29 @@ export const costumersRelations = relations(costumers, ({ one, many }) => ({
   shipments: many(shipments),
 }))
 
-export const orders = pgTable('orders', {
-  id: serial('id').primaryKey(),
-  costumerId: integer('costumer_id')
-    .references(() => costumers.id)
-    .notNull(),
-  shipmentId: integer('shipment_id').references(() => shipments.id),
-  orderNumber: text('order_number').notNull(),
-  guideNumber: text('guide_number').notNull(),
-  destinationAddress: text('destination_address').notNull(),
-  destinationDistrict: text('destination_district').notNull(),
-  totalValue: numeric('total_value').notNull(),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-  deliveredAt: timestamp('delivered_at'),
-  refusedAt: timestamp('refused_at'),
-  refusedReason: text('refused_reason'),
-})
+export const orders = pgTable(
+  'orders',
+  {
+    id: serial('id').primaryKey(),
+    costumerId: integer('costumer_id')
+      .references(() => costumers.id)
+      .notNull(),
+    shipmentId: integer('shipment_id').references(() => shipments.id),
+    clientOrderId: integer('client_order_id').notNull(),
+    orderNumber: text('order_number').notNull(),
+    guideNumber: text('guide_number').notNull(),
+    destinationAddress: text('destination_address').notNull(),
+    destinationDistrict: text('destination_district').notNull(),
+    totalValue: numeric('total_value').notNull(),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    deliveredAt: timestamp('delivered_at'),
+    refusedAt: timestamp('refused_at'),
+    refusedReason: text('refused_reason'),
+  },
+  (t) => ({
+    uniq: unique().on(t.costumerId, t.clientOrderId),
+  }),
+)
 
 export const ordersRelations = relations(orders, ({ one }) => ({
   costumer: one(costumers, {
@@ -114,6 +121,8 @@ export const ordersRelations = relations(orders, ({ one }) => ({
     references: [shipments.id],
   }),
 }))
+
+export type CreateOrder = typeof orders.$inferInsert
 
 export const shipments = pgTable('shipments', {
   id: serial('id').primaryKey(),
@@ -143,3 +152,5 @@ export const shipmentsRelations = relations(shipments, ({ one, many }) => ({
   }),
   orders: many(orders),
 }))
+
+export type CreateShipment = typeof shipments.$inferInsert
