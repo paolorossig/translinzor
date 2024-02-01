@@ -122,6 +122,7 @@ export const ordersRelations = relations(orders, ({ one }) => ({
   }),
 }))
 
+export type Order = typeof orders.$inferSelect
 export type CreateOrder = typeof orders.$inferInsert
 
 export const shipments = pgTable('shipments', {

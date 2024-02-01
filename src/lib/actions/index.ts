@@ -1,14 +1,10 @@
 'use server'
 
 import { unstable_noStore as noStore, revalidatePath } from 'next/cache'
+import { notFound } from 'next/navigation'
 
 import { db } from '@/db'
-import {
-  orders,
-  shipments,
-  type CreateOrder,
-  type CreateShipment,
-} from '@/db/schema'
+import { orders, shipments, type CreateOrder } from '@/db/schema'
 import { catchError } from '@/lib/utils'
 import { ShipmentBulkUploadRow } from '@/lib/validations/shipment-upload'
 
@@ -62,6 +58,31 @@ export async function getShipmentsByClientId(clientId: number) {
 export type ShipmentsByClient = Awaited<
   ReturnType<typeof getShipmentsByClientId>
 >
+
+export async function getShipmentById(shipmentId: number) {
+  const shipment = await db.query.shipments.findFirst({
+    with: {
+      orders: {
+        with: {
+          costumer: {
+            with: { company: true },
+          },
+        },
+      },
+      driver: true,
+      transportUnit: true,
+    },
+    where: (shipments, { eq }) => eq(shipments.id, shipmentId),
+  })
+
+  if (!shipment) {
+    notFound()
+  }
+
+  return shipment
+}
+
+export type ShipmentById = Awaited<ReturnType<typeof getShipmentById>>
 
 interface CreateBulkShipmentInput {
   clientId: number
