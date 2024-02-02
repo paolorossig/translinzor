@@ -1,11 +1,21 @@
 /* eslint-disable @next/next/no-img-element */
+import { cookies } from 'next/headers'
 import Link from 'next/link'
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
+import { ChevronRightIcon } from 'lucide-react'
 
 import { LoginForm } from '@/components/auth/login-form'
+import { Icons } from '@/components/icons'
+import { Button } from '@/components/ui/button'
 
-export default function LoginPage() {
+export default async function LoginPage() {
+  const supabase = createServerComponentClient({ cookies })
+  const {
+    data: { session },
+  } = await supabase.auth.getSession()
+
   return (
-    <section className="mx-auto flex w-full flex-col justify-center space-y-6 px-4 sm:w-[350px] sm:px-0">
+    <section className="mx-auto flex w-full flex-col justify-center space-y-6 px-4 sm:w-[350px]">
       <div className="flex flex-col text-center">
         <picture className="lg:hidden">
           <img
@@ -21,7 +31,34 @@ export default function LoginPage() {
           Inicia sesión en tu cuenta para acceder al dashboard.
         </p>
       </div>
-      <LoginForm />
+      {session ? (
+        <Button asChild className="group">
+          <Link href="/">
+            Ir al dashboard
+            <ChevronRightIcon className="ml-2 h-4 w-4 group-hover:scale-125 group-hover:animate-pulse" />
+          </Link>
+        </Button>
+      ) : (
+        <LoginForm />
+      )}
+      <div className="relative">
+        <div className="absolute inset-0 flex items-center">
+          <span className="w-full border-t" />
+        </div>
+        <div className="relative flex justify-center text-xs uppercase">
+          <span className="bg-background px-2 text-muted-foreground">O</span>
+        </div>
+      </div>
+      <Button asChild className="bg-green-400 text-white hover:bg-green-400/90">
+        <Link
+          href="https://wa.link/ml2t11"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Icons.whatsapp className="mr-2 h-4 w-4" />
+          Contáctanos
+        </Link>
+      </Button>
       <p className="px-8 text-center text-sm text-muted-foreground">
         Al hacer clic en continuar, aceptas nuestros{' '}
         <Link

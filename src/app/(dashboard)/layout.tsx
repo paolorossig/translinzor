@@ -1,3 +1,6 @@
+import { cookies } from 'next/headers'
+import { redirect } from 'next/navigation'
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import { MenuIcon } from 'lucide-react'
 
 import NavBreadcrumb from '@/components/layout/nav-breadcrumb'
@@ -6,11 +9,20 @@ import { ThemeToggle } from '@/components/layout/theme'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const supabase = createServerComponentClient({ cookies })
+  const {
+    data: { session },
+  } = await supabase.auth.getSession()
+
+  if (!session) {
+    redirect('/login')
+  }
+
   return (
     <div className="h-full bg-background text-foreground">
       <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">

@@ -1,80 +1,119 @@
 'use client'
 
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useTransition } from 'react'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { AuthError } from '@supabase/supabase-js'
 import { Loader2Icon } from 'lucide-react'
+import { useForm } from 'react-hook-form'
+import * as z from 'zod'
 
-import { Icons } from '@/components/icons'
 import { Button } from '@/components/ui/button'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { cn, wait } from '@/lib/utils'
 
-interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
+const supabaseKnownErrors: Record<string, string> = {
+  'Invalid login credentials': 'Credenciales de acceso inválidos',
+}
+const defaultErrorMessage = 'Ocurrió un error inesperado'
 
-export function LoginForm({ className, ...props }: UserAuthFormProps) {
-  const [isLoading, setIsLoading] = useState(false)
+const getUserErrorMessage = (error: AuthError) => {
+  const message = error.message
+  return supabaseKnownErrors[message] ?? defaultErrorMessage
+}
+
+export const authSignInSchema = z.object({
+  email: z
+    .string({ required_error: 'Requerido' })
+    .email({ message: 'Email inválido' }),
+  password: z.string({ required_error: 'Requerido' }),
+})
+
+type AuthSignInInput = z.infer<typeof authSignInSchema>
+
+export function LoginForm() {
   const router = useRouter()
+  const supabase = createClientComponentClient()
+  const [isPending, startTransition] = useTransition()
 
-  async function onSubmit(event: React.SyntheticEvent) {
-    event.preventDefault()
-    setIsLoading(true)
+  const form = useForm<AuthSignInInput>({
+    resolver: zodResolver(authSignInSchema),
+  })
 
-    await wait(1000)
+  const userSignIn = (input: AuthSignInInput) => {
+    startTransition(async () => {
+      const { data, error } = await supabase.auth.signInWithPassword(input)
 
-    setIsLoading(false)
-    router.push('/')
+      if (error) {
+        form.setError('password', { message: getUserErrorMessage(error) })
+        return
+      }
+
+      if (data.session) router.push('/')
+    })
   }
 
   return (
-    <div className={cn('grid gap-6', className)} {...props}>
-      <form onSubmit={(e) => void onSubmit(e)}>
-        <div className="grid gap-2">
-          <div className="grid gap-1">
-            <Label className="sr-only" htmlFor="email">
-              Email
-            </Label>
-            <Input
-              id="email"
-              placeholder="name@example.com"
-              type="email"
-              autoCapitalize="none"
-              autoComplete="email"
-              autoCorrect="off"
-              disabled={isLoading}
-            />
-          </div>
-          <Button disabled={isLoading}>
-            {isLoading && <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />}
-            Iniciar sesión con email
-          </Button>
-        </div>
+    <Form {...form}>
+      <form className="grid gap-2" onSubmit={form.handleSubmit(userSignIn)}>
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <Label className="sr-only">Email</Label>
+              <FormControl>
+                <Input
+                  type="email"
+                  placeholder="name@example.com"
+                  autoCapitalize="none"
+                  autoComplete="email"
+                  autoCorrect="off"
+                  disabled={isPending}
+                  value={field.value}
+                  onChange={field.onChange}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="sr-only">Contraseña</FormLabel>
+              <FormControl>
+                <Input
+                  type="password"
+                  placeholder="password"
+                  autoCapitalize="none"
+                  autoComplete="off"
+                  autoCorrect="off"
+                  disabled={isPending}
+                  value={field.value}
+                  onChange={field.onChange}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button type="submit" disabled={isPending} className="mt-2">
+          {isPending && <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />}
+          Iniciar sesión
+        </Button>
       </form>
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">O</span>
-        </div>
-      </div>
-      <Button
-        variant="default"
-        type="button"
-        disabled={isLoading}
-        asChild
-        className="bg-green-400 text-white hover:bg-green-400/90"
-      >
-        <Link
-          href="https://wa.link/ml2t11"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Icons.whatsapp className="mr-2 h-4 w-4" />
-          Contáctanos
-        </Link>
-      </Button>
-    </div>
+    </Form>
   )
 }
