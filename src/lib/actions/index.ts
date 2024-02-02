@@ -6,7 +6,7 @@ import { notFound } from 'next/navigation'
 import { db } from '@/db'
 import { orders, shipments, type CreateOrder } from '@/db/schema'
 import { catchError } from '@/lib/utils'
-import { ShipmentBulkUploadRow } from '@/lib/validations/shipment-upload'
+import { type CreateBulkShipmentsInput } from '@/lib/validations/shipment-upload'
 
 export async function getCostumersByClientId(clientId: number) {
   return await db.query.costumers.findMany({
@@ -84,12 +84,6 @@ export async function getShipmentById(shipmentId: number) {
 
 export type ShipmentById = Awaited<ReturnType<typeof getShipmentById>>
 
-interface CreateBulkShipmentInput {
-  clientId: number
-  deliveryDate: Date
-  bundledOrders: ShipmentBulkUploadRow[]
-}
-
 const minBundleSizeError = 'bundledOrders debe contener al menos un registro'
 const costumerNotFoundError =
   'Al menos 1 cliente no ha sido encontrado en la base de datos'
@@ -104,7 +98,7 @@ const respondError = (message: string) => {
   }
 }
 
-export async function createBulkShipments(input: CreateBulkShipmentInput) {
+export async function createBulkShipments(input: CreateBulkShipmentsInput) {
   console.log('creating bulk shipments')
   const { clientId, deliveryDate, bundledOrders } = input
   console.log('input:', {
@@ -165,9 +159,13 @@ export async function createBulkShipments(input: CreateBulkShipmentInput) {
 
   const shipmentsOrdersMap = bundledOrders.reduce(
     (acc, curr) => {
-      const { route, internalCode, clientOrderId, ...rest } = curr
-      const costumerId = internalCodeToCostumerIdMap[internalCode]!
-      const order = { clientOrderId, costumerId, ...rest }
+      const { route, internalCode, clientOrderId, totalValue, ...rest } = curr
+      const order = {
+        clientOrderId,
+        costumerId: internalCodeToCostumerIdMap[internalCode]!,
+        totalValue: totalValue.toFixed(2),
+        ...rest,
+      }
 
       acc[route] = [...(acc[route] ?? []), order]
       return acc

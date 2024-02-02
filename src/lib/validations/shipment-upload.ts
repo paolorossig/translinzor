@@ -10,7 +10,7 @@ const shipmentBulkUploadSchema = z.object({
   guideNumber: z.string(),
   destinationAddress: z.string().toUpperCase().transform(removeAccents),
   destinationDistrict: z.string().toUpperCase(),
-  totalValue: z.number().transform((value) => value.toFixed(2)),
+  totalValue: z.number(),
 })
 
 export type ShipmentBulkUploadRow = z.infer<typeof shipmentBulkUploadSchema>
@@ -43,3 +43,11 @@ export const parseShipmentBulkUpload = (
     })
     .filter(Boolean) as ShipmentBulkUploadRow[]
 }
+
+export const createBulkShipmentsSchema = z.object({
+  clientId: z.number({ required_error: 'Requerido' }),
+  deliveryDate: z.date({ required_error: 'Requerido' }),
+  bundledOrders: z.array(shipmentBulkUploadSchema),
+})
+
+export type CreateBulkShipmentsInput = z.infer<typeof createBulkShipmentsSchema>
