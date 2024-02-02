@@ -41,27 +41,27 @@ export default async function ShipmentPage({
       <section className="space-y-4">
         <div>
           <h2 className="mb-2 text-lg font-medium text-primary/90">Resumen</h2>
-          <div className="flex items-center space-x-1 text-card-foreground">
-            <CalendarIcon className="h-4 w-4" />
-            <span>{shipment.deliveryDate.toLocaleDateString('es')}</span>
-          </div>
-          <div className="flex items-center space-x-1 text-card-foreground">
-            <CarIcon className="h-4 w-4" />
-            <span>
-              {shipment.transportUnit
-                ? `${shipment.transportUnit.type} - ${shipment.transportUnit.licensePlate}`
-                : 'No asignado'}
-            </span>
-          </div>
-          <div className="flex items-center space-x-1 text-card-foreground">
-            <UserRoundIcon className="h-4 w-4" />
-            <span>{shipment.driverId ? 'Asignado' : 'No asignado'}</span>
-          </div>
-          <div className="flex items-center space-x-1 text-card-foreground">
-            <LayersIcon className="h-4 w-4" />
-            <span>
-              {`${shipment.orders.length} ${shipment.orders.length > 1 ? 'órdenes' : 'orden'}`}
-            </span>
+          <div className="grid md:grid-cols-2">
+            <div className="grid grid-cols-2 gap-y-1 text-card-foreground">
+              <span className="flex items-center">
+                <CalendarIcon className="mr-1 h-4 w-4" />
+                {shipment.deliveryDate.toLocaleDateString('es')}
+              </span>
+              <span className="flex items-center">
+                <CarIcon className="mr-1 h-4 w-4" />
+                {shipment.transportUnit
+                  ? `${shipment.transportUnit.type} - ${shipment.transportUnit.licensePlate}`
+                  : 'No asignado'}
+              </span>
+              <span className="flex items-center">
+                <LayersIcon className="mr-1 h-4 w-4" />
+                {`${shipment.orders.length} ${shipment.orders.length > 1 ? 'órdenes' : 'orden'}`}
+              </span>
+              <span className="flex items-center">
+                <UserRoundIcon className="mr-1 h-4 w-4" />
+                {shipment.driverId ? 'Asignado' : 'No asignado'}
+              </span>
+            </div>
           </div>
         </div>
         <div>
