@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import type { ColumnDef } from '@tanstack/react-table'
 import { CalendarIcon, MoreHorizontalIcon, TrashIcon } from 'lucide-react'
 
@@ -122,7 +123,9 @@ export const columns: ColumnDef<ShipmentsByClient[number]>[] = [
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-[160px]">
-            <DropdownMenuItem>Ver</DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href={`/shipments/${row.original.id}`}>Ver</Link>
+            </DropdownMenuItem>
             <DropdownMenuItem>Editar</DropdownMenuItem>
             <DropdownMenuItem>Asignar</DropdownMenuItem>
             <DropdownMenuSeparator />

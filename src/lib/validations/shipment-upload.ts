@@ -1,14 +1,15 @@
 import * as z from 'zod'
 
+import { removeAccents } from '@/lib/utils'
+
 const shipmentBulkUploadSchema = z.object({
   route: z.string(),
-  costumerCode: z.string(),
-  businessName: z.string(),
-  voucher: z.number(),
+  internalCode: z.string(),
+  clientOrderId: z.number(),
   orderNumber: z.string(),
   guideNumber: z.string(),
-  address: z.string(),
-  district: z.string(),
+  destinationAddress: z.string().toUpperCase().transform(removeAccents),
+  destinationDistrict: z.string().toUpperCase(),
   totalValue: z.number(),
 })
 
@@ -16,13 +17,12 @@ export type ShipmentBulkUploadRow = z.infer<typeof shipmentBulkUploadSchema>
 
 const headersMap: Record<string, keyof ShipmentBulkUploadRow> = {
   CHOFER: 'route',
-  'Cod. Cliente': 'costumerCode',
-  'Razón Social': 'businessName',
-  'NRO VALE': 'voucher',
+  'Cod. Cliente': 'internalCode',
+  'NRO VALE': 'clientOrderId',
   'NRO PEDIDO': 'orderNumber',
   'NRO GUIA': 'guideNumber',
-  DIRECCION: 'address',
-  DISTRITO: 'district',
+  DIRECCION: 'destinationAddress',
+  DISTRITO: 'destinationDistrict',
   'VALOR TOT.': 'totalValue',
 }
 
@@ -43,3 +43,11 @@ export const parseShipmentBulkUpload = (
     })
     .filter(Boolean) as ShipmentBulkUploadRow[]
 }
+
+export const createBulkShipmentsSchema = z.object({
+  clientId: z.number({ required_error: 'Requerido' }),
+  deliveryDate: z.date({ required_error: 'Requerido' }),
+  bundledOrders: z.array(shipmentBulkUploadSchema),
+})
+
+export type CreateBulkShipmentsInput = z.infer<typeof createBulkShipmentsSchema>
