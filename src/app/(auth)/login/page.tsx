@@ -9,7 +9,8 @@ import { Icons } from '@/components/icons'
 import { Button } from '@/components/ui/button'
 
 export default async function LoginPage() {
-  const supabase = createServerComponentClient({ cookies })
+  const cookieStore = cookies()
+  const supabase = createServerComponentClient({ cookies: () => cookieStore })
   const {
     data: { session },
   } = await supabase.auth.getSession()
