@@ -34,12 +34,13 @@ export default async function DashboardLayout({
     redirect('/login')
   }
 
-  const userNavItems = dashboardConfig.navigationByUserRole[profile.role]
+  const { displayName, role } = profile
+  const userNavigation = dashboardConfig.navigationByUserRole[role]
 
   return (
     <div className="h-full bg-background text-foreground">
       <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
-        <Sidebar displayName={profile.displayName} userNavItems={userNavItems} />
+        <Sidebar displayName={displayName} userNavigation={userNavigation} />
       </div>
       <div className="fixed inset-x-0 top-0 h-full bg-card lg:ml-72 lg:mr-4 lg:mt-4 lg:rounded-t-2xl lg:border-x lg:border-t">
         <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 bg-card px-4 sm:gap-x-6 sm:px-6 lg:rounded-t-2xl">
@@ -51,7 +52,10 @@ export default async function DashboardLayout({
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="w-72 px-0">
-              <Sidebar displayName={profile.displayName} userNavItems={userNavItems} />
+              <Sidebar
+                displayName={displayName}
+                userNavigation={userNavigation}
+              />
             </SheetContent>
           </Sheet>
           <div className="h-6 w-px bg-border lg:hidden" aria-hidden="true" />

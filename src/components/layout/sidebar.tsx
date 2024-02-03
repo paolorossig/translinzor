@@ -10,14 +10,14 @@ import { Icons } from '@/components/icons'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import type { NavItem } from '@/types'
+import type { UserNavigation } from '@/types'
 
 interface SidebarProps {
   displayName: string
-  userNavItems: NavItem[]
+  userNavigation: UserNavigation
 }
 
-export default function Sidebar({ displayName, userNavItems }: SidebarProps) {
+export default function Sidebar({ displayName, userNavigation }: SidebarProps) {
   const router = useRouter()
   const segment = useSelectedLayoutSegment()
   const supabase = createClientComponentClient()
@@ -52,7 +52,15 @@ export default function Sidebar({ displayName, userNavItems }: SidebarProps) {
         <ul role="list" className="flex flex-1 flex-col gap-y-7">
           <li>
             <ul role="list" className="-mx-2 space-y-1">
-              {userNavItems.map((item) => {
+              {userNavigation.map((item) => {
+                if (item.separator) {
+                  return (
+                    <li key={item.name} className="pt-3 tracking-tight">
+                      {item.name}
+                    </li>
+                  )
+                }
+
                 const Icon = Icons[item.icon]
                 return (
                   <li key={item.name}>
