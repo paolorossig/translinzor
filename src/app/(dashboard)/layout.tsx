@@ -8,6 +8,8 @@ import Sidebar from '@/components/layout/sidebar'
 import { ThemeToggle } from '@/components/layout/theme'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import { dashboardConfig } from '@/config/dashboard'
+import { db } from '@/db'
 
 export default async function DashboardLayout({
   children,
@@ -24,10 +26,20 @@ export default async function DashboardLayout({
     redirect('/login')
   }
 
+  const profile = await db.query.profiles.findFirst({
+    where: (profiles, { eq }) => eq(profiles.id, session.user.id),
+  })
+
+  if (!profile) {
+    redirect('/login')
+  }
+
+  const userNavItems = dashboardConfig.navigationByUserRole[profile.role]
+
   return (
     <div className="h-full bg-background text-foreground">
       <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
-        <Sidebar />
+        <Sidebar displayName={profile.displayName} userNavItems={userNavItems} />
       </div>
       <div className="fixed inset-x-0 top-0 h-full bg-card lg:ml-72 lg:mr-4 lg:mt-4 lg:rounded-t-2xl lg:border-x lg:border-t">
         <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 bg-card px-4 sm:gap-x-6 sm:px-6 lg:rounded-t-2xl">
@@ -39,7 +51,7 @@ export default async function DashboardLayout({
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="w-72 px-0">
-              <Sidebar />
+              <Sidebar displayName={profile.displayName} userNavItems={userNavItems} />
             </SheetContent>
           </Sheet>
           <div className="h-6 w-px bg-border lg:hidden" aria-hidden="true" />

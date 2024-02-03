@@ -4,11 +4,13 @@ import {
   boolean,
   integer,
   numeric,
+  pgEnum,
   pgTable,
   serial,
   text,
   timestamp,
   unique,
+  uuid,
 } from 'drizzle-orm/pg-core'
 
 export const transportUnits = pgTable('transport_units', {
@@ -155,3 +157,12 @@ export const shipmentsRelations = relations(shipments, ({ one, many }) => ({
 }))
 
 export type CreateShipment = typeof shipments.$inferInsert
+
+export const userRolesEnum = pgEnum('role', ['admin', 'client'] as const)
+export type UserRole = (typeof userRolesEnum.enumValues)[number]
+
+export const profiles = pgTable('profiles', {
+  id: uuid('id').primaryKey(),
+  displayName: text('displayName').notNull(),
+  role: userRolesEnum('role').notNull(),
+})

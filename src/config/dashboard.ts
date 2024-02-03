@@ -1,25 +1,24 @@
-import {
-  BaggageClaimIcon,
-  CarIcon,
-  ContactIcon,
-  HomeIcon,
-  PieChartIcon,
-  UsersIcon,
-} from 'lucide-react'
-
+import { UserRole } from '@/db/schema'
 import type { NavItem } from '@/types'
 
 interface DashboardConfig {
-  navigation: NavItem[]
+  navigationByUserRole: Record<UserRole, NavItem[]>
 }
 
 export const dashboardConfig: DashboardConfig = {
-  navigation: [
-    { name: 'Dashboard', href: '/', icon: HomeIcon },
-    { name: 'Clientes', href: '/costumers', icon: ContactIcon },
-    { name: 'Entregas', href: '/shipments', icon: BaggageClaimIcon },
-    { name: 'Operaciones', href: '/operations', icon: CarIcon },
-    { name: 'Usuarios', href: '#', icon: UsersIcon },
-    { name: 'Reportes', href: '#', icon: PieChartIcon },
-  ],
+  navigationByUserRole: {
+    admin: [
+      { name: 'Dashboard', href: '/', icon: 'home' },
+      { name: 'Entregas', href: '/shipments', icon: 'baggageClaim' },
+      { name: 'Clientes', href: '/costumers', icon: 'contact' },
+      { name: 'Operaciones', href: '/operations', icon: 'car' },
+      { name: 'Usuarios', href: '#', icon: 'users' },
+    ],
+    client: [
+      { name: 'Dashboard', href: '/', icon: 'home' },
+      { name: 'Clientes', href: '/costumers', icon: 'contact' },
+      { name: 'Entregas', href: '/shipments', icon: 'baggageClaim' },
+      { name: 'Reportes', href: '#', icon: 'pieChart' },
+    ],
+  },
 }
