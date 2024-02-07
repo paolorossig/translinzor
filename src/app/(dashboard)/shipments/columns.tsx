@@ -9,7 +9,7 @@ import {
   TrashIcon,
 } from 'lucide-react'
 
-import { AssignmentForm } from '@/components/modules/shipments/assignment-form'
+import { AssignmentForm } from '@/components/modules/shipments'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'

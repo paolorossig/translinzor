@@ -1,4 +1,4 @@
-import { ShipmentBulkUpload } from '@/components/shipment-bulk-upload'
+import { ShipmentBulkUpload } from '@/components/modules/shipments'
 import {
   DataTable,
   DataTableDateFilter,
