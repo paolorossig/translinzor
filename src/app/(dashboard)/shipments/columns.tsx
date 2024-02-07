@@ -2,8 +2,14 @@
 
 import Link from 'next/link'
 import type { ColumnDef } from '@tanstack/react-table'
-import { CalendarIcon, MoreHorizontalIcon, TrashIcon } from 'lucide-react'
+import {
+  CalendarIcon,
+  EyeIcon,
+  MoreHorizontalIcon,
+  TrashIcon,
+} from 'lucide-react'
 
+import { AssignmentForm } from '@/components/modules/shipments/assignment-form'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -15,10 +21,20 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet'
 import { ShipmentsByClient } from '@/lib/actions'
 import { cn } from '@/lib/utils'
 
-export const columns: ColumnDef<ShipmentsByClient[number]>[] = [
+type ShipmentColumns = ColumnDef<ShipmentsByClient[number]>[]
+
+const columns: ShipmentColumns = [
   {
     id: 'select',
     header: ({ table }) => (
@@ -108,35 +124,72 @@ export const columns: ColumnDef<ShipmentsByClient[number]>[] = [
       )
     },
   },
+]
+
+export const adminColumns: ShipmentColumns = [
+  ...columns,
   {
-    id: 'actions',
+    id: 'admin-actions',
     cell: ({ row }) => {
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
-            >
-              <MoreHorizontalIcon className="h-4 w-4" />
-              <span className="sr-only">Abrir el menú</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-[160px]">
-            <DropdownMenuItem asChild>
-              <Link href={`/shipments/${row.original.id}`}>Ver</Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem>Editar</DropdownMenuItem>
-            <DropdownMenuItem>Asignar</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-destructive focus:bg-destructive/20 focus:text-destructive">
-              Eliminar
-              <DropdownMenuShortcut>
-                <TrashIcon className="h-4 w-4" />
-              </DropdownMenuShortcut>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <Sheet>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
+              >
+                <MoreHorizontalIcon className="h-4 w-4" />
+                <span className="sr-only">Abrir el menú</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-[160px]">
+              <DropdownMenuItem asChild>
+                <Link href={`/shipments/${row.original.id}`}>Ver</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem disabled>Editar</DropdownMenuItem>
+              <SheetTrigger asChild>
+                <DropdownMenuItem>Asignar</DropdownMenuItem>
+              </SheetTrigger>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                disabled
+                className="text-destructive focus:bg-destructive/20 focus:text-destructive"
+              >
+                Eliminar
+                <DropdownMenuShortcut>
+                  <TrashIcon className="h-4 w-4" />
+                </DropdownMenuShortcut>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <SheetContent>
+            <SheetHeader>
+              <SheetTitle className="text-primary">Asignación</SheetTitle>
+              <SheetDescription>
+                Realiza la asignación de conductor y unidad de transporte para
+                la entrega seleccionada.
+              </SheetDescription>
+            </SheetHeader>
+            <AssignmentForm shipmentId={row.original.id.toString()} />
+          </SheetContent>
+        </Sheet>
+      )
+    },
+  },
+]
+
+export const clientColumns: ShipmentColumns = [
+  ...columns,
+  {
+    id: 'client-actions',
+    cell: ({ row }) => {
+      return (
+        <Button asChild variant="ghost" className="flex h-8 w-8 p-0">
+          <Link href={`/shipments/${row.original.id}`}>
+            <EyeIcon className="h-4 w-4" />
+          </Link>
+        </Button>
       )
     },
   },

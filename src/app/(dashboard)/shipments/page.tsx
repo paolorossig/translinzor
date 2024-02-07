@@ -7,11 +7,14 @@ import {
   DataTableWrapper,
 } from '@/components/ui/data-table'
 import { getShipmentsByClientId } from '@/lib/actions'
+import { useAuth } from '@/lib/auth'
 
-import { columns } from './columns'
+import { adminColumns, clientColumns } from './columns'
 
 export default async function ShipmentsPage() {
+  const { isAdmin } = await useAuth()
   const shipments = await getShipmentsByClientId(1)
+  const columns = isAdmin ? adminColumns : clientColumns
 
   return (
     <>
@@ -20,7 +23,9 @@ export default async function ShipmentsPage() {
       </h1>
       <div>
         <DataTableWrapper columns={columns} data={shipments}>
-          <DataTableHeader actionArea={<ShipmentBulkUpload />}>
+          <DataTableHeader
+            actionArea={<ShipmentBulkUpload disabled={!isAdmin} />}
+          >
             <DataTableDateFilter columnName="deliveryDate" />
             <DataTableResetFilter />
           </DataTableHeader>

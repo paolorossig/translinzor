@@ -2,11 +2,22 @@
 
 import { unstable_noStore as noStore, revalidatePath } from 'next/cache'
 import { notFound } from 'next/navigation'
+import { eq } from 'drizzle-orm'
 
 import { db } from '@/db'
-import { orders, shipments, type CreateOrder } from '@/db/schema'
+import {
+  drivers,
+  orders,
+  shipments,
+  transportUnits,
+  type CreateOrder,
+} from '@/db/schema'
 import { catchError } from '@/lib/utils'
-import { type CreateBulkShipmentsInput } from '@/lib/validations/shipment-upload'
+import {
+  AssignShipmentInput,
+  type CreateBulkShipmentsInput,
+} from '@/lib/validations/shipments'
+import { type Option } from '@/types'
 
 export async function getCostumersByClientId(clientId: number) {
   return await db.query.costumers.findMany({
@@ -200,6 +211,75 @@ export async function createBulkShipments(input: CreateBulkShipmentsInput) {
       }
     })
     console.log('transaction finished')
+
+    revalidatePath('/shipments')
+
+    return { success: true as const }
+  } catch (error) {
+    const err = catchError(error)
+    return respondError(err)
+  }
+}
+
+export async function getAssignmentInfo() {
+  const drivers = await db.query.drivers.findMany({
+    columns: {
+      id: true,
+      name: true,
+      lastName: true,
+    },
+    where: (drivers, { eq }) => eq(drivers.isActive, true),
+  })
+
+  const transportUnits = await db.query.transportUnits.findMany({
+    columns: {
+      id: true,
+      brand: true,
+      licensePlate: true,
+    },
+    where: (transportUnits, { eq }) => eq(transportUnits.isActive, true),
+  })
+
+  const driverOptions: Option[] = drivers.map((driver) => ({
+    label: `${driver.lastName}, ${driver.name}`,
+    value: driver.id.toString(),
+  }))
+
+  const transportUnitOptions: Option[] = transportUnits.map((unit) => ({
+    label: `${unit.brand} - ${unit.licensePlate}`,
+    value: unit.id.toString(),
+  }))
+
+  return { drivers: driverOptions, transportUnits: transportUnitOptions }
+}
+
+export type AssignmentInfo = Awaited<ReturnType<typeof getAssignmentInfo>>
+
+export async function assignShipment(input: AssignShipmentInput) {
+  console.log('assigning shipment')
+  console.log('input:', input)
+
+  const shipmentId = Number(input.shipmentId)
+  const driverId = Number(input.driverId)
+  const transportUnitId = Number(input.transportUnitId)
+
+  try {
+    await db.transaction(async (tx) => {
+      await tx
+        .update(drivers)
+        .set({ isActive: false })
+        .where(eq(drivers.id, driverId))
+
+      await tx
+        .update(transportUnits)
+        .set({ isActive: false })
+        .where(eq(transportUnits.id, transportUnitId))
+
+      await tx
+        .update(shipments)
+        .set({ driverId, transportUnitId })
+        .where(eq(shipments.id, shipmentId))
+    })
 
     revalidatePath('/shipments')
 
