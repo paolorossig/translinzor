@@ -1,6 +1,3 @@
-import { cookies } from 'next/headers'
-import { redirect } from 'next/navigation'
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import { MenuIcon } from 'lucide-react'
 
 import NavBreadcrumb from '@/components/layout/nav-breadcrumb'
@@ -9,32 +6,16 @@ import { ThemeToggle } from '@/components/layout/theme'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { dashboardConfig } from '@/config/dashboard'
-import { db } from '@/db'
+import { useAuth } from '@/lib/auth'
 
 export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const cookieStore = cookies()
-  const supabase = createServerComponentClient({ cookies: () => cookieStore })
   const {
-    data: { session },
-  } = await supabase.auth.getSession()
-
-  if (!session) {
-    redirect('/login')
-  }
-
-  const profile = await db.query.profiles.findFirst({
-    where: (profiles, { eq }) => eq(profiles.id, session.user.id),
-  })
-
-  if (!profile) {
-    redirect('/login')
-  }
-
-  const { displayName, role } = profile
+    profile: { displayName, role },
+  } = await useAuth()
   const userNavigation = dashboardConfig.navigationByUserRole[role]
 
   return (
