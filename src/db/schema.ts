@@ -38,16 +38,6 @@ export const drivers = pgTable('drivers', {
 
 export type Driver = typeof drivers.$inferSelect
 
-export const clients = pgTable('clients', {
-  id: serial('id').primaryKey(),
-  name: text('name').notNull(),
-})
-
-export const clientsRelations = relations(clients, ({ many }) => ({
-  costumers: many(costumers),
-  shipments: many(shipments),
-}))
-
 export const companies = pgTable('companies', {
   id: serial('id').primaryKey(),
   name: text('name').unique().notNull(),
@@ -58,11 +48,40 @@ export const companiesRelations = relations(companies, ({ many }) => ({
   costumers: many(costumers),
 }))
 
+export const userRolesEnum = pgEnum('role', ['admin', 'client'] as const)
+export type UserRole = (typeof userRolesEnum.enumValues)[number]
+
+export const profiles = pgTable('profiles', {
+  id: uuid('id').primaryKey(), // auth.user.id
+  displayName: text('displayName').notNull(),
+  email: text('email').notNull(),
+  role: userRolesEnum('role').notNull(),
+  clientId: uuid('client_id').references(() => clients.id),
+})
+
+export const profilesRelations = relations(profiles, ({ one }) => ({
+  client: one(clients, {
+    fields: [profiles.clientId],
+    references: [clients.id],
+  }),
+}))
+
+export const clients = pgTable('clients', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  name: text('name').notNull(),
+})
+
+export const clientsRelations = relations(clients, ({ many }) => ({
+  profiles: many(profiles),
+  costumers: many(costumers),
+  shipments: many(shipments),
+}))
+
 export const costumers = pgTable(
   'costumers',
   {
     id: serial('id').primaryKey(),
-    clientId: integer('client_id')
+    clientId: uuid('client_id')
       .references(() => clients.id)
       .notNull(),
     companyId: integer('company_id')
@@ -129,7 +148,7 @@ export type CreateOrder = typeof orders.$inferInsert
 
 export const shipments = pgTable('shipments', {
   id: serial('id').primaryKey(),
-  clientId: integer('client_id')
+  clientId: uuid('client_id')
     .references(() => clients.id)
     .notNull(),
   transportUnitId: integer('transport_unit_id').references(
@@ -157,12 +176,3 @@ export const shipmentsRelations = relations(shipments, ({ one, many }) => ({
 }))
 
 export type CreateShipment = typeof shipments.$inferInsert
-
-export const userRolesEnum = pgEnum('role', ['admin', 'client'] as const)
-export type UserRole = (typeof userRolesEnum.enumValues)[number]
-
-export const profiles = pgTable('profiles', {
-  id: uuid('id').primaryKey(),
-  displayName: text('displayName').notNull(),
-  role: userRolesEnum('role').notNull(),
-})

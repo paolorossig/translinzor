@@ -43,6 +43,13 @@
       "when": 1706916014629,
       "tag": "0005_add_profiles",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1707355415951,
+      "tag": "0006_make_client_id_uuid",
+      "breakpoints": true
     }
   ]
 }
