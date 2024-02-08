@@ -30,6 +30,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
+import { clientIds } from '@/config/clients'
 import { createBulkShipments } from '@/lib/actions'
 import {
   createBulkShipmentsSchema,
@@ -51,7 +52,7 @@ export function ShipmentBulkUpload({ disabled }: { disabled: boolean }) {
   const [isPending, startTransition] = useTransition()
 
   const defaultValues = {
-    clientId: 1,
+    clientId: clientIds.laSirena,
     bundledOrders: [],
   }
 

@@ -13,9 +13,8 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode
 }) {
-  const {
-    profile: { displayName, role },
-  } = await useAuth()
+  const { profile } = await useAuth()
+  const { displayName, role } = profile
   const userNavigation = dashboardConfig.navigationByUserRole[role]
 
   return (

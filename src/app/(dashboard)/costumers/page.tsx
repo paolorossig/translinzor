@@ -7,12 +7,14 @@ import {
   DataTableWrapper,
 } from '@/components/ui/data-table'
 import { getCostumersByClientId } from '@/lib/actions'
+import { useAuth } from '@/lib/auth'
 import { channelOptions } from '@/lib/data'
 
 import { columns } from './columns'
 
 export default async function CostumersPage() {
-  const data = await getCostumersByClientId(1)
+  const { profile } = await useAuth()
+  const data = await getCostumersByClientId(profile.clientId!)
 
   return (
     <>

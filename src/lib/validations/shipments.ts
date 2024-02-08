@@ -45,7 +45,7 @@ export const parseShipmentBulkUpload = (
 }
 
 export const createBulkShipmentsSchema = z.object({
-  clientId: z.number({ required_error: 'Requerido' }),
+  clientId: z.string({ required_error: 'Requerido' }),
   deliveryDate: z.date({ required_error: 'Requerido' }),
   bundledOrders: z.array(shipmentBulkUploadSchema),
 })

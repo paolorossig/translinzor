@@ -19,7 +19,7 @@ import {
 } from '@/lib/validations/shipments'
 import { type Option } from '@/types'
 
-export async function getCostumersByClientId(clientId: number) {
+export async function getCostumersByClientId(clientId: string) {
   return await db.query.costumers.findMany({
     columns: {
       internalCode: true,
@@ -36,12 +36,19 @@ export type CostumersByClient = Awaited<
   ReturnType<typeof getCostumersByClientId>
 >
 
-export async function getShipmentsByClientId(clientId: number) {
+export async function getShipmentsByClientId(clientId: string | null) {
   noStore()
+
+  console.log(
+    clientId
+      ? `getting shipments by client id: ${clientId}`
+      : 'getting all shipments for admin user',
+  )
 
   const shipments = await db.query.shipments.findMany({
     columns: {
       id: true,
+      clientId: true,
       deliveryDate: true,
       createdAt: true,
     },
@@ -50,7 +57,9 @@ export async function getShipmentsByClientId(clientId: number) {
       driver: true,
       transportUnit: true,
     },
-    where: (shipments, { eq }) => eq(shipments.clientId, clientId),
+    ...(clientId
+      ? { where: (shipments, { eq }) => eq(shipments.clientId, clientId) }
+      : {}),
   })
 
   return shipments.map((shipment) => {

@@ -12,8 +12,9 @@ import { useAuth } from '@/lib/auth'
 import { adminColumns, clientColumns } from './columns'
 
 export default async function ShipmentsPage() {
-  const { isAdmin } = await useAuth()
-  const shipments = await getShipmentsByClientId(1)
+  const { isAdmin, profile } = await useAuth()
+  const shipments = await getShipmentsByClientId(profile.clientId)
+
   const columns = isAdmin ? adminColumns : clientColumns
 
   return (
