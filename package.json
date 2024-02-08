@@ -10,10 +10,12 @@
     "migration:generate": "drizzle-kit generate:pg",
     "migration:drop": "drizzle-kit drop",
     "db:push": "dotenv -e .env.local -- drizzle-kit push:pg",
-    "db:studio": "dotenv -e .env.local -- drizzle-kit studio"
+    "db:studio": "dotenv -e .env.local -- drizzle-kit studio",
+    "db:seed": "dotenv -e .env.local -- tsx ./src/db/seed.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "3.3.4",
+    "@radix-ui/react-avatar": "1.0.4",
     "@radix-ui/react-checkbox": "1.0.4",
     "@radix-ui/react-dialog": "1.0.5",
     "@radix-ui/react-dropdown-menu": "2.0.6",
@@ -21,6 +23,8 @@
     "@radix-ui/react-popover": "1.0.7",
     "@radix-ui/react-separator": "1.0.3",
     "@radix-ui/react-slot": "1.0.2",
+    "@supabase/auth-helpers-nextjs": "0.9.0",
+    "@supabase/supabase-js": "2.39.3",
     "@tanstack/react-table": "8.11.7",
     "class-variance-authority": "0.7.0",
     "clsx": "2.1.0",

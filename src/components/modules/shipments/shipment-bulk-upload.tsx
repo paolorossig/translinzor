@@ -30,12 +30,13 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
+import { clientIds } from '@/config/clients'
 import { createBulkShipments } from '@/lib/actions'
 import {
   createBulkShipmentsSchema,
   parseShipmentBulkUpload,
   type CreateBulkShipmentsInput,
-} from '@/lib/validations/shipment-upload'
+} from '@/lib/validations/shipments'
 
 const excelAcceptedMimeTypes = {
   'application/vnd.ms-excel': ['.xls'],
@@ -44,13 +45,14 @@ const excelAcceptedMimeTypes = {
   ],
 }
 
-export function ShipmentBulkUpload() {
+// TODO: Send just the neccesary JS when disabled is true
+export function ShipmentBulkUpload({ disabled }: { disabled: boolean }) {
   const [open, setOpen] = useState(false)
   const [excelFile, setExcelFile] = useState<ArrayBuffer | null>(null)
   const [isPending, startTransition] = useTransition()
 
   const defaultValues = {
-    clientId: 1,
+    clientId: clientIds.laSirena,
     bundledOrders: [],
   }
 
@@ -119,7 +121,7 @@ export function ShipmentBulkUpload() {
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
-        <Button className="h-8">
+        <Button className="h-8" disabled={disabled}>
           <UploadIcon className="h-4 w-4" />
           <span className="ml-2 hidden md:block">Carga masiva</span>
         </Button>

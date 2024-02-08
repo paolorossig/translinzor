@@ -45,9 +45,17 @@ export const parseShipmentBulkUpload = (
 }
 
 export const createBulkShipmentsSchema = z.object({
-  clientId: z.number({ required_error: 'Requerido' }),
+  clientId: z.string({ required_error: 'Requerido' }),
   deliveryDate: z.date({ required_error: 'Requerido' }),
   bundledOrders: z.array(shipmentBulkUploadSchema),
 })
 
 export type CreateBulkShipmentsInput = z.infer<typeof createBulkShipmentsSchema>
+
+export const assignShipmentSchema = z.object({
+  shipmentId: z.string({ required_error: 'Requerido' }),
+  transportUnitId: z.string({ required_error: 'Requerido' }),
+  driverId: z.string({ required_error: 'Requerido' }),
+})
+
+export type AssignShipmentInput = z.infer<typeof assignShipmentSchema>

@@ -50,7 +50,7 @@ export default async function ShipmentPage({
               <span className="flex items-center">
                 <CarIcon className="mr-1 h-4 w-4" />
                 {shipment.transportUnit
-                  ? `${shipment.transportUnit.type} - ${shipment.transportUnit.licensePlate}`
+                  ? shipment.transportUnit.licensePlate
                   : 'No asignado'}
               </span>
               <span className="flex items-center">
