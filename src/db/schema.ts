@@ -123,6 +123,7 @@ export const orders = pgTable(
     destinationDistrict: text('destination_district').notNull(),
     totalValue: numeric('total_value').notNull(),
     createdAt: timestamp('created_at').defaultNow().notNull(),
+    startedAt: timestamp('started_at'),
     deliveredAt: timestamp('delivered_at'),
     refusedAt: timestamp('refused_at'),
     refusedReason: text('refused_reason'),
@@ -157,6 +158,7 @@ export const shipments = pgTable('shipments', {
   driverId: integer('driver_id').references(() => drivers.id),
   deliveryDate: timestamp('delivery_date').notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
+  startedAt: timestamp('started_at'),
 })
 
 export const shipmentsRelations = relations(shipments, ({ one, many }) => ({
