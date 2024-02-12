@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { useState } from 'react'
 import type { ColumnDef } from '@tanstack/react-table'
 import {
   CalendarIcon,
@@ -131,8 +132,12 @@ export const adminColumns: ShipmentColumns = [
   {
     id: 'admin-actions',
     cell: ({ row }) => {
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      const [open, setOpen] = useState(false)
+      const { id, driverId, transportUnitId } = row.original
+
       return (
-        <Sheet>
+        <Sheet open={open} onOpenChange={setOpen}>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
@@ -171,7 +176,12 @@ export const adminColumns: ShipmentColumns = [
                 la entrega seleccionada.
               </SheetDescription>
             </SheetHeader>
-            <AssignmentForm shipmentId={row.original.id.toString()} />
+            <AssignmentForm
+              shipmentId={id.toString()}
+              driverId={driverId?.toString()}
+              transportUnitId={transportUnitId?.toString()}
+              closeSheet={() => setOpen(false)}
+            />
           </SheetContent>
         </Sheet>
       )

@@ -51,6 +51,8 @@ export async function getShipmentsByClientId(clientId: string | null) {
       clientId: true,
       deliveryDate: true,
       createdAt: true,
+      driverId: true,
+      transportUnitId: true,
     },
     with: {
       orders: true,
@@ -230,14 +232,15 @@ export async function createBulkShipments(input: CreateBulkShipmentsInput) {
   }
 }
 
-export async function getAssignmentInfo() {
+export async function getAssignmentOptions() {
   const drivers = await db.query.drivers.findMany({
     columns: {
       id: true,
       name: true,
       lastName: true,
+      isActive: true,
     },
-    where: (drivers, { eq }) => eq(drivers.isActive, true),
+    orderBy: (drivers, { desc }) => desc(drivers.isActive),
   })
 
   const transportUnits = await db.query.transportUnits.findMany({
@@ -245,35 +248,68 @@ export async function getAssignmentInfo() {
       id: true,
       brand: true,
       licensePlate: true,
+      isActive: true,
     },
-    where: (transportUnits, { eq }) => eq(transportUnits.isActive, true),
+    orderBy: (drivers, { desc }) => desc(drivers.isActive),
   })
 
   const driverOptions: Option[] = drivers.map((driver) => ({
     label: `${driver.lastName}, ${driver.name}`,
     value: driver.id.toString(),
+    disabled: !driver.isActive,
   }))
 
   const transportUnitOptions: Option[] = transportUnits.map((unit) => ({
     label: `${unit.brand} - ${unit.licensePlate}`,
     value: unit.id.toString(),
+    disabled: !unit.isActive,
   }))
 
   return { drivers: driverOptions, transportUnits: transportUnitOptions }
 }
 
-export type AssignmentInfo = Awaited<ReturnType<typeof getAssignmentInfo>>
+export type AssignmentInfo = Awaited<ReturnType<typeof getAssignmentOptions>>
 
 export async function assignShipment(input: AssignShipmentInput) {
   console.log('assigning shipment')
   console.log('input:', input)
 
-  const shipmentId = Number(input.shipmentId)
   const driverId = Number(input.driverId)
   const transportUnitId = Number(input.transportUnitId)
+  const shipmentId = Number(input.shipmentId)
+
+  const [shipment] = await db.query.shipments.findMany({
+    columns: {
+      id: true,
+      driverId: true,
+      transportUnitId: true,
+    },
+    where: (shipments, { eq }) => eq(shipments.id, shipmentId),
+  })
+
+  if (!shipment) {
+    return respondError('El envío no existe')
+  }
 
   try {
     await db.transaction(async (tx) => {
+      if (shipment.driverId && shipment.driverId !== driverId) {
+        await tx
+          .update(drivers)
+          .set({ isActive: true })
+          .where(eq(drivers.id, shipment.driverId))
+      }
+
+      if (
+        shipment.transportUnitId &&
+        shipment.transportUnitId !== transportUnitId
+      ) {
+        await tx
+          .update(transportUnits)
+          .set({ isActive: true })
+          .where(eq(transportUnits.id, shipment.transportUnitId))
+      }
+
       await tx
         .update(drivers)
         .set({ isActive: false })

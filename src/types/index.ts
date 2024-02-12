@@ -22,4 +22,5 @@ export interface Option<T = string> {
   label: string
   value: T
   icon?: Icon
+  disabled?: boolean
 }
