@@ -1,8 +1,4 @@
-import { type LucideIcon } from 'lucide-react'
-
 import { IconName } from '@/components/icons'
-
-export type Icon = LucideIcon
 
 export interface NavItem {
   name: string
@@ -21,6 +17,6 @@ export type UserNavigation = (NavItem | NavGroupSeparator)[]
 export interface Option<T = string> {
   label: string
   value: T
-  icon?: Icon
+  icon?: IconName
   disabled?: boolean
 }

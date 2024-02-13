@@ -2,6 +2,7 @@
 
 import { type ColumnDef } from '@tanstack/react-table'
 
+import { Icons } from '@/components/icons'
 import {
   getOrderStatus,
   orderStatusOptions,
@@ -39,17 +40,19 @@ export const columns: ColumnDef<ShipmentById['orders'][number]>[] = [
       const status = orderStatusOptions.find(
         (option) => option.value === getOrderStatus(row.original),
       )
-
       if (!status) return null
+      const Icon = status.icon ? Icons[status.icon] : null
 
       return (
         <div className="flex items-center">
-          {status.icon && (
-            <status.icon className="mr-2 h-4 w-4 text-muted-foreground" />
-          )}
+          {Icon && <Icon className="mr-2 h-4 w-4 text-muted-foreground" />}
           <span>{status.label}</span>
         </div>
       )
+    },
+    accessorFn: (row) => getOrderStatus(row),
+    filterFn: (row, id, value) => {
+      return (value as string).includes(getOrderStatus(row.original))
     },
   },
 ]

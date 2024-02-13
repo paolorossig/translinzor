@@ -1,10 +1,3 @@
-import {
-  CheckCircle2Icon,
-  CircleIcon,
-  TimerIcon,
-  XCircleIcon,
-} from 'lucide-react'
-
 import { type Order } from '@/db/schema'
 import { type Option } from '@/types'
 
@@ -16,10 +9,10 @@ export enum OrderStatus {
 }
 
 export const orderStatusOptions: Option<OrderStatus>[] = [
-  { label: 'Agendado', value: OrderStatus.SCHEDULED, icon: CircleIcon },
-  { label: 'Pendiente', value: OrderStatus.PENDING, icon: TimerIcon },
-  { label: 'Entregado', value: OrderStatus.DELIVERED, icon: CheckCircle2Icon },
-  { label: 'Rechazado', value: OrderStatus.REFUSED, icon: XCircleIcon },
+  { label: 'Agendado', value: OrderStatus.SCHEDULED, icon: 'scheduled' },
+  { label: 'Pendiente', value: OrderStatus.PENDING, icon: 'pending' },
+  { label: 'Entregado', value: OrderStatus.DELIVERED, icon: 'delivered' },
+  { label: 'Rechazado', value: OrderStatus.REFUSED, icon: 'refused' },
 ]
 
 export function getOrderStatus(order: Order): OrderStatus {

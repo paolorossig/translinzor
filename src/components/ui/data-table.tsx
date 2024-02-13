@@ -22,6 +22,7 @@ import {
   RotateCcwIcon,
 } from 'lucide-react'
 
+import { Icons } from '@/components/icons'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -210,6 +211,8 @@ export function DataTableFacetedFilter({
             <CommandGroup>
               {options.map((option) => {
                 const isSelected = selectedValues.has(option.value)
+                const Icon = option.icon ? Icons[option.icon] : null
+
                 return (
                   <CommandItem
                     key={option.value}
@@ -235,8 +238,8 @@ export function DataTableFacetedFilter({
                     >
                       <CheckIcon className={cn('h-4 w-4')} />
                     </div>
-                    {option.icon && (
-                      <option.icon className="mr-2 h-4 w-4 text-muted-foreground" />
+                    {Icon && (
+                      <Icon className="mr-2 h-4 w-4 text-muted-foreground" />
                     )}
                     <span>{option.label}</span>
                     {facets?.get(option.value) && (
