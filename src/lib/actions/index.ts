@@ -51,6 +51,7 @@ export async function getShipmentsByClientId(clientId: string | null) {
       clientId: true,
       deliveryDate: true,
       createdAt: true,
+      startedAt: true,
       driverId: true,
       transportUnitId: true,
     },
@@ -323,6 +324,49 @@ export async function assignShipment(input: AssignShipmentInput) {
       await tx
         .update(shipments)
         .set({ driverId, transportUnitId })
+        .where(eq(shipments.id, shipmentId))
+    })
+
+    revalidatePath('/shipments')
+
+    return { success: true as const }
+  } catch (error) {
+    const err = catchError(error)
+    return respondError(err)
+  }
+}
+
+export async function startShipment(shipmentId: number) {
+  console.log('starting shipment:', shipmentId)
+
+  const [shipment] = await db.query.shipments.findMany({
+    columns: {
+      id: true,
+      startedAt: true,
+    },
+    where: (shipments, { eq }) => eq(shipments.id, shipmentId),
+  })
+
+  if (!shipment) {
+    return respondError('El envío no existe')
+  }
+
+  if (shipment.startedAt) {
+    return respondError('El envío ya ha sido iniciado')
+  }
+
+  try {
+    await db.transaction(async (tx) => {
+      const startedAt = new Date()
+
+      await tx
+        .update(orders)
+        .set({ startedAt })
+        .where(eq(orders.shipmentId, shipmentId))
+
+      await tx
+        .update(shipments)
+        .set({ startedAt })
         .where(eq(shipments.id, shipmentId))
     })
 

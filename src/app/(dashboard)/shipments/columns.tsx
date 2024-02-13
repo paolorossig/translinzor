@@ -1,7 +1,8 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 'use client'
 
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useTransition } from 'react'
 import type { ColumnDef } from '@tanstack/react-table'
 import {
   CalendarIcon,
@@ -9,6 +10,7 @@ import {
   MoreHorizontalIcon,
   TrashIcon,
 } from 'lucide-react'
+import { toast } from 'sonner'
 
 import { AssignmentForm } from '@/components/modules/shipments'
 import { Badge } from '@/components/ui/badge'
@@ -28,9 +30,8 @@ import {
   SheetDescription,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
 } from '@/components/ui/sheet'
-import { ShipmentsByClient } from '@/lib/actions'
+import { startShipment, type ShipmentsByClient } from '@/lib/actions'
 import { cn } from '@/lib/utils'
 
 type ShipmentColumns = ColumnDef<ShipmentsByClient[number]>[]
@@ -127,14 +128,40 @@ const columns: ShipmentColumns = [
   },
 ]
 
+enum AdminDialog {
+  EDIT = 'edit',
+  ASSIGNMENT = 'assignment',
+}
+
 export const adminColumns: ShipmentColumns = [
   ...columns,
   {
     id: 'admin-actions',
     cell: ({ row }) => {
-      // eslint-disable-next-line react-hooks/rules-of-hooks
       const [open, setOpen] = useState(false)
-      const { id, driverId, transportUnitId } = row.original
+      const [dialog, setDialog] = useState<AdminDialog>()
+      const [isPending, startTransition] = useTransition()
+
+      const { id, driverId, transportUnitId, startedAt } = row.original
+
+      const openEditDialog = () => {
+        setDialog(AdminDialog.EDIT)
+        setOpen(true)
+      }
+      const openAssignmentDialog = () => {
+        setDialog(AdminDialog.ASSIGNMENT)
+        setOpen(true)
+      }
+      const onStartClick = () => {
+        startTransition(async () => {
+          const response = await startShipment(id)
+          if (response.success) {
+            toast.success('Envío iniciado')
+          } else {
+            toast.error(response.message)
+          }
+        })
+      }
 
       return (
         <Sheet open={open} onOpenChange={setOpen}>
@@ -152,10 +179,12 @@ export const adminColumns: ShipmentColumns = [
               <DropdownMenuItem asChild>
                 <Link href={`/shipments/${row.original.id}`}>Ver</Link>
               </DropdownMenuItem>
-              <DropdownMenuItem disabled>Editar</DropdownMenuItem>
-              <SheetTrigger asChild>
-                <DropdownMenuItem>Asignar</DropdownMenuItem>
-              </SheetTrigger>
+              <DropdownMenuItem onClick={openEditDialog}>
+                Editar
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={openAssignmentDialog}>
+                Asignar
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 disabled
@@ -169,19 +198,42 @@ export const adminColumns: ShipmentColumns = [
             </DropdownMenuContent>
           </DropdownMenu>
           <SheetContent>
-            <SheetHeader>
-              <SheetTitle className="text-primary">Asignación</SheetTitle>
-              <SheetDescription>
-                Realiza la asignación de conductor y unidad de transporte para
-                la entrega seleccionada.
-              </SheetDescription>
-            </SheetHeader>
-            <AssignmentForm
-              shipmentId={id.toString()}
-              driverId={driverId?.toString()}
-              transportUnitId={transportUnitId?.toString()}
-              closeSheet={() => setOpen(false)}
-            />
+            {dialog === AdminDialog.EDIT ? (
+              <>
+                <SheetHeader>
+                  <SheetTitle className="text-primary">
+                    Editar órdenes
+                  </SheetTitle>
+                  <SheetDescription>
+                    Actualiza el estatus de las órdenes, podrás marcarlas como
+                    entregadas o rechazadas, así como adjuntar una constancia.
+                  </SheetDescription>
+                </SheetHeader>
+                {!startedAt ? (
+                  <div className="my-6 flex justify-end">
+                    <Button onClick={onStartClick} disabled={isPending}>
+                      Iniciar entrega
+                    </Button>
+                  </div>
+                ) : null}
+              </>
+            ) : dialog === AdminDialog.ASSIGNMENT ? (
+              <>
+                <SheetHeader>
+                  <SheetTitle className="text-primary">Asignación</SheetTitle>
+                  <SheetDescription>
+                    Realiza la asignación de conductor y unidad de transporte
+                    para la entrega seleccionada.
+                  </SheetDescription>
+                </SheetHeader>
+                <AssignmentForm
+                  shipmentId={id.toString()}
+                  driverId={driverId?.toString()}
+                  transportUnitId={transportUnitId?.toString()}
+                  closeSheet={() => setOpen(false)}
+                />
+              </>
+            ) : null}
           </SheetContent>
         </Sheet>
       )
