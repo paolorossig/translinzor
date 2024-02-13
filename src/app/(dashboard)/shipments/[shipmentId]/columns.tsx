@@ -1,8 +1,12 @@
 'use client'
 
-import { ColumnDef } from '@tanstack/react-table'
+import { type ColumnDef } from '@tanstack/react-table'
 
-import { ShipmentById } from '@/lib/actions'
+import {
+  getOrderStatus,
+  orderStatusOptions,
+} from '@/components/modules/shipments/order-status'
+import { type ShipmentById } from '@/lib/actions'
 
 export const columns: ColumnDef<ShipmentById['orders'][number]>[] = [
   {
@@ -27,5 +31,25 @@ export const columns: ColumnDef<ShipmentById['orders'][number]>[] = [
   {
     accessorKey: 'destinationDistrict',
     header: 'Distrito',
+  },
+  {
+    id: 'status',
+    header: 'Estado',
+    cell: ({ row }) => {
+      const status = orderStatusOptions.find(
+        (option) => option.value === getOrderStatus(row.original),
+      )
+
+      if (!status) return null
+
+      return (
+        <div className="flex items-center">
+          {status.icon && (
+            <status.icon className="mr-2 h-4 w-4 text-muted-foreground" />
+          )}
+          <span>{status.label}</span>
+        </div>
+      )
+    },
   },
 ]
