@@ -13,6 +13,7 @@ import {
 import { toast } from 'sonner'
 
 import { AssignmentForm } from '@/components/modules/shipments'
+import { OrderStatusForm } from '@/components/modules/shipments/order-status-form'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -105,7 +106,7 @@ const columns: ShipmentColumns = [
     header: 'Resumen',
     cell: ({ row }) => {
       const { delivered, total } = row.original.ordersSummary
-      const deliveredRate = (delivered / total) * 100
+      const deliveredRate = Math.round((delivered / total) * 100)
 
       return (
         <div className="flex items-center space-x-2">
@@ -215,7 +216,9 @@ export const adminColumns: ShipmentColumns = [
                       Iniciar entrega
                     </Button>
                   </div>
-                ) : null}
+                ) : (
+                  <OrderStatusForm shipmentId={id.toString()} />
+                )}
               </>
             ) : dialog === AdminDialog.ASSIGNMENT ? (
               <>

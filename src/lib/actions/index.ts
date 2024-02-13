@@ -4,6 +4,10 @@ import { unstable_noStore as noStore, revalidatePath } from 'next/cache'
 import { notFound } from 'next/navigation'
 import { eq } from 'drizzle-orm'
 
+import {
+  getOrderStatus,
+  isOrderFinalized,
+} from '@/components/modules/shipments/order-status'
 import { db } from '@/db'
 import {
   drivers,
@@ -378,3 +382,24 @@ export async function startShipment(shipmentId: number) {
     return respondError(err)
   }
 }
+
+export async function getOrderStatusOptionsByShipmentId(shipmentId: number) {
+  console.log('getting orders by shipment id:', shipmentId)
+
+  const orders = await db.query.orders.findMany({
+    where: (order, { eq }) => eq(order.shipmentId, shipmentId),
+  })
+
+  const orderStatusOptions: Option<number>[] = orders.map((order) => ({
+    label: order.orderNumber,
+    value: order.id,
+    icon: getOrderStatus(order),
+    disabled: isOrderFinalized(order),
+  }))
+
+  return orderStatusOptions
+}
+
+export type OrderStatusOptions = Awaited<
+  ReturnType<typeof getOrderStatusOptionsByShipmentId>
+>

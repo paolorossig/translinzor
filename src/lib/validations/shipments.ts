@@ -59,3 +59,10 @@ export const assignShipmentSchema = z.object({
 })
 
 export type AssignShipmentInput = z.infer<typeof assignShipmentSchema>
+
+export const updateOrderStatusSchema = z.object({
+  shipmentId: z.string({ required_error: 'Requerido' }),
+  orderId: z.number({ required_error: 'Requerido' }),
+})
+
+export type UpdateOrderStatusInput = z.infer<typeof updateOrderStatusSchema>

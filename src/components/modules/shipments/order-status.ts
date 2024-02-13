@@ -26,3 +26,7 @@ export function getOrderStatus(order: Order): OrderStatus {
 
   return OrderStatus.SCHEDULED
 }
+
+export function isOrderFinalized(order: Order): boolean {
+  return !!order.deliveredAt || !!order.refusedAt
+}
