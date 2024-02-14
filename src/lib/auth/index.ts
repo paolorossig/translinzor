@@ -17,7 +17,11 @@ export async function useAuth() {
     where: (profiles, { eq }) => eq(profiles.id, session.user.id),
   })
 
-  if (!profile) redirect('/login')
+  if (!profile) {
+    console.log('Profile not found')
+    await supabase.auth.signOut()
+    redirect('/login')
+  }
 
   const isAdmin = profile.role === 'admin'
   const isClient = profile.role === 'client'

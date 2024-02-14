@@ -1,5 +1,6 @@
 import * as z from 'zod'
 
+import { OrderStatus } from '@/components/modules/shipments/order-status'
 import { removeAccents } from '@/lib/utils'
 
 const shipmentBulkUploadSchema = z.object({
@@ -59,3 +60,24 @@ export const assignShipmentSchema = z.object({
 })
 
 export type AssignShipmentInput = z.infer<typeof assignShipmentSchema>
+
+export const updateOrderStatusSchema = z
+  .object({
+    orderId: z.number({ required_error: 'Requerido' }),
+    status: z.enum([OrderStatus.DELIVERED, OrderStatus.REFUSED], {
+      required_error: 'Requerido',
+    }),
+    refusedReason: z.string().optional(),
+  })
+  .superRefine(({ status, refusedReason }, refinementContext) => {
+    if (status === OrderStatus.REFUSED && !refusedReason) {
+      return refinementContext.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Requerido',
+        path: ['refusedReason'],
+      })
+    }
+    return true
+  })
+
+export type UpdateOrderStatusInput = z.infer<typeof updateOrderStatusSchema>

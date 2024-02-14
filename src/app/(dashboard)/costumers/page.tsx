@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/data-table'
 import { getCostumersByClientId } from '@/lib/actions'
 import { useAuth } from '@/lib/auth'
-import { channelOptions } from '@/lib/data'
+import { channelOptions } from '@/lib/constants'
 
 import { columns } from './columns'
 

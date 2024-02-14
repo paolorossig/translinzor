@@ -2,7 +2,12 @@
 
 import { useEffect, useState, useTransition } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { CheckIcon, ChevronsUpDownIcon } from 'lucide-react'
+import {
+  BadgeMinusIcon,
+  CheckIcon,
+  ChevronsUpDownIcon,
+  Loader2Icon,
+} from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
@@ -30,7 +35,7 @@ import {
 import { Skeleton } from '@/components/ui/skeleton'
 import {
   assignShipment,
-  getAssignmentInfo as getAssignmentOptions,
+  getAssignmentOptions,
   type AssignmentInfo,
 } from '@/lib/actions'
 import { catchError, cn } from '@/lib/utils'
@@ -49,31 +54,31 @@ function OptionsSkeleton() {
   )
 }
 
-export function AssignmentForm({ shipmentId }: { shipmentId: string }) {
+interface AssignmentFormProps {
+  shipmentId: string
+  driverId?: string
+  transportUnitId?: string
+  closeSheet: () => void
+}
+
+export function AssignmentForm({ closeSheet, ...props }: AssignmentFormProps) {
   const [isPending, startTransition] = useTransition()
   const [data, setData] = useState<AssignmentInfo | null>(null)
 
-  const defaultValues = {
-    shipmentId,
-    transportUnitId: undefined,
-    driverId: undefined,
-  }
   const form = useForm<AssignShipmentInput>({
     resolver: zodResolver(assignShipmentSchema),
-    defaultValues,
+    defaultValues: props,
   })
 
   useEffect(() => {
-    const fetchData = async () => {
+    startTransition(async () => {
       try {
         const data = await getAssignmentOptions()
         setData(data)
       } catch (err) {
         catchError(err)
       }
-    }
-
-    startTransition(fetchData)
+    })
 
     return () => setData(null)
   }, [])
@@ -82,7 +87,8 @@ export function AssignmentForm({ shipmentId }: { shipmentId: string }) {
     startTransition(() => {
       toast.promise(
         assignShipment(data).then((result) => {
-          form.reset(defaultValues)
+          form.reset(props)
+          closeSheet()
 
           if (!result.success) return Promise.reject(result.message)
 
@@ -124,7 +130,11 @@ export function AssignmentForm({ shipmentId }: { shipmentId: string }) {
                             (unit) => unit.value === field.value,
                           )?.label
                         : 'Selecciona la unidad...'}
-                      <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      {isPending ? (
+                        <Loader2Icon className="ml-2 h-4 w-4 shrink-0 animate-spin opacity-50" />
+                      ) : (
+                        <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      )}
                     </Button>
                   </FormControl>
                 </PopoverTrigger>
@@ -147,6 +157,7 @@ export function AssignmentForm({ shipmentId }: { shipmentId: string }) {
                           <CommandItem
                             key={unit.value}
                             value={unit.label}
+                            disabled={unit.disabled}
                             onSelect={() => {
                               form.setValue('transportUnitId', unit.value)
                             }}
@@ -162,6 +173,14 @@ export function AssignmentForm({ shipmentId }: { shipmentId: string }) {
                             <span className="overflow-x-clip whitespace-nowrap">
                               {unit.label}
                             </span>
+                            <BadgeMinusIcon
+                              className={cn(
+                                'ml-2 h-4 w-4 text-destructive/50',
+                                unit.disabled && unit.value !== field.value
+                                  ? 'opacity-100'
+                                  : 'opacity-0',
+                              )}
+                            />
                           </CommandItem>
                         ))
                       )}
@@ -195,7 +214,11 @@ export function AssignmentForm({ shipmentId }: { shipmentId: string }) {
                             (driver) => driver.value === field.value,
                           )?.label
                         : 'Selecciona el conductor...'}
-                      <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      {isPending ? (
+                        <Loader2Icon className="ml-2 h-4 w-4 shrink-0 animate-spin opacity-50" />
+                      ) : (
+                        <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      )}
                     </Button>
                   </FormControl>
                 </PopoverTrigger>
@@ -218,6 +241,7 @@ export function AssignmentForm({ shipmentId }: { shipmentId: string }) {
                           <CommandItem
                             key={driver.value}
                             value={driver.label}
+                            disabled={driver.disabled}
                             onSelect={() => {
                               form.setValue('driverId', driver.value)
                             }}
@@ -233,6 +257,14 @@ export function AssignmentForm({ shipmentId }: { shipmentId: string }) {
                             <span className="overflow-x-clip whitespace-nowrap">
                               {driver.label}
                             </span>
+                            <BadgeMinusIcon
+                              className={cn(
+                                'ml-2 h-4 w-4 text-destructive/50',
+                                driver.disabled && driver.value !== field.value
+                                  ? 'opacity-100'
+                                  : 'opacity-0',
+                              )}
+                            />
                           </CommandItem>
                         ))
                       )}
@@ -244,9 +276,11 @@ export function AssignmentForm({ shipmentId }: { shipmentId: string }) {
             </FormItem>
           )}
         />
-        <Button type="submit" disabled={isPending}>
-          Guardar
-        </Button>
+        <div className="flex justify-end">
+          <Button type="submit" disabled={isPending}>
+            Guardar
+          </Button>
+        </div>
       </form>
     </Form>
   )

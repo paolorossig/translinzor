@@ -3,3 +3,8 @@ export const segmentLabelMap: Record<string, string> = {
   shipments: 'Entregas',
   operations: 'Operaciones',
 }
+
+export const channelOptions = [
+  { label: 'VCORP', value: 'VCORP' },
+  { label: 'VDISTRIB', value: 'VDISTRIB' },
+]

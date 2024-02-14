@@ -1,5 +1,6 @@
 import { CalendarIcon, CarIcon, LayersIcon, UserRoundIcon } from 'lucide-react'
 
+import { orderStatusOptions } from '@/components/modules/shipments/order-status'
 import {
   DataTable,
   DataTableFacetedFilter,
@@ -77,6 +78,11 @@ export default async function ShipmentPage({
                   columnName="costumer_company.name"
                   title="Cliente"
                   options={costumers}
+                />
+                <DataTableFacetedFilter
+                  columnName="status"
+                  title="Estado"
+                  options={orderStatusOptions}
                 />
                 <DataTableResetFilter />
               </div>
