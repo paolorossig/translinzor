@@ -145,6 +145,7 @@ export const adminColumns: ShipmentColumns = [
 
       const { id, driverId, transportUnitId, startedAt } = row.original
 
+      const closeSheet = () => setOpen(false)
       const openEditDialog = () => {
         setDialog(AdminDialog.EDIT)
         setOpen(true)
@@ -217,7 +218,10 @@ export const adminColumns: ShipmentColumns = [
                     </Button>
                   </div>
                 ) : (
-                  <OrderStatusForm shipmentId={id.toString()} />
+                  <OrderStatusForm
+                    shipmentId={id.toString()}
+                    closeSheet={closeSheet}
+                  />
                 )}
               </>
             ) : dialog === AdminDialog.ASSIGNMENT ? (
@@ -233,7 +237,7 @@ export const adminColumns: ShipmentColumns = [
                   shipmentId={id.toString()}
                   driverId={driverId?.toString()}
                   transportUnitId={transportUnitId?.toString()}
-                  closeSheet={() => setOpen(false)}
+                  closeSheet={closeSheet}
                 />
               </>
             ) : null}

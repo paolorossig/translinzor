@@ -7,6 +7,7 @@ import { eq } from 'drizzle-orm'
 import {
   getOrderStatus,
   isOrderFinalized,
+  OrderStatus,
 } from '@/components/modules/shipments/order-status'
 import { db } from '@/db'
 import {
@@ -18,8 +19,9 @@ import {
 } from '@/db/schema'
 import { catchError } from '@/lib/utils'
 import {
-  AssignShipmentInput,
+  type AssignShipmentInput,
   type CreateBulkShipmentsInput,
+  type UpdateOrderStatusInput,
 } from '@/lib/validations/shipments'
 import { type Option } from '@/types'
 
@@ -403,3 +405,45 @@ export async function getOrderStatusOptionsByShipmentId(shipmentId: number) {
 export type OrderStatusOptions = Awaited<
   ReturnType<typeof getOrderStatusOptionsByShipmentId>
 >
+
+export async function updateOrderStatus(input: UpdateOrderStatusInput) {
+  console.log('updating order status')
+  console.log('input:', input)
+
+  const [order] = await db.query.orders.findMany({
+    where: (orders, { eq }) => eq(orders.id, input.orderId),
+  })
+
+  if (!order) {
+    return respondError('El pedido no existe')
+  }
+
+  if (isOrderFinalized(order)) {
+    return respondError('El pedido ya ha sido finalizado')
+  }
+
+  try {
+    await db.transaction(async (tx) => {
+      await tx
+        .update(orders)
+        .set(
+          input.status === OrderStatus.REFUSED
+            ? {
+                refusedAt: new Date(),
+                refusedReason: input.refusedReason,
+              }
+            : {
+                deliveredAt: new Date(),
+              },
+        )
+        .where(eq(orders.id, input.orderId))
+    })
+
+    revalidatePath('/shipments')
+
+    return { success: true as const }
+  } catch (error) {
+    const err = catchError(error)
+    return respondError(err)
+  }
+}

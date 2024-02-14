@@ -71,16 +71,14 @@ export function AssignmentForm({ closeSheet, ...props }: AssignmentFormProps) {
   })
 
   useEffect(() => {
-    const fetchData = async () => {
+    startTransition(async () => {
       try {
         const data = await getAssignmentOptions()
         setData(data)
       } catch (err) {
         catchError(err)
       }
-    }
-
-    startTransition(fetchData)
+    })
 
     return () => setData(null)
   }, [])
