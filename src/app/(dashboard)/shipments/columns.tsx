@@ -105,23 +105,24 @@ const columns: ShipmentColumns = [
     id: 'summary',
     header: 'Resumen',
     cell: ({ row }) => {
-      const { delivered, total } = row.original.ordersSummary
-      const deliveredRate = Math.round((delivered / total) * 100)
+      const { delivered, refused, total } = row.original.ordersSummary
+      const finalized = delivered + refused
+      const finalizedRate = Math.round((finalized / total) * 100)
 
       return (
         <div className="flex items-center space-x-2">
           <Badge
             className={cn('text-nowrap', {
-              'bg-red-400 hover:bg-red-400': deliveredRate >= 0,
-              'bg-yellow-400 hover:bg-yellow-400': deliveredRate >= 50,
-              'bg-green-400 hover:bg-green-400': deliveredRate >= 80,
+              'bg-red-400 hover:bg-red-400': finalizedRate >= 0,
+              'bg-yellow-400 hover:bg-yellow-400': finalizedRate >= 50,
+              'bg-green-400 hover:bg-green-400': finalizedRate >= 80,
             })}
           >
-            {deliveredRate} %
+            {finalizedRate} %
           </Badge>
           <span className="text-nowrap text-card-foreground">
-            {delivered}/{total}{' '}
-            {total > 1 ? 'órdenes entregadas' : 'orden entregada'}
+            {finalized}/{total}{' '}
+            {total > 1 ? 'órdenes finalizadas' : 'orden finzalizada'}
           </span>
         </div>
       )
