@@ -59,6 +59,8 @@ export const profiles = pgTable('profiles', {
   clientId: uuid('client_id').references(() => clients.id),
 })
 
+export type Profile = typeof profiles.$inferSelect
+
 export const profilesRelations = relations(profiles, ({ one }) => ({
   client: one(clients, {
     fields: [profiles.clientId],
