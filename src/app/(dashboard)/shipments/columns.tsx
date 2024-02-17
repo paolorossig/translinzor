@@ -144,7 +144,8 @@ export const adminColumns: ShipmentColumns = [
       const [dialog, setDialog] = useState<AdminDialog>()
       const [isPending, startTransition] = useTransition()
 
-      const { id, driverId, transportUnitId, startedAt } = row.original
+      const { id, deliveryDate, driverId, transportUnitId, startedAt } =
+        row.original
 
       const closeSheet = () => setOpen(false)
       const openEditDialog = () => {
@@ -236,6 +237,7 @@ export const adminColumns: ShipmentColumns = [
                 </SheetHeader>
                 <AssignmentForm
                   shipmentId={id.toString()}
+                  deliveryDate={deliveryDate}
                   driverId={driverId?.toString()}
                   transportUnitId={transportUnitId?.toString()}
                   closeSheet={closeSheet}

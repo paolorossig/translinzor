@@ -35,7 +35,7 @@ import {
 import { Skeleton } from '@/components/ui/skeleton'
 import {
   assignShipment,
-  getAssignmentOptions,
+  getAvailableAssignmentOptions,
   type AssignmentInfo,
 } from '@/lib/actions'
 import { catchError, cn } from '@/lib/utils'
@@ -55,25 +55,30 @@ function OptionsSkeleton() {
 }
 
 interface AssignmentFormProps {
+  deliveryDate: Date
   shipmentId: string
   driverId?: string
   transportUnitId?: string
   closeSheet: () => void
 }
 
-export function AssignmentForm({ closeSheet, ...props }: AssignmentFormProps) {
+export function AssignmentForm({
+  deliveryDate,
+  closeSheet,
+  ...defaultValues
+}: AssignmentFormProps) {
   const [isPending, startTransition] = useTransition()
   const [data, setData] = useState<AssignmentInfo | null>(null)
 
   const form = useForm<AssignShipmentInput>({
     resolver: zodResolver(assignShipmentSchema),
-    defaultValues: props,
+    defaultValues,
   })
 
   useEffect(() => {
     startTransition(async () => {
       try {
-        const data = await getAssignmentOptions()
+        const data = await getAvailableAssignmentOptions(deliveryDate)
         setData(data)
       } catch (err) {
         catchError(err)
@@ -81,13 +86,13 @@ export function AssignmentForm({ closeSheet, ...props }: AssignmentFormProps) {
     })
 
     return () => setData(null)
-  }, [])
+  }, [deliveryDate])
 
   const onSubmit = (data: AssignShipmentInput) => {
     startTransition(() => {
       toast.promise(
         assignShipment(data).then((result) => {
-          form.reset(props)
+          form.reset(defaultValues)
           closeSheet()
 
           if (!result.success) return Promise.reject(result.message)

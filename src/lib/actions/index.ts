@@ -10,13 +10,7 @@ import {
   OrderStatus,
 } from '@/components/modules/shipments/order-status'
 import { db } from '@/db'
-import {
-  drivers,
-  orders,
-  shipments,
-  transportUnits,
-  type CreateOrder,
-} from '@/db/schema'
+import { orders, shipments, type CreateOrder } from '@/db/schema'
 import { catchError } from '@/lib/utils'
 import {
   type AssignShipmentInput,
@@ -66,6 +60,10 @@ export async function getShipmentsByClientId(clientId: string | null) {
       driver: true,
       transportUnit: true,
     },
+    orderBy: (shipments, { desc, asc }) => [
+      desc(shipments.deliveryDate),
+      asc(shipments.id),
+    ],
     ...(clientId
       ? { where: (shipments, { eq }) => eq(shipments.clientId, clientId) }
       : {}),
@@ -239,15 +237,16 @@ export async function createBulkShipments(input: CreateBulkShipmentsInput) {
   }
 }
 
-export async function getAssignmentOptions() {
+export async function getAvailableAssignmentOptions(date: Date) {
+  console.log('getting available assignment options')
+  console.log('date:', date)
+
   const drivers = await db.query.drivers.findMany({
     columns: {
       id: true,
       name: true,
       lastName: true,
-      isActive: true,
     },
-    orderBy: (drivers, { desc }) => desc(drivers.isActive),
   })
 
   const transportUnits = await db.query.transportUnits.findMany({
@@ -255,27 +254,49 @@ export async function getAssignmentOptions() {
       id: true,
       brand: true,
       licensePlate: true,
-      isActive: true,
     },
-    orderBy: (drivers, { desc }) => desc(drivers.isActive),
   })
+
+  const shipments = await db.query.shipments.findMany({
+    columns: {
+      id: true,
+      driverId: true,
+      transportUnitId: true,
+    },
+    where: (shipments, { eq }) => eq(shipments.deliveryDate, date),
+  })
+
+  const busyIds = shipments.reduce(
+    (acc, shipment) => {
+      if (shipment.driverId) {
+        acc.drivers.push(shipment.driverId)
+      }
+      if (shipment.transportUnitId) {
+        acc.transportUnits.push(shipment.transportUnitId)
+      }
+      return acc
+    },
+    { drivers: [] as number[], transportUnits: [] as number[] },
+  )
 
   const driverOptions: Option[] = drivers.map((driver) => ({
     label: `${driver.lastName}, ${driver.name}`,
     value: driver.id.toString(),
-    disabled: !driver.isActive,
+    disabled: busyIds.drivers.includes(driver.id),
   }))
 
   const transportUnitOptions: Option[] = transportUnits.map((unit) => ({
     label: `${unit.brand} - ${unit.licensePlate}`,
     value: unit.id.toString(),
-    disabled: !unit.isActive,
+    disabled: busyIds.transportUnits.includes(unit.id),
   }))
 
   return { drivers: driverOptions, transportUnits: transportUnitOptions }
 }
 
-export type AssignmentInfo = Awaited<ReturnType<typeof getAssignmentOptions>>
+export type AssignmentInfo = Awaited<
+  ReturnType<typeof getAvailableAssignmentOptions>
+>
 
 export async function assignShipment(input: AssignShipmentInput) {
   console.log('assigning shipment')
@@ -299,39 +320,10 @@ export async function assignShipment(input: AssignShipmentInput) {
   }
 
   try {
-    await db.transaction(async (tx) => {
-      if (shipment.driverId && shipment.driverId !== driverId) {
-        await tx
-          .update(drivers)
-          .set({ isActive: true })
-          .where(eq(drivers.id, shipment.driverId))
-      }
-
-      if (
-        shipment.transportUnitId &&
-        shipment.transportUnitId !== transportUnitId
-      ) {
-        await tx
-          .update(transportUnits)
-          .set({ isActive: true })
-          .where(eq(transportUnits.id, shipment.transportUnitId))
-      }
-
-      await tx
-        .update(drivers)
-        .set({ isActive: false })
-        .where(eq(drivers.id, driverId))
-
-      await tx
-        .update(transportUnits)
-        .set({ isActive: false })
-        .where(eq(transportUnits.id, transportUnitId))
-
-      await tx
-        .update(shipments)
-        .set({ driverId, transportUnitId })
-        .where(eq(shipments.id, shipmentId))
-    })
+    await db
+      .update(shipments)
+      .set({ driverId, transportUnitId })
+      .where(eq(shipments.id, shipmentId))
 
     revalidatePath('/shipments')
 
