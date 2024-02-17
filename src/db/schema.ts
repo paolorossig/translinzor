@@ -1,7 +1,6 @@
 import { relations } from 'drizzle-orm'
 import {
   bigint,
-  boolean,
   integer,
   numeric,
   pgEnum,
@@ -22,7 +21,6 @@ export const transportUnits = pgTable('transport_units', {
   capacity: text('capacity'),
   grossWeight: integer('gross_weight'),
   netWeight: integer('net_weight'),
-  isActive: boolean('is_active').default(true).notNull(),
 })
 
 export type TransportUnit = typeof transportUnits.$inferSelect
@@ -33,7 +31,6 @@ export const drivers = pgTable('drivers', {
   lastName: text('last_name').notNull(),
   dni: text('dni').notNull(),
   licenseNumber: text('license_number').notNull(),
-  isActive: boolean('is_active').default(true).notNull(),
 })
 
 export type Driver = typeof drivers.$inferSelect
