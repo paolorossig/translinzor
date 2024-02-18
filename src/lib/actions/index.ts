@@ -197,7 +197,7 @@ export async function createBulkShipments(input: CreateBulkShipmentsInput) {
       acc[route] = [...(acc[route] ?? []), order]
       return acc
     },
-    {} as Record<string, CreateOrder[]>,
+    {} as Record<string, Omit<CreateOrder, 'shipmentId'>[]>,
   )
 
   try {

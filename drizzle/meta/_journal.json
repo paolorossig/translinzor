@@ -64,6 +64,13 @@
       "when": 1708209784042,
       "tag": "0008_remove_is_active",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "5",
+      "when": 1708218348576,
+      "tag": "0009_add_order_on_delete_and_unique_constraints",
+      "breakpoints": true
     }
   ]
 }

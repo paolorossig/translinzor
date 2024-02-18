@@ -14,7 +14,7 @@ import {
 
 export const transportUnits = pgTable('transport_units', {
   id: serial('id').primaryKey(),
-  licensePlate: text('license_plate').notNull(),
+  licensePlate: text('license_plate').notNull().unique(),
   type: text('type').notNull(),
   brand: text('brand'),
   model: text('model'),
@@ -29,8 +29,8 @@ export const drivers = pgTable('drivers', {
   id: serial('id').primaryKey(),
   name: text('name').notNull(),
   lastName: text('last_name').notNull(),
-  dni: text('dni').notNull(),
-  licenseNumber: text('license_number').notNull(),
+  dni: text('dni').unique().notNull(),
+  licenseNumber: text('license_number').unique().notNull(),
 })
 
 export type Driver = typeof drivers.$inferSelect
@@ -114,7 +114,11 @@ export const orders = pgTable(
     costumerId: integer('costumer_id')
       .references(() => costumers.id)
       .notNull(),
-    shipmentId: integer('shipment_id').references(() => shipments.id),
+    shipmentId: integer('shipment_id')
+      .references(() => shipments.id, {
+        onDelete: 'cascade',
+      })
+      .notNull(),
     clientOrderId: integer('client_order_id').notNull(),
     orderNumber: text('order_number').notNull(),
     guideNumber: text('guide_number').notNull(),
