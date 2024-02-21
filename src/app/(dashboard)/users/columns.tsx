@@ -7,6 +7,14 @@ import { type Users } from '@/lib/auth/actions'
 
 export const columns: ColumnDef<Users[number]>[] = [
   {
+    accessorKey: 'displayName',
+    header: 'Nombre',
+  },
+  {
+    accessorKey: 'email',
+    header: 'Email',
+  },
+  {
     accessorKey: 'role',
     header: 'Rol',
     cell: ({ row }) => {
@@ -21,13 +29,5 @@ export const columns: ColumnDef<Users[number]>[] = [
   {
     accessorKey: 'client.name',
     header: 'Nombre de cliente',
-  },
-  {
-    accessorKey: 'displayName',
-    header: 'Nombre',
-  },
-  {
-    accessorKey: 'email',
-    header: 'Email',
   },
 ]
