@@ -377,6 +377,30 @@ export async function startShipment(shipmentId: number) {
   }
 }
 
+export async function deleteShipment(shipmentId: number) {
+  console.log('deleting shipment:', shipmentId)
+
+  const [shipment] = await db.query.shipments.findMany({
+    columns: { id: true },
+    where: (shipments, { eq }) => eq(shipments.id, shipmentId),
+  })
+
+  if (!shipment) {
+    return respondError('El envío no existe')
+  }
+
+  try {
+    await db.delete(shipments).where(eq(shipments.id, shipmentId))
+
+    revalidatePath('/shipments')
+
+    return { success: true as const }
+  } catch (error) {
+    const err = catchError(error)
+    return respondError(err)
+  }
+}
+
 export async function getOrderStatusOptionsByShipmentId(shipmentId: number) {
   console.log('getting orders by shipment id:', shipmentId)
 
