@@ -50,6 +50,7 @@ export async function getShipmentsByClientId(clientId: string | null) {
       id: true,
       clientId: true,
       deliveryDate: true,
+      route: true,
       createdAt: true,
       startedAt: true,
       driverId: true,
@@ -202,12 +203,13 @@ export async function createBulkShipments(input: CreateBulkShipmentsInput) {
 
   try {
     await db.transaction(async (tx) => {
-      for (const bundledOrders of Object.values(shipmentsOrdersMap)) {
+      for (const [route, bundledOrders] of Object.entries(shipmentsOrdersMap)) {
         const [createdShipment] = await tx
           .insert(shipments)
           .values({
             clientId,
             deliveryDate,
+            route,
           })
           .returning({ id: shipments.id })
 

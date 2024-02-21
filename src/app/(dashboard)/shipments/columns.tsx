@@ -101,6 +101,10 @@ const columns: ShipmentColumns = [
     },
   },
   {
+    accessorKey: 'route',
+    header: 'Ruta',
+  },
+  {
     accessorKey: 'transportUnit',
     header: 'Unidad de transporte',
     cell: ({ row }) => {

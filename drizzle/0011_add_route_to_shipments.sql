@@ -1,0 +1,1 @@
+ALTER TABLE "shipments" ADD COLUMN "route" text NOT NULL;

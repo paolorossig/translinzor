@@ -160,6 +160,7 @@ export const shipments = pgTable('shipments', {
     () => transportUnits.id,
   ),
   driverId: integer('driver_id').references(() => drivers.id),
+  route: text('route').notNull(),
   deliveryDate: timestamp('delivery_date').notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   startedAt: timestamp('started_at'),
