@@ -142,7 +142,7 @@ export async function createBulkShipments(input: CreateBulkShipmentsInput) {
     ...new Set(bundledOrders.map((order) => order.internalCode)),
   ]
 
-  const costumersIds = await db.query.costumers.findMany({
+  const foundCostumers = await db.query.costumers.findMany({
     columns: {
       id: true,
       internalCode: true,
@@ -154,8 +154,15 @@ export async function createBulkShipments(input: CreateBulkShipmentsInput) {
       ),
   })
 
-  if (costumersIds.length !== uniqueInternalCodes.length)
+  if (foundCostumers.length !== uniqueInternalCodes.length) {
+    const missingCostumerIds = uniqueInternalCodes.filter(
+      (code) =>
+        !foundCostumers.some((costumer) => costumer.internalCode === code),
+    )
+    console.log('Missing costumer IDs:', missingCostumerIds)
     return respondError(costumerNotFoundError)
+  }
+
   console.log('all costumers found')
 
   const uniqueClientOrderIds = bundledOrders.map((order) => order.clientOrderId)
@@ -169,7 +176,7 @@ export async function createBulkShipments(input: CreateBulkShipmentsInput) {
         inArray(orders.clientOrderId, uniqueClientOrderIds),
         inArray(
           orders.costumerId,
-          costumersIds.map((costumer) => costumer.id),
+          foundCostumers.map((costumer) => costumer.id),
         ),
       ),
   })
@@ -177,7 +184,7 @@ export async function createBulkShipments(input: CreateBulkShipmentsInput) {
   if (existingOrders.length) return respondError(orderAlreadyExistsError)
   console.log('all orders in the file do not exist yet')
 
-  const internalCodeToCostumerIdMap = costumersIds.reduce(
+  const internalCodeToCostumerIdMap = foundCostumers.reduce(
     (acc, curr) => {
       acc[curr.internalCode] = curr.id
       return acc
