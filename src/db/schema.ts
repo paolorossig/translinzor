@@ -38,7 +38,8 @@ export type Driver = typeof drivers.$inferSelect
 export const companies = pgTable('companies', {
   id: serial('id').primaryKey(),
   name: text('name').unique().notNull(),
-  ruc: bigint('ruc', { mode: 'number' }).unique().notNull(),
+  // If there is no ruc, it is a natural person
+  ruc: bigint('ruc', { mode: 'number' }).unique(),
 })
 
 export const companiesRelations = relations(companies, ({ many }) => ({

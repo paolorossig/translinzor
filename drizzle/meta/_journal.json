@@ -71,6 +71,13 @@
       "when": 1708218348576,
       "tag": "0009_add_order_on_delete_and_unique_constraints",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "5",
+      "when": 1708529597978,
+      "tag": "0010_allow_null_in_companies_ruc",
+      "breakpoints": true
     }
   ]
 }
