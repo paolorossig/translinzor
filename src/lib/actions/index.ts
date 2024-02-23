@@ -12,12 +12,12 @@ import {
 import { db } from '@/db'
 import { orders, shipments, type CreateOrder } from '@/db/schema'
 import { catchError } from '@/lib/utils'
-import {
-  type AssignShipmentInput,
-  type CreateBulkShipmentsInput,
-  type UpdateOrderStatusInput,
+import type {
+  AssignShipmentInput,
+  CreateBulkShipmentsInput,
+  UpdateOrderStatusInput,
 } from '@/lib/validations/shipments'
-import { type Option } from '@/types'
+import type { Option } from '@/types'
 
 export async function getCostumersByClientId(clientId: string) {
   return await db.query.costumers.findMany({

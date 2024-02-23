@@ -1,5 +1,5 @@
-import { type Order } from '@/db/schema'
-import { type Option } from '@/types'
+import type { Order } from '@/db/schema'
+import type { Option } from '@/types'
 
 export enum OrderStatus {
   SCHEDULED = 'scheduled',

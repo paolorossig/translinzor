@@ -1,6 +1,6 @@
 'use client'
 
-import { type ColumnDef } from '@tanstack/react-table'
+import type { ColumnDef } from '@tanstack/react-table'
 import { InfoIcon } from 'lucide-react'
 
 import { Icons } from '@/components/icons'
@@ -15,7 +15,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import { type ShipmentById } from '@/lib/actions'
+import type { ShipmentById } from '@/lib/actions'
 
 export const columns: ColumnDef<ShipmentById['orders'][number]>[] = [
   {

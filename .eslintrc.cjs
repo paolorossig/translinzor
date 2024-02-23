@@ -12,14 +12,13 @@ const config = {
   ],
   rules: {
     '@typescript-eslint/no-empty-interface': 'off',
-    '@typescript-eslint/no-unnecessary-type-assertion': 'off',
-    '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+    '@typescript-eslint/no-import-type-side-effects': 'error',
     '@typescript-eslint/no-misused-promises': [
       'error',
-      {
-        checksVoidReturn: { attributes: false },
-      },
+      { checksVoidReturn: { attributes: false } },
     ],
+    '@typescript-eslint/no-unnecessary-type-assertion': 'off',
+    '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
   },
 }
 
