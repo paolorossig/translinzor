@@ -14,6 +14,8 @@ export interface NavGroupSeparator {
 
 export type UserNavigation = (NavItem | NavGroupSeparator)[]
 
+export type SearchParams = Record<string, string | string[] | undefined>
+
 export interface Option<T = string> {
   label: string
   value: T
