@@ -27,3 +27,19 @@ export function handleServerActionResponse(response: ServerActionResponse) {
 
   return Promise.resolve(response)
 }
+
+/**
+ * The `keyMirror` function in TypeScript creates an object with keys that have the same value as their
+ * names.
+ */
+export function keyMirror<T extends Record<string, unknown>>(
+  obj: T,
+): { [K in keyof T]: K } {
+  const result: Partial<{ [K in keyof T]: K }> = {}
+
+  for (const key in obj) {
+    result[key] = key
+  }
+
+  return result as { [K in keyof T]: K }
+}

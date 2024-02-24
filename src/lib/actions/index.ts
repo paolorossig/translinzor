@@ -8,6 +8,7 @@ import {
   getOrderStatus,
   isOrderFinalized,
   OrderStatus,
+  summarizeOrderStatus,
 } from '@/components/modules/shipments/order-status'
 import { db } from '@/db'
 import { orders, shipments, type CreateOrder } from '@/db/schema'
@@ -86,6 +87,46 @@ export async function getShipmentsByClientId(clientId: string | null) {
 export type ShipmentsByClient = Awaited<
   ReturnType<typeof getShipmentsByClientId>
 >
+
+interface ShipmentMetricsInput {
+  clientId?: string | null
+  date: Date
+}
+
+export async function getShipmentMetrics(input: ShipmentMetricsInput) {
+  noStore()
+
+  console.log('getting shipment metrics for:', input)
+
+  const shipments = await db.query.shipments.findMany({
+    columns: {
+      id: true,
+      route: true,
+    },
+    with: {
+      orders: true,
+    },
+    where: (shipments, { eq, and }) =>
+      and(
+        eq(shipments.deliveryDate, input.date),
+        input.clientId ? eq(shipments.clientId, input.clientId) : undefined,
+      ),
+  })
+
+  const orderStatusCountByShipment = shipments.map(({ id, route, orders }) => {
+    const ordersSummary = summarizeOrderStatus(orders)
+
+    return {
+      id,
+      route,
+      ...ordersSummary,
+    }
+  })
+
+  return orderStatusCountByShipment
+}
+
+export type ShipmentMetrics = Awaited<ReturnType<typeof getShipmentMetrics>>
 
 export async function getShipmentById(shipmentId: number) {
   const shipment = await db.query.shipments.findFirst({
