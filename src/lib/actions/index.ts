@@ -2,22 +2,24 @@
 
 import { unstable_noStore as noStore, revalidatePath } from 'next/cache'
 import { notFound } from 'next/navigation'
-import { eq } from 'drizzle-orm'
+import { format } from 'date-fns'
+import { eq, gte, lte } from 'drizzle-orm'
 
 import {
   getOrderStatus,
   isOrderFinalized,
   OrderStatus,
+  summarizeOrderStatus,
 } from '@/components/modules/shipments/order-status'
 import { db } from '@/db'
 import { orders, shipments, type CreateOrder } from '@/db/schema'
 import { catchError } from '@/lib/utils'
-import {
-  type AssignShipmentInput,
-  type CreateBulkShipmentsInput,
-  type UpdateOrderStatusInput,
+import type {
+  AssignShipmentInput,
+  CreateBulkShipmentsInput,
+  UpdateOrderStatusInput,
 } from '@/lib/validations/shipments'
-import { type Option } from '@/types'
+import type { Option } from '@/types'
 
 export async function getCostumersByClientId(clientId: string) {
   return await db.query.costumers.findMany({
@@ -50,6 +52,7 @@ export async function getShipmentsByClientId(clientId: string | null) {
       id: true,
       clientId: true,
       deliveryDate: true,
+      route: true,
       createdAt: true,
       startedAt: true,
       driverId: true,
@@ -84,6 +87,109 @@ export async function getShipmentsByClientId(clientId: string | null) {
 
 export type ShipmentsByClient = Awaited<
   ReturnType<typeof getShipmentsByClientId>
+>
+
+interface ShipmentMetricsInput {
+  clientId?: string | null
+  date: Date
+}
+
+export async function getShipmentMetrics(input: ShipmentMetricsInput) {
+  noStore()
+
+  console.log('getting shipment metrics for:', input)
+
+  const shipments = await db.query.shipments.findMany({
+    columns: {
+      id: true,
+      route: true,
+    },
+    with: {
+      orders: true,
+    },
+    where: (shipments, { eq, and }) =>
+      and(
+        input.clientId ? eq(shipments.clientId, input.clientId) : undefined,
+        eq(shipments.deliveryDate, input.date),
+      ),
+  })
+
+  const orderStatusCountByShipment = shipments.map(({ id, route, orders }) => {
+    const ordersSummary = summarizeOrderStatus(orders)
+
+    return {
+      id,
+      route,
+      ...ordersSummary,
+    }
+  })
+
+  return orderStatusCountByShipment
+}
+
+export type ShipmentMetrics = Awaited<ReturnType<typeof getShipmentMetrics>>
+
+interface HistoryShipmentMetricsInput {
+  clientId?: string | null
+  from: Date
+  to: Date
+}
+
+export async function getHistoryShipmentMetrics(
+  input: HistoryShipmentMetricsInput,
+) {
+  noStore()
+
+  console.log('getting history shipments metrics for:', input)
+
+  const shipments = await db.query.shipments.findMany({
+    columns: {
+      id: true,
+      deliveryDate: true,
+    },
+    with: {
+      orders: true,
+    },
+    where: (shipments, { eq, and }) =>
+      and(
+        input.clientId ? eq(shipments.clientId, input.clientId) : undefined,
+        gte(shipments.deliveryDate, input.from),
+        lte(shipments.deliveryDate, input.to),
+      ),
+  })
+
+  const groupedByDeliveryDate = shipments.reduce(
+    (acc, curr) => {
+      const key = format(curr.deliveryDate, 'yyyy-MM-dd')
+
+      if (acc[key]) {
+        acc[key]?.orders.push(...curr.orders)
+      } else {
+        acc[key] = curr
+      }
+
+      return acc
+    },
+    {} as Record<string, (typeof shipments)[number]>,
+  )
+
+  const orderStatusCountByShipment = Object.values(groupedByDeliveryDate).map(
+    ({ id, deliveryDate, orders }) => {
+      const ordersSummary = summarizeOrderStatus(orders)
+
+      return {
+        id,
+        deliveryDate: format(deliveryDate, 'dd/MM/yyyy'),
+        ...ordersSummary,
+      }
+    },
+  )
+
+  return orderStatusCountByShipment
+}
+
+export type HistoryShipmentMetrics = Awaited<
+  ReturnType<typeof getHistoryShipmentMetrics>
 >
 
 export async function getShipmentById(shipmentId: number) {
@@ -141,7 +247,7 @@ export async function createBulkShipments(input: CreateBulkShipmentsInput) {
     ...new Set(bundledOrders.map((order) => order.internalCode)),
   ]
 
-  const costumersIds = await db.query.costumers.findMany({
+  const foundCostumers = await db.query.costumers.findMany({
     columns: {
       id: true,
       internalCode: true,
@@ -153,8 +259,15 @@ export async function createBulkShipments(input: CreateBulkShipmentsInput) {
       ),
   })
 
-  if (costumersIds.length !== uniqueInternalCodes.length)
+  if (foundCostumers.length !== uniqueInternalCodes.length) {
+    const missingCostumerIds = uniqueInternalCodes.filter(
+      (code) =>
+        !foundCostumers.some((costumer) => costumer.internalCode === code),
+    )
+    console.log('Missing costumer IDs:', missingCostumerIds)
     return respondError(costumerNotFoundError)
+  }
+
   console.log('all costumers found')
 
   const uniqueClientOrderIds = bundledOrders.map((order) => order.clientOrderId)
@@ -168,7 +281,7 @@ export async function createBulkShipments(input: CreateBulkShipmentsInput) {
         inArray(orders.clientOrderId, uniqueClientOrderIds),
         inArray(
           orders.costumerId,
-          costumersIds.map((costumer) => costumer.id),
+          foundCostumers.map((costumer) => costumer.id),
         ),
       ),
   })
@@ -176,7 +289,7 @@ export async function createBulkShipments(input: CreateBulkShipmentsInput) {
   if (existingOrders.length) return respondError(orderAlreadyExistsError)
   console.log('all orders in the file do not exist yet')
 
-  const internalCodeToCostumerIdMap = costumersIds.reduce(
+  const internalCodeToCostumerIdMap = foundCostumers.reduce(
     (acc, curr) => {
       acc[curr.internalCode] = curr.id
       return acc
@@ -197,17 +310,18 @@ export async function createBulkShipments(input: CreateBulkShipmentsInput) {
       acc[route] = [...(acc[route] ?? []), order]
       return acc
     },
-    {} as Record<string, CreateOrder[]>,
+    {} as Record<string, Omit<CreateOrder, 'shipmentId'>[]>,
   )
 
   try {
     await db.transaction(async (tx) => {
-      for (const bundledOrders of Object.values(shipmentsOrdersMap)) {
+      for (const [route, bundledOrders] of Object.entries(shipmentsOrdersMap)) {
         const [createdShipment] = await tx
           .insert(shipments)
           .values({
             clientId,
             deliveryDate,
+            route,
           })
           .returning({ id: shipments.id })
 
@@ -367,6 +481,30 @@ export async function startShipment(shipmentId: number) {
         .set({ startedAt })
         .where(eq(shipments.id, shipmentId))
     })
+
+    revalidatePath('/shipments')
+
+    return { success: true as const }
+  } catch (error) {
+    const err = catchError(error)
+    return respondError(err)
+  }
+}
+
+export async function deleteShipment(shipmentId: number) {
+  console.log('deleting shipment:', shipmentId)
+
+  const [shipment] = await db.query.shipments.findMany({
+    columns: { id: true },
+    where: (shipments, { eq }) => eq(shipments.id, shipmentId),
+  })
+
+  if (!shipment) {
+    return respondError('El envío no existe')
+  }
+
+  try {
+    await db.delete(shipments).where(eq(shipments.id, shipmentId))
 
     revalidatePath('/shipments')
 

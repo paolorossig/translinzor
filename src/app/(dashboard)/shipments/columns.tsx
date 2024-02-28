@@ -14,6 +14,17 @@ import { toast } from 'sonner'
 
 import { AssignmentForm } from '@/components/modules/shipments'
 import { OrderStatusForm } from '@/components/modules/shipments/order-status-form'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -32,8 +43,12 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet'
-import { startShipment, type ShipmentsByClient } from '@/lib/actions'
-import { cn } from '@/lib/utils'
+import {
+  deleteShipment,
+  startShipment,
+  type ShipmentsByClient,
+} from '@/lib/actions'
+import { catchError, cn, handleServerActionResponse } from '@/lib/utils'
 
 type ShipmentColumns = ColumnDef<ShipmentsByClient[number]>[]
 
@@ -84,6 +99,10 @@ const columns: ShipmentColumns = [
       const dateStr = date.toLocaleDateString('es')
       return (value as Date).toLocaleDateString('es').includes(dateStr)
     },
+  },
+  {
+    accessorKey: 'route',
+    header: 'Ruta',
   },
   {
     accessorKey: 'transportUnit',
@@ -166,41 +185,70 @@ export const adminColumns: ShipmentColumns = [
           }
         })
       }
+      const onDeleteClick = () => {
+        startTransition(() => {
+          toast.promise(deleteShipment(id).then(handleServerActionResponse), {
+            loading: 'Eliminando...',
+            success: 'Envío eliminado',
+            error: (err: unknown) =>
+              catchError(err, 'No se pudo eliminar el envío'),
+          })
+        })
+      }
 
       return (
         <Sheet open={open} onOpenChange={setOpen}>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
-              >
-                <MoreHorizontalIcon className="h-4 w-4" />
-                <span className="sr-only">Abrir el menú</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-[160px]">
-              <DropdownMenuItem asChild>
-                <Link href={`/shipments/${row.original.id}`}>Ver</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={openEditDialog}>
-                Editar
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={openAssignmentDialog}>
-                Asignar
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                disabled
-                className="text-destructive focus:bg-destructive/20 focus:text-destructive"
-              >
-                Eliminar
-                <DropdownMenuShortcut>
-                  <TrashIcon className="h-4 w-4" />
-                </DropdownMenuShortcut>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <AlertDialog>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  disabled={isPending}
+                  variant="ghost"
+                  className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
+                >
+                  <MoreHorizontalIcon className="h-4 w-4" />
+                  <span className="sr-only">Abrir el menú</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-[160px]">
+                <DropdownMenuItem asChild>
+                  <Link href={`/shipments/${row.original.id}`}>Ver</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={openEditDialog}>
+                  Editar
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={openAssignmentDialog}>
+                  Asignar
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <AlertDialogTrigger asChild>
+                  <DropdownMenuItem className="text-destructive focus:bg-destructive/20 focus:text-destructive">
+                    Eliminar
+                    <DropdownMenuShortcut>
+                      <TrashIcon className="h-4 w-4" />
+                    </DropdownMenuShortcut>
+                  </DropdownMenuItem>
+                </AlertDialogTrigger>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>
+                  ¿Estás absolutamente seguro?
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  Esta acción no se puede deshacer. Esto eliminará el envío y
+                  sus respectivas órdenes permanentemente.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogAction onClick={onDeleteClick}>
+                  Continuar
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
           <SheetContent>
             {dialog === AdminDialog.EDIT ? (
               <>

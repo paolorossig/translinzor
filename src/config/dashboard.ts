@@ -1,4 +1,4 @@
-import { type UserRole } from '@/db/schema'
+import type { UserRole } from '@/db/schema'
 import type { UserNavigation } from '@/types'
 
 interface DashboardConfig {
@@ -18,7 +18,7 @@ export const dashboardConfig: DashboardConfig = {
       { name: 'Dashboard', href: '/', icon: 'home' },
       { name: 'Entregas', href: '/shipments', icon: 'baggageClaim' },
       { name: 'Clientes', href: '/costumers', icon: 'contact' },
-      { name: 'Reportes', href: '#', icon: 'pieChart' },
+      { name: 'Reportes', href: '/reports', icon: 'pieChart' },
     ],
   },
 }

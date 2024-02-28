@@ -1,0 +1,1 @@
+ALTER TABLE "companies" ALTER COLUMN "ruc" DROP NOT NULL;

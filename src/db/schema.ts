@@ -14,7 +14,7 @@ import {
 
 export const transportUnits = pgTable('transport_units', {
   id: serial('id').primaryKey(),
-  licensePlate: text('license_plate').notNull(),
+  licensePlate: text('license_plate').notNull().unique(),
   type: text('type').notNull(),
   brand: text('brand'),
   model: text('model'),
@@ -29,8 +29,8 @@ export const drivers = pgTable('drivers', {
   id: serial('id').primaryKey(),
   name: text('name').notNull(),
   lastName: text('last_name').notNull(),
-  dni: text('dni').notNull(),
-  licenseNumber: text('license_number').notNull(),
+  dni: text('dni').unique().notNull(),
+  licenseNumber: text('license_number').unique().notNull(),
 })
 
 export type Driver = typeof drivers.$inferSelect
@@ -38,7 +38,8 @@ export type Driver = typeof drivers.$inferSelect
 export const companies = pgTable('companies', {
   id: serial('id').primaryKey(),
   name: text('name').unique().notNull(),
-  ruc: bigint('ruc', { mode: 'number' }).unique().notNull(),
+  // If there is no ruc, it is a natural person
+  ruc: bigint('ruc', { mode: 'number' }).unique(),
 })
 
 export const companiesRelations = relations(companies, ({ many }) => ({
@@ -114,7 +115,11 @@ export const orders = pgTable(
     costumerId: integer('costumer_id')
       .references(() => costumers.id)
       .notNull(),
-    shipmentId: integer('shipment_id').references(() => shipments.id),
+    shipmentId: integer('shipment_id')
+      .references(() => shipments.id, {
+        onDelete: 'cascade',
+      })
+      .notNull(),
     clientOrderId: integer('client_order_id').notNull(),
     orderNumber: text('order_number').notNull(),
     guideNumber: text('guide_number').notNull(),
@@ -155,6 +160,7 @@ export const shipments = pgTable('shipments', {
     () => transportUnits.id,
   ),
   driverId: integer('driver_id').references(() => drivers.id),
+  route: text('route').notNull(),
   deliveryDate: timestamp('delivery_date').notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   startedAt: timestamp('started_at'),

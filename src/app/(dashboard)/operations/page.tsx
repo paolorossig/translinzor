@@ -25,7 +25,7 @@ export default async function OperationsPage() {
       </h1>
       <div className="space-y-6">
         <section>
-          <h2 className="text secondary pb-2 text-xl font-semibold tracking-tight">
+          <h2 className="pb-2 text-xl font-semibold tracking-tight text-foreground">
             Unidades de Transportes
           </h2>
           <DataTableWrapper
@@ -36,7 +36,7 @@ export default async function OperationsPage() {
           </DataTableWrapper>
         </section>
         <section>
-          <h2 className="text secondary pb-4 text-xl font-semibold tracking-tight">
+          <h2 className="pb-4 text-xl font-semibold tracking-tight text-foreground">
             Choferes
           </h2>
           <DataTableWrapper columns={driversColumns} data={drivers}>
