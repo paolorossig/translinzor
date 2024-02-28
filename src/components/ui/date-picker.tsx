@@ -16,17 +16,19 @@ import { cn } from '@/lib/utils'
 interface DatePickerProps {
   date: Date | undefined
   onSelect: SelectSingleEventHandler
+  className?: string
 }
 
-export function DatePicker({ date, onSelect }: DatePickerProps) {
+export function DatePicker({ date, onSelect, className }: DatePickerProps) {
   return (
     <Popover>
       <PopoverTrigger asChild>
         <Button
           variant={'outline'}
           className={cn(
-            'h-8 text-left font-normal',
+            'text-left font-normal',
             !date && 'text-muted-foreground',
+            className,
           )}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />

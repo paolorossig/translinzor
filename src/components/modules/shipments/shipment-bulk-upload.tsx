@@ -153,6 +153,7 @@ export function ShipmentBulkUpload({ disabled }: { disabled: boolean }) {
                           <DatePicker
                             date={field.value}
                             onSelect={field.onChange}
+                            className="h-8"
                           />
                         </div>
                       </FormControl>

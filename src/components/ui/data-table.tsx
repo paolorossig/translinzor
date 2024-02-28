@@ -285,6 +285,7 @@ export function DataTableDateFilter({ columnName }: DataTableDateFilterProps) {
     <DatePicker
       date={column.getFilterValue() as Date | undefined}
       onSelect={column.setFilterValue}
+      className="h-8"
     />
   )
 }
