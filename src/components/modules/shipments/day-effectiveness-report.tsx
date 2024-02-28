@@ -1,38 +1,21 @@
-'use client'
-
-import { usePathname, useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
-import { format } from 'date-fns'
+import { Suspense } from 'react'
 import { LineChartIcon } from 'lucide-react'
 
+import { BarChartSkeleton } from '@/components/charts/chart-skeletons'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
-import { DatePicker } from '@/components/ui/date-picker'
-import type { ShipmentMetrics } from '@/lib/actions'
-import { useQueryString } from '@/lib/hooks/use-query-string'
+import { getShipmentMetrics } from '@/lib/actions'
+import { useAuth } from '@/lib/auth'
 
 import EffectivenessChart from './effectiveness-chart'
+import { DatePickerWithSearchParams } from './with-search-params'
 
-interface DayEffectivenessReportProps {
-  data: ShipmentMetrics
+interface DayEffectivenessProps {
+  date: Date
 }
 
 export default function DayEffectivenessReport({
-  data,
-}: DayEffectivenessReportProps) {
-  const router = useRouter()
-  const pathname = usePathname()
-  const { createQueryString } = useQueryString()
-  const [date, setDate] = useState<Date | undefined>(new Date())
-
-  useEffect(() => {
-    router.push(
-      `${pathname}?${createQueryString({
-        date: date ? format(date, 'yyyy-MM-dd') : null,
-      })}`,
-      { scroll: false },
-    )
-  }, [createQueryString, date, pathname, router])
-
+  date,
+}: DayEffectivenessProps) {
   return (
     <Card>
       <CardHeader className="flex-col items-center justify-between md:flex-row">
@@ -44,11 +27,24 @@ export default function DayEffectivenessReport({
             Efectividad de entregas
           </h2>
         </div>
-        <DatePicker date={date} onSelect={setDate} />
+        <DatePickerWithSearchParams />
       </CardHeader>
       <CardContent className="pl-0">
-        <EffectivenessChart data={data} />
+        <Suspense key={date.toString()} fallback={<BarChartSkeleton />}>
+          <EffectivenessChartWrapper date={date} />
+        </Suspense>
       </CardContent>
     </Card>
   )
+}
+
+async function EffectivenessChartWrapper({ date }: DayEffectivenessProps) {
+  const { profile } = await useAuth()
+
+  const metrics = await getShipmentMetrics({
+    date,
+    clientId: profile.clientId,
+  })
+
+  return <EffectivenessChart type="day" data={metrics} />
 }

@@ -2,7 +2,8 @@
 
 import { unstable_noStore as noStore, revalidatePath } from 'next/cache'
 import { notFound } from 'next/navigation'
-import { eq } from 'drizzle-orm'
+import { format } from 'date-fns'
+import { eq, gte, lte } from 'drizzle-orm'
 
 import {
   getOrderStatus,
@@ -108,8 +109,8 @@ export async function getShipmentMetrics(input: ShipmentMetricsInput) {
     },
     where: (shipments, { eq, and }) =>
       and(
-        eq(shipments.deliveryDate, input.date),
         input.clientId ? eq(shipments.clientId, input.clientId) : undefined,
+        eq(shipments.deliveryDate, input.date),
       ),
   })
 
@@ -127,6 +128,69 @@ export async function getShipmentMetrics(input: ShipmentMetricsInput) {
 }
 
 export type ShipmentMetrics = Awaited<ReturnType<typeof getShipmentMetrics>>
+
+interface HistoryShipmentMetricsInput {
+  clientId?: string | null
+  from: Date
+  to: Date
+}
+
+export async function getHistoryShipmentMetrics(
+  input: HistoryShipmentMetricsInput,
+) {
+  noStore()
+
+  console.log('getting history shipments metrics for:', input)
+
+  const shipments = await db.query.shipments.findMany({
+    columns: {
+      id: true,
+      deliveryDate: true,
+    },
+    with: {
+      orders: true,
+    },
+    where: (shipments, { eq, and }) =>
+      and(
+        input.clientId ? eq(shipments.clientId, input.clientId) : undefined,
+        gte(shipments.deliveryDate, input.from),
+        lte(shipments.deliveryDate, input.to),
+      ),
+  })
+
+  const groupedByDeliveryDate = shipments.reduce(
+    (acc, curr) => {
+      const key = format(curr.deliveryDate, 'yyyy-MM-dd')
+
+      if (acc[key]) {
+        acc[key]?.orders.push(...curr.orders)
+      } else {
+        acc[key] = curr
+      }
+
+      return acc
+    },
+    {} as Record<string, (typeof shipments)[number]>,
+  )
+
+  const orderStatusCountByShipment = Object.values(groupedByDeliveryDate).map(
+    ({ id, deliveryDate, orders }) => {
+      const ordersSummary = summarizeOrderStatus(orders)
+
+      return {
+        id,
+        deliveryDate: format(deliveryDate, 'dd/MM/yyyy'),
+        ...ordersSummary,
+      }
+    },
+  )
+
+  return orderStatusCountByShipment
+}
+
+export type HistoryShipmentMetrics = Awaited<
+  ReturnType<typeof getHistoryShipmentMetrics>
+>
 
 export async function getShipmentById(shipmentId: number) {
   const shipment = await db.query.shipments.findFirst({

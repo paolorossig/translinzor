@@ -1,28 +1,21 @@
-'use client'
-
-import { useState } from 'react'
-import { addDays } from 'date-fns'
 import { LineChartIcon } from 'lucide-react'
-import type { DateRange } from 'react-day-picker'
 
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
-import { DateRangePicker } from '@/components/ui/date-range-picker'
-import type { ShipmentMetrics } from '@/lib/actions'
+import { getHistoryShipmentMetrics } from '@/lib/actions'
+import { useAuth } from '@/lib/auth'
 
 import EffectivenessChart from './effectiveness-chart'
+import { DateRangeWithSearchParams } from './with-search-params'
 
-interface HistoryEffectivenessReportProps {
-  data: ShipmentMetrics
+interface HistoryEffectivenessProps {
+  from: Date
+  to: Date
 }
 
 export default function HistoryEffectivenessReport({
-  data,
-}: HistoryEffectivenessReportProps) {
-  const [date, setDate] = useState<DateRange | undefined>({
-    from: new Date(2024, 0, 14),
-    to: addDays(new Date(2024, 0, 14), 20),
-  })
-
+  from,
+  to,
+}: HistoryEffectivenessProps) {
   return (
     <Card>
       <CardHeader className="flex-row items-center justify-between">
@@ -34,11 +27,26 @@ export default function HistoryEffectivenessReport({
             Efectividad de entregas
           </h2>
         </div>
-        <DateRangePicker date={date} onSelect={setDate} />
+        <DateRangeWithSearchParams />
       </CardHeader>
       <CardContent className="pl-0">
-        <EffectivenessChart data={data} />
+        <EffectivenessChartWrapper from={from} to={to} />
       </CardContent>
     </Card>
   )
+}
+
+async function EffectivenessChartWrapper({
+  from,
+  to,
+}: HistoryEffectivenessProps) {
+  const { profile } = await useAuth()
+
+  const metrics = await getHistoryShipmentMetrics({
+    from,
+    to,
+    clientId: profile.clientId,
+  })
+
+  return <EffectivenessChart type="history" data={metrics} />
 }

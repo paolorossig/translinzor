@@ -1,8 +1,6 @@
 import DayEffectivenessReport from '@/components/modules/shipments/day-effectiveness-report'
 import HistoryEffectivenessReport from '@/components/modules/shipments/history-effectiveness-report'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { getShipmentMetrics } from '@/lib/actions'
-import { useAuth } from '@/lib/auth'
 import { searchParamsSchema } from '@/lib/validations/params'
 import type { SearchParams } from '@/types'
 
@@ -10,16 +8,11 @@ interface ReportsPageProps {
   searchParams: SearchParams
 }
 
-export default async function ReportsPage({ searchParams }: ReportsPageProps) {
-  const { profile } = await useAuth()
-
-  const { date } = searchParamsSchema.parse(searchParams)
+export default function ReportsPage({ searchParams }: ReportsPageProps) {
+  const { date, from, to } = searchParamsSchema.parse(searchParams)
   const dateDay = date ? new Date(`${date}T05:00:00.000Z`) : new Date()
-
-  const metrics = await getShipmentMetrics({
-    date: dateDay,
-    clientId: profile.clientId,
-  })
+  const fromDay = from ? new Date(`${from}T05:00:00.000Z`) : new Date()
+  const toDay = to ? new Date(`${to}T05:00:00.000Z`) : new Date()
 
   return (
     <>
@@ -33,10 +26,10 @@ export default async function ReportsPage({ searchParams }: ReportsPageProps) {
             <TabsTrigger value="history">Histórico</TabsTrigger>
           </TabsList>
           <TabsContent value="day">
-            <DayEffectivenessReport data={metrics} />
+            <DayEffectivenessReport date={dateDay} />
           </TabsContent>
           <TabsContent value="history">
-            <HistoryEffectivenessReport data={metrics} />
+            <HistoryEffectivenessReport from={fromDay} to={toDay} />
           </TabsContent>
         </Tabs>
       </div>

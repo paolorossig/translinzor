@@ -1,3 +1,5 @@
+'use client'
+
 import { AlertCircle } from 'lucide-react'
 import {
   Bar,
@@ -11,7 +13,7 @@ import {
 } from 'recharts'
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import type { ShipmentMetrics } from '@/lib/actions'
+import type { HistoryShipmentMetrics, ShipmentMetrics } from '@/lib/actions'
 import { useMediaQuery } from '@/lib/hooks/use-media-query'
 import { keyMirror } from '@/lib/utils'
 
@@ -29,11 +31,20 @@ console.error = (...args: any) => {
 
 const formatPercentValue = (value: number | string) => `${value}%`
 
-interface EffectivenessChartProps {
-  data: ShipmentMetrics
-}
+type EffectivenessChartProps =
+  | {
+      type: 'day'
+      data: ShipmentMetrics
+    }
+  | {
+      type: 'history'
+      data: HistoryShipmentMetrics
+    }
 
-export default function EffectivenessChart({ data }: EffectivenessChartProps) {
+export default function EffectivenessChart({
+  data,
+  type,
+}: EffectivenessChartProps) {
   const isDesktop = useMediaQuery('(min-width: 640px)')
 
   if (!data.length) {
@@ -43,7 +54,8 @@ export default function EffectivenessChart({ data }: EffectivenessChartProps) {
           <AlertCircle className="h-4 w-4" />
           <AlertTitle>Sin resultados</AlertTitle>
           <AlertDescription>
-            No hay datos de efectividad para mostrar en el dia seleccionado.
+            No hay datos de efectividad para mostrar en el{' '}
+            {type === 'day' ? 'día' : 'rango'} seleccionado.
           </AlertDescription>
         </Alert>
       </div>
@@ -56,7 +68,11 @@ export default function EffectivenessChart({ data }: EffectivenessChartProps) {
     <ResponsiveContainer width="100%" height={350}>
       <BarChart data={data} maxBarSize={40}>
         <XAxis
-          dataKey={dataKeyHelper.route}
+          dataKey={
+            'route' in dataKeyHelper
+              ? dataKeyHelper.route
+              : dataKeyHelper.deliveryDate
+          }
           fontSize={12}
           tickLine={false}
           axisLine={false}
