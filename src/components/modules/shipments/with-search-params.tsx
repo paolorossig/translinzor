@@ -2,12 +2,13 @@
 
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { addDays, format } from 'date-fns'
+import { format } from 'date-fns'
 import { DateRange } from 'react-day-picker'
 
 import { DatePicker } from '@/components/ui/date-picker'
 import { DateRangePicker } from '@/components/ui/date-range-picker'
 import { useQueryString } from '@/lib/hooks/use-query-string'
+import { getPastMonday } from '@/lib/utils'
 
 export function DatePickerWithSearchParams() {
   const router = useRouter()
@@ -45,7 +46,7 @@ export function DateRangeWithSearchParams() {
       : new Date()
     const from = searchParams.from
       ? new Date(`${searchParams.from}T05:00:00.000Z`)
-      : addDays(to, -5)
+      : getPastMonday(new Date())
 
     return {
       from,

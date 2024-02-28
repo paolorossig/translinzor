@@ -43,3 +43,9 @@ export function keyMirror<T extends Record<string, unknown>>(
 
   return result as { [K in keyof T]: K }
 }
+
+export function getPastMonday(date: Date): Date {
+  const day = date.getDay()
+  const diff = date.getDate() - day + (day === 0 ? -6 : 1)
+  return new Date(date.setDate(diff))
+}
