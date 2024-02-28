@@ -53,8 +53,10 @@ export const columns: ColumnDef<ShipmentById['orders'][number]>[] = [
 
       return (
         <div className="flex items-center">
-          {Icon && <Icon className="mr-2 h-4 w-4 text-muted-foreground" />}
-          <p>{status.label}</p>
+          {Icon && (
+            <Icon className="mr-2 h-4 w-4 shrink-0 text-muted-foreground" />
+          )}
+          <p className="text-nowrap">{status.label}</p>
           {status.value === OrderStatus.REFUSED && (
             <Popover>
               <PopoverTrigger asChild>

@@ -3,14 +3,14 @@ import type { Option } from '@/types'
 
 export enum OrderStatus {
   SCHEDULED = 'scheduled',
-  PENDING = 'pending',
+  ON_ROUTE = 'on_route',
   DELIVERED = 'delivered',
   REFUSED = 'refused',
 }
 
 export const orderStatusOptions: Option<OrderStatus>[] = [
   { label: 'Agendado', value: OrderStatus.SCHEDULED, icon: 'scheduled' },
-  { label: 'Pendiente', value: OrderStatus.PENDING, icon: 'pending' },
+  { label: 'En ruta', value: OrderStatus.ON_ROUTE, icon: 'on_route' },
   { label: 'Entregado', value: OrderStatus.DELIVERED, icon: 'delivered' },
   { label: 'Rechazado', value: OrderStatus.REFUSED, icon: 'refused' },
 ]
@@ -21,7 +21,7 @@ export function getOrderStatus(order: Order) {
   } else if (order.deliveredAt) {
     return OrderStatus.DELIVERED
   } else if (order.startedAt) {
-    return OrderStatus.PENDING
+    return OrderStatus.ON_ROUTE
   }
 
   return OrderStatus.SCHEDULED
@@ -40,7 +40,7 @@ export function summarizeOrderStatus(orders: Order[]) {
     },
     {
       [OrderStatus.SCHEDULED]: 0,
-      [OrderStatus.PENDING]: 0,
+      [OrderStatus.ON_ROUTE]: 0,
       [OrderStatus.DELIVERED]: 0,
       [OrderStatus.REFUSED]: 0,
     },
@@ -51,7 +51,7 @@ export function summarizeOrderStatus(orders: Order[]) {
   const rates = {
     deliveryRate: Math.round((orderStatusCount.delivered / total) * 100),
     refusedRate: Math.round((orderStatusCount.refused / total) * 100),
-    pendingRate: Math.round((orderStatusCount.pending / total) * 100),
+    pendingRate: Math.round((orderStatusCount.on_route / total) * 100),
   }
 
   return { ...orderStatusCount, total, ...rates }
