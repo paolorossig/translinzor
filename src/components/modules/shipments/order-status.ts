@@ -1,4 +1,5 @@
 import type { Order } from '@/db/schema'
+import { getRates } from '@/lib/utils'
 import type { Option } from '@/types'
 
 export enum OrderStatus {
@@ -32,6 +33,7 @@ export function isOrderFinalized(order: Order) {
 }
 
 export function summarizeOrderStatus(orders: Order[]) {
+  const total = orders.length
   const orderStatusCount = orders.reduce(
     (acc, order) => {
       const status = getOrderStatus(order)
@@ -46,12 +48,18 @@ export function summarizeOrderStatus(orders: Order[]) {
     },
   )
 
-  const total = orders.length
+  const [scheduledRate, onRouteRate, deliveryRate, refusedRate] = getRates(
+    orderStatusCount.scheduled,
+    orderStatusCount.on_route,
+    orderStatusCount.delivered,
+    orderStatusCount.refused,
+  )
 
   const rates = {
-    deliveryRate: Math.round((orderStatusCount.delivered / total) * 100),
-    refusedRate: Math.round((orderStatusCount.refused / total) * 100),
-    pendingRate: Math.round((orderStatusCount.on_route / total) * 100),
+    deliveryRate,
+    refusedRate,
+    onRouteRate,
+    scheduledRate,
   }
 
   return { ...orderStatusCount, total, ...rates }

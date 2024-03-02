@@ -49,3 +49,23 @@ export function getPastMonday(date: Date): Date {
   const diff = date.getDate() - day + (day === 0 ? -6 : 1)
   return new Date(date.setDate(diff))
 }
+
+export const sumArray = (arr: number[]) =>
+  arr.reduce((acc, val) => acc + val, 0)
+
+export function roundNumber(num: number, dec = 0) {
+  return Math.round(num * Math.pow(10, dec)) / Math.pow(10, dec)
+}
+
+export function getRates(...values: number[]) {
+  const total = sumArray(values)
+  const rates = values.map((val) => roundNumber((val / total) * 100, 1))
+  const sumOfRates = sumArray(rates)
+
+  if (sumOfRates !== 100) {
+    const adjustmentFactor = 100 / sumOfRates
+    return rates.map((val) => roundNumber(val * adjustmentFactor, 1))
+  }
+
+  return rates
+}
