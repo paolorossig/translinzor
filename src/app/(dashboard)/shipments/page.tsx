@@ -3,6 +3,7 @@ import {
   DataTable,
   DataTableDateFilter,
   DataTableHeader,
+  DataTablePagination,
   DataTableResetFilter,
   DataTableWrapper,
 } from '@/components/ui/data-table'
@@ -31,6 +32,7 @@ export default async function ShipmentsPage() {
             <DataTableResetFilter />
           </DataTableHeader>
           <DataTable />
+          <DataTablePagination />
         </DataTableWrapper>
       </div>
     </>
