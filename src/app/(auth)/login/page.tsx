@@ -12,8 +12,8 @@ export default async function LoginPage() {
   const cookieStore = cookies()
   const supabase = createServerComponentClient({ cookies: () => cookieStore })
   const {
-    data: { session },
-  } = await supabase.auth.getSession()
+    data: { user },
+  } = await supabase.auth.getUser()
 
   return (
     <section className="mx-auto flex w-full flex-col justify-center space-y-6 px-4 sm:w-[350px]">
@@ -32,7 +32,7 @@ export default async function LoginPage() {
           Inicia sesión en tu cuenta para acceder al dashboard.
         </p>
       </div>
-      {session ? (
+      {user ? (
         <Button asChild className="group">
           <Link href="/">
             Ir al dashboard
