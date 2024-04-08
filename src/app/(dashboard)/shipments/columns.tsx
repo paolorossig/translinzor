@@ -117,7 +117,7 @@ const columns: ShipmentColumns = [
     header: 'Conductor',
     cell: ({ row }) => {
       const driver = row.original.driver
-      return <span>{driver ? driver.name : '-'}</span>
+      return <span className="truncate">{driver ? driver.name : '-'}</span>
     },
   },
   {

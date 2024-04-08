@@ -120,7 +120,7 @@ export default function EffectivenessChart({
         />
         <Bar
           name="Pendiente"
-          dataKey={dataKeyHelper.pendingRate}
+          dataKey={dataKeyHelper.onRouteRate}
           stackId="rateMetrics"
           fill="#F3AC3C"
         />

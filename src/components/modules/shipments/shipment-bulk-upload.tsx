@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useTransition } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { UploadIcon, XIcon } from 'lucide-react'
+import { LinkIcon, UploadIcon, XIcon } from 'lucide-react'
 import { defaultStyles, FileIcon } from 'react-file-icon'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -34,6 +34,7 @@ import { clientIds } from '@/config/clients'
 import { createBulkShipments } from '@/lib/actions'
 import {
   createBulkShipmentsSchema,
+  headersMap,
   parseShipmentBulkUpload,
   type CreateBulkShipmentsInput,
 } from '@/lib/validations/shipments'
@@ -118,6 +119,13 @@ export function ShipmentBulkUpload({ disabled }: { disabled: boolean }) {
     })
   }
 
+  const downloadTemplate = () => {
+    const worksheet = xlsx.utils.aoa_to_sheet([Object.keys(headersMap)])
+    const workbook = xlsx.utils.book_new()
+    xlsx.utils.book_append_sheet(workbook, worksheet, 'Entregas')
+    xlsx.writeFile(workbook, 'template.xlsx')
+  }
+
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
@@ -139,6 +147,16 @@ export function ShipmentBulkUpload({ disabled }: { disabled: boolean }) {
                 de excel.
               </DrawerDescription>
             </DrawerHeader>
+            <div>
+              <Button
+                variant="link"
+                className="flex h-6 items-center text-gray-700"
+                onClick={downloadTemplate}
+              >
+                <LinkIcon className="mr-1 h-4 w-4" />
+                La Sirena - Template
+              </Button>
+            </div>
 
             {areBundledOrdersValid ? (
               <div className="flex flex-col justify-center gap-x-6 gap-y-4 p-4 sm:flex-row">

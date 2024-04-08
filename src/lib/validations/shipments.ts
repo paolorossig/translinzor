@@ -16,7 +16,7 @@ const shipmentBulkUploadSchema = z.object({
 
 export type ShipmentBulkUploadRow = z.infer<typeof shipmentBulkUploadSchema>
 
-const headersMap: Record<string, keyof ShipmentBulkUploadRow> = {
+export const headersMap: Record<string, keyof ShipmentBulkUploadRow> = {
   CHOFER: 'route',
   'Cod. Cliente': 'internalCode',
   'NRO VALE': 'clientOrderId',

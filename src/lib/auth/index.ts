@@ -8,13 +8,13 @@ export async function useAuth() {
   const cookieStore = cookies()
   const supabase = createServerComponentClient({ cookies: () => cookieStore })
   const {
-    data: { session },
-  } = await supabase.auth.getSession()
+    data: { user },
+  } = await supabase.auth.getUser()
 
-  if (!session) redirect('/login')
+  if (!user) redirect('/login')
 
   const profile = await db.query.profiles.findFirst({
-    where: (profiles, { eq }) => eq(profiles.id, session.user.id),
+    where: (profiles, { eq }) => eq(profiles.id, user.id),
   })
 
   if (!profile) {
@@ -26,5 +26,5 @@ export async function useAuth() {
   const isAdmin = profile.role === 'admin'
   const isClient = profile.role === 'client'
 
-  return { session, profile, isAdmin, isClient }
+  return { user, profile, isAdmin, isClient }
 }

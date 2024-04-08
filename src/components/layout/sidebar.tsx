@@ -92,7 +92,7 @@ export default function Sidebar({ displayName, userNavigation }: SidebarProps) {
           <li className="mt-auto">
             <a
               href="#"
-              className="group -mx-2 flex items-center gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 hover:text-primary"
+              className="group -mx-2 hidden items-center gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 hover:text-primary"
             >
               <SettingsIcon
                 className="h-5 w-5 shrink-0 text-gray-400 group-hover:text-primary"
