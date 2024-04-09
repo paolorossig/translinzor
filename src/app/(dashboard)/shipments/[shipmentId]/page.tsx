@@ -6,6 +6,7 @@ import {
   DataTableFacetedFilter,
   DataTableFilterInput,
   DataTableHeader,
+  DataTablePagination,
   DataTableResetFilter,
   DataTableWrapper,
 } from '@/components/ui/data-table'
@@ -88,6 +89,7 @@ export default async function ShipmentPage({
               </div>
             </DataTableHeader>
             <DataTable />
+            <DataTablePagination />
           </DataTableWrapper>
         </div>
       </section>
