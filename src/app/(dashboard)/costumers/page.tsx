@@ -1,20 +1,22 @@
+import { CreateCostumerButton } from '@/components/modules/costumers/new-costumer'
 import {
   DataTable,
   DataTableFacetedFilter,
   DataTableFilterInput,
   DataTableHeader,
+  DataTablePagination,
   DataTableResetFilter,
   DataTableWrapper,
 } from '@/components/ui/data-table'
-import { getCostumersByClientId } from '@/lib/actions'
+import { getCostumers } from '@/lib/actions'
 import { useAuth } from '@/lib/auth'
 import { channelOptions } from '@/lib/constants'
 
 import { columns } from './columns'
 
 export default async function CostumersPage() {
-  const { profile } = await useAuth()
-  const data = await getCostumersByClientId(profile.clientId!)
+  const { profile, isAdmin } = await useAuth()
+  const data = await getCostumers({ clientId: profile.clientId })
 
   return (
     <>
@@ -23,9 +25,9 @@ export default async function CostumersPage() {
       </h1>
       <div>
         <DataTableWrapper columns={columns} data={data}>
-          <DataTableHeader>
+          <DataTableHeader actionArea={isAdmin && <CreateCostumerButton />}>
             <DataTableFilterInput
-              columnName="name"
+              columnName="company_name"
               placeholder="Filtrar clientes..."
             />
             <div className="flex w-full space-x-2 sm:w-fit">
@@ -38,6 +40,7 @@ export default async function CostumersPage() {
             </div>
           </DataTableHeader>
           <DataTable />
+          <DataTablePagination />
         </DataTableWrapper>
       </div>
     </>

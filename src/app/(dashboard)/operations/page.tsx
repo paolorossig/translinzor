@@ -1,4 +1,8 @@
-import { DataTable, DataTableWrapper } from '@/components/ui/data-table'
+import {
+  DataTable,
+  DataTablePagination,
+  DataTableWrapper,
+} from '@/components/ui/data-table'
 import { db } from '@/db'
 import { drivers, transportUnits } from '@/db/schema'
 
@@ -33,6 +37,7 @@ export default async function OperationsPage() {
             data={transportUnits}
           >
             <DataTable className="mt-2" />
+            <DataTablePagination />
           </DataTableWrapper>
         </section>
         <section>
@@ -41,6 +46,7 @@ export default async function OperationsPage() {
           </h2>
           <DataTableWrapper columns={driversColumns} data={drivers}>
             <DataTable className="mt-2" />
+            <DataTablePagination />
           </DataTableWrapper>
         </section>
       </div>

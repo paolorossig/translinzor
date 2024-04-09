@@ -11,9 +11,17 @@ import {
   OrderStatus,
   summarizeOrderStatus,
 } from '@/components/modules/shipments/order-status'
+import { clientIds } from '@/config/clients'
 import { db } from '@/db'
-import { orders, shipments, type CreateOrder } from '@/db/schema'
+import {
+  companies,
+  costumers,
+  orders,
+  shipments,
+  type CreateOrder,
+} from '@/db/schema'
 import { catchError } from '@/lib/utils'
+import type { CreateCostumerInput } from '@/lib/validations/costumers'
 import type {
   AssignShipmentInput,
   CreateBulkShipmentsInput,
@@ -21,7 +29,7 @@ import type {
 } from '@/lib/validations/shipments'
 import type { Option } from '@/types'
 
-export async function getCostumersByClientId(clientId: string) {
+export async function getCostumers({ clientId }: { clientId?: string | null }) {
   return await db.query.costumers.findMany({
     columns: {
       internalCode: true,
@@ -30,13 +38,12 @@ export async function getCostumersByClientId(clientId: string) {
     with: {
       company: true,
     },
-    where: (costumers, { eq }) => eq(costumers.clientId, clientId),
+    where: (costumers, { eq }) =>
+      clientId ? eq(costumers.clientId, clientId) : undefined,
   })
 }
 
-export type CostumersByClient = Awaited<
-  ReturnType<typeof getCostumersByClientId>
->
+export type CostumersByClient = Awaited<ReturnType<typeof getCostumers>>
 
 export async function getShipmentsByClientId(clientId: string | null) {
   noStore()
@@ -570,6 +577,59 @@ export async function updateOrderStatus(input: UpdateOrderStatusInput) {
     })
 
     revalidatePath('/shipments')
+
+    return { success: true as const }
+  } catch (error) {
+    const err = catchError(error)
+    return respondError(err)
+  }
+}
+
+export async function createLaSirenaCostumer(input: CreateCostumerInput) {
+  const [company] = await db.query.companies.findMany({
+    where: (companies, { eq, or }) =>
+      or(
+        eq(companies.name, input.company_name),
+        input.company_ruc ? eq(companies.ruc, input.company_ruc) : undefined,
+      ),
+  })
+
+  if (company) {
+    return respondError('El cliente ya existe en la base de datos')
+  }
+
+  const [costumer] = await db.query.costumers.findMany({
+    where: (costumers, { eq }) =>
+      eq(costumers.internalCode, input.internal_code),
+  })
+
+  if (costumer) {
+    return respondError('El cliente ya existe en la base de datos')
+  }
+
+  try {
+    await db.transaction(async (tx) => {
+      const [createdCompany] = await tx
+        .insert(companies)
+        .values({
+          name: input.company_name,
+          ruc: input.company_ruc,
+        })
+        .returning({ id: companies.id })
+
+      if (!createdCompany) {
+        throw new Error('create company failed')
+      }
+
+      await tx.insert(costumers).values({
+        clientId: clientIds.laSirena,
+        companyId: createdCompany.id,
+        internalCode: input.internal_code,
+        channel: input.channel,
+      })
+    })
+
+    revalidatePath('/costumers')
 
     return { success: true as const }
   } catch (error) {

@@ -11,6 +11,7 @@ export const dashboardConfig: DashboardConfig = {
       { name: 'Dashboard', href: '/', icon: 'home' },
       { name: 'Entregas', href: '/shipments', icon: 'baggageClaim' },
       { name: 'Maestros', separator: true },
+      { name: 'Clientes', href: '/costumers', icon: 'contact' },
       { name: 'Operaciones', href: '/operations', icon: 'car' },
       { name: 'Usuarios', href: '/users', icon: 'users' },
     ],

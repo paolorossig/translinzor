@@ -46,8 +46,7 @@ const excelAcceptedMimeTypes = {
   ],
 }
 
-// TODO: Send just the neccesary JS when disabled is true
-export function ShipmentBulkUpload({ disabled }: { disabled: boolean }) {
+export function ShipmentBulkUpload() {
   const [open, setOpen] = useState(false)
   const [excelFile, setExcelFile] = useState<ArrayBuffer | null>(null)
   const [isPending, startTransition] = useTransition()
@@ -129,7 +128,7 @@ export function ShipmentBulkUpload({ disabled }: { disabled: boolean }) {
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
-        <Button className="h-8" disabled={disabled}>
+        <Button className="h-8">
           <UploadIcon className="h-4 w-4" />
           <span className="ml-2 hidden md:block">Carga masiva</span>
         </Button>
