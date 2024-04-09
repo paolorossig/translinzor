@@ -1,4 +1,4 @@
-import * as z from 'zod'
+import { z } from 'zod'
 
 import { OrderStatus } from '@/components/modules/shipments/order-status'
 import { removeAccents } from '@/lib/utils'

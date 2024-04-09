@@ -69,7 +69,7 @@ export default function Sidebar({ displayName, userNavigation }: SidebarProps) {
                       className={cn(
                         isTabSelected(item.href)
                           ? 'bg-white text-primary dark:border-zinc-700 dark:bg-zinc-800'
-                          : 'border-transparent hover:text-primary',
+                          : 'border-transparent text-gray-400 hover:text-primary',
                         'group flex items-center gap-x-3 rounded-md border p-2 text-sm font-semibold leading-6',
                       )}
                     >

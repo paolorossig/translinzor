@@ -25,9 +25,7 @@ export default async function ShipmentsPage() {
       </h1>
       <div>
         <DataTableWrapper columns={columns} data={shipments}>
-          <DataTableHeader
-            actionArea={<ShipmentBulkUpload disabled={!isAdmin} />}
-          >
+          <DataTableHeader actionArea={isAdmin && <ShipmentBulkUpload />}>
             <DataTableDateFilter columnName="deliveryDate" />
             <DataTableResetFilter />
           </DataTableHeader>
