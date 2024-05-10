@@ -39,11 +39,11 @@ export default function DayEffectivenessReport({
 }
 
 async function EffectivenessChartWrapper({ date }: DayEffectivenessProps) {
-  const { profile } = await useAuth()
+  const { user } = await useAuth()
 
   const metrics = await getShipmentMetrics({
     date,
-    clientId: profile.clientId,
+    clientId: user.clientId,
   })
 
   return <EffectivenessChart type="day" data={metrics} />

@@ -40,12 +40,12 @@ async function EffectivenessChartWrapper({
   from,
   to,
 }: HistoryEffectivenessProps) {
-  const { profile } = await useAuth()
+  const { user } = await useAuth()
 
   const metrics = await getHistoryShipmentMetrics({
     from,
     to,
-    clientId: profile.clientId,
+    clientId: user.clientId,
   })
 
   return <EffectivenessChart type="history" data={metrics} />

@@ -4,6 +4,7 @@ import {
   integer,
   numeric,
   pgEnum,
+  pgSchema,
   pgTable,
   serial,
   text,
@@ -46,22 +47,29 @@ export const companiesRelations = relations(companies, ({ many }) => ({
   costumers: many(costumers),
 }))
 
+const SupabaseAuthSchema = pgSchema('auth')
+const SupabaseAuthUsers = SupabaseAuthSchema.table('users', {
+  id: uuid('id').primaryKey(),
+})
+
 export const userRolesEnum = pgEnum('role', ['admin', 'client'] as const)
 export type UserRole = (typeof userRolesEnum.enumValues)[number]
 
-export const profiles = pgTable('profiles', {
-  id: uuid('id').primaryKey(), // auth.user.id
+export const users = pgTable('users', {
+  id: uuid('id')
+    .primaryKey()
+    .references(() => SupabaseAuthUsers.id, { onDelete: 'cascade' }),
   displayName: text('displayName').notNull(),
   email: text('email').notNull(),
   role: userRolesEnum('role').notNull(),
   clientId: uuid('client_id').references(() => clients.id),
 })
 
-export type Profile = typeof profiles.$inferSelect
+export type User = typeof users.$inferSelect
 
-export const profilesRelations = relations(profiles, ({ one }) => ({
+export const usersRelations = relations(users, ({ one }) => ({
   client: one(clients, {
-    fields: [profiles.clientId],
+    fields: [users.clientId],
     references: [clients.id],
   }),
 }))
@@ -72,7 +80,7 @@ export const clients = pgTable('clients', {
 })
 
 export const clientsRelations = relations(clients, ({ many }) => ({
-  profiles: many(profiles),
+  users: many(users),
   costumers: many(costumers),
   shipments: many(shipments),
 }))
