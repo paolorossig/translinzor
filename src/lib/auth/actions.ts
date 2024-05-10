@@ -3,11 +3,11 @@
 import { db } from '@/db'
 
 export async function getAllUsers() {
-  const profiles = await db.query.profiles.findMany({
+  const users = await db.query.users.findMany({
     with: { client: true },
-    orderBy: (profiles, { asc }) => asc(profiles.role),
+    orderBy: (users, { asc }) => asc(users.role),
   })
-  return profiles
+  return users
 }
 
 export type Users = Awaited<ReturnType<typeof getAllUsers>>
