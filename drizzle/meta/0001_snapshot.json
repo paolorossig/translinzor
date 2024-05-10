@@ -1,10 +1,8 @@
 {
-  "id": "2012d60f-478b-4e36-bce0-5c6bb3b05e8b",
-  "prevId": "7d7661fb-1e17-4936-8ba7-2b7eb7a03f61",
-  "version": "5",
-  "dialect": "pg",
+  "version": "6",
+  "dialect": "postgresql",
   "tables": {
-    "clients": {
+    "public.clients": {
       "name": "clients",
       "schema": "",
       "columns": {
@@ -26,7 +24,7 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "companies": {
+    "public.companies": {
       "name": "companies",
       "schema": "",
       "columns": {
@@ -55,21 +53,21 @@
       "uniqueConstraints": {
         "companies_name_unique": {
           "name": "companies_name_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "name"
-          ]
+          ],
+          "nullsNotDistinct": false
         },
         "companies_ruc_unique": {
           "name": "companies_ruc_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "ruc"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
       }
     },
-    "costumers": {
+    "public.costumers": {
       "name": "costumers",
       "schema": "",
       "columns": {
@@ -103,28 +101,28 @@
         "costumers_user_id_clients_id_fk": {
           "name": "costumers_user_id_clients_id_fk",
           "tableFrom": "costumers",
-          "tableTo": "clients",
           "columnsFrom": [
             "user_id"
           ],
+          "tableTo": "clients",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "costumers_company_id_companies_id_fk": {
           "name": "costumers_company_id_companies_id_fk",
           "tableFrom": "costumers",
-          "tableTo": "companies",
           "columnsFrom": [
             "company_id"
           ],
+          "tableTo": "companies",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {
@@ -138,7 +136,7 @@
       },
       "uniqueConstraints": {}
     },
-    "drivers": {
+    "public.drivers": {
       "name": "drivers",
       "schema": "",
       "columns": {
@@ -192,7 +190,7 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "transportUnits": {
+    "public.transportUnits": {
       "name": "transportUnits",
       "schema": "",
       "columns": {
@@ -268,8 +266,10 @@
   "enums": {},
   "schemas": {},
   "_meta": {
-    "columns": {},
     "schemas": {},
-    "tables": {}
-  }
+    "tables": {},
+    "columns": {}
+  },
+  "id": "2012d60f-478b-4e36-bce0-5c6bb3b05e8b",
+  "prevId": "7d7661fb-1e17-4936-8ba7-2b7eb7a03f61"
 }
