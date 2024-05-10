@@ -8,23 +8,23 @@ export async function useAuth() {
   const cookieStore = cookies()
   const supabase = createServerComponentClient({ cookies: () => cookieStore })
   const {
-    data: { user },
+    data: { user: supabaseUser },
   } = await supabase.auth.getUser()
 
-  if (!user) redirect('/login')
+  if (!supabaseUser) redirect('/login')
 
-  const profile = await db.query.profiles.findFirst({
-    where: (profiles, { eq }) => eq(profiles.id, user.id),
+  const user = await db.query.users.findFirst({
+    where: (users, { eq }) => eq(users.id, supabaseUser.id),
   })
 
-  if (!profile) {
-    console.log('Profile not found')
+  if (!user) {
+    console.log('User not found')
     await supabase.auth.signOut()
     redirect('/login')
   }
 
-  const isAdmin = profile.role === 'admin'
-  const isClient = profile.role === 'client'
+  const isAdmin = user.role === 'admin'
+  const isClient = user.role === 'client'
 
-  return { user, profile, isAdmin, isClient }
+  return { supabaseUser, user, isAdmin, isClient }
 }

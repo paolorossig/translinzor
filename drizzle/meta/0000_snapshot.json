@@ -1,10 +1,8 @@
 {
-  "id": "7d7661fb-1e17-4936-8ba7-2b7eb7a03f61",
-  "prevId": "00000000-0000-0000-0000-000000000000",
-  "version": "5",
-  "dialect": "pg",
+  "version": "6",
+  "dialect": "postgresql",
   "tables": {
-    "drivers": {
+    "public.drivers": {
       "name": "drivers",
       "schema": "",
       "columns": {
@@ -58,7 +56,7 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "transportUnits": {
+    "public.transportUnits": {
       "name": "transportUnits",
       "schema": "",
       "columns": {
@@ -134,8 +132,10 @@
   "enums": {},
   "schemas": {},
   "_meta": {
-    "columns": {},
     "schemas": {},
-    "tables": {}
-  }
+    "tables": {},
+    "columns": {}
+  },
+  "id": "7d7661fb-1e17-4936-8ba7-2b7eb7a03f61",
+  "prevId": "00000000-0000-0000-0000-000000000000"
 }

@@ -85,6 +85,13 @@
       "when": 1708540350293,
       "tag": "0011_add_route_to_shipments",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "6",
+      "when": 1715316407658,
+      "tag": "0012_rename_profiles_to_users",
+      "breakpoints": true
     }
   ]
 }

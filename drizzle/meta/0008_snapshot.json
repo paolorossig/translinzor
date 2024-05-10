@@ -1,10 +1,8 @@
 {
-  "id": "5c24b800-d0f5-478d-8ace-07f93ea8c992",
-  "prevId": "8e387e52-aa62-4281-9733-cbc02b97036f",
-  "version": "5",
-  "dialect": "pg",
+  "version": "6",
+  "dialect": "postgresql",
   "tables": {
-    "clients": {
+    "public.clients": {
       "name": "clients",
       "schema": "",
       "columns": {
@@ -27,7 +25,7 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "companies": {
+    "public.companies": {
       "name": "companies",
       "schema": "",
       "columns": {
@@ -56,21 +54,21 @@
       "uniqueConstraints": {
         "companies_name_unique": {
           "name": "companies_name_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "name"
-          ]
+          ],
+          "nullsNotDistinct": false
         },
         "companies_ruc_unique": {
           "name": "companies_ruc_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "ruc"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
       }
     },
-    "costumers": {
+    "public.costumers": {
       "name": "costumers",
       "schema": "",
       "columns": {
@@ -110,43 +108,43 @@
         "costumers_client_id_clients_id_fk": {
           "name": "costumers_client_id_clients_id_fk",
           "tableFrom": "costumers",
-          "tableTo": "clients",
           "columnsFrom": [
             "client_id"
           ],
+          "tableTo": "clients",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "costumers_company_id_companies_id_fk": {
           "name": "costumers_company_id_companies_id_fk",
           "tableFrom": "costumers",
-          "tableTo": "companies",
           "columnsFrom": [
             "company_id"
           ],
+          "tableTo": "companies",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "costumers_client_id_company_id_unique": {
           "name": "costumers_client_id_company_id_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "client_id",
             "company_id"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
       }
     },
-    "drivers": {
+    "public.drivers": {
       "name": "drivers",
       "schema": "",
       "columns": {
@@ -186,7 +184,7 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "orders": {
+    "public.orders": {
       "name": "orders",
       "schema": "",
       "columns": {
@@ -281,43 +279,43 @@
         "orders_costumer_id_costumers_id_fk": {
           "name": "orders_costumer_id_costumers_id_fk",
           "tableFrom": "orders",
-          "tableTo": "costumers",
           "columnsFrom": [
             "costumer_id"
           ],
+          "tableTo": "costumers",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "orders_shipment_id_shipments_id_fk": {
           "name": "orders_shipment_id_shipments_id_fk",
           "tableFrom": "orders",
-          "tableTo": "shipments",
           "columnsFrom": [
             "shipment_id"
           ],
+          "tableTo": "shipments",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "orders_costumer_id_client_order_id_unique": {
           "name": "orders_costumer_id_client_order_id_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "costumer_id",
             "client_order_id"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
       }
     },
-    "profiles": {
+    "public.profiles": {
       "name": "profiles",
       "schema": "",
       "columns": {
@@ -357,21 +355,21 @@
         "profiles_client_id_clients_id_fk": {
           "name": "profiles_client_id_clients_id_fk",
           "tableFrom": "profiles",
-          "tableTo": "clients",
           "columnsFrom": [
             "client_id"
           ],
+          "tableTo": "clients",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "shipments": {
+    "public.shipments": {
       "name": "shipments",
       "schema": "",
       "columns": {
@@ -424,47 +422,47 @@
         "shipments_client_id_clients_id_fk": {
           "name": "shipments_client_id_clients_id_fk",
           "tableFrom": "shipments",
-          "tableTo": "clients",
           "columnsFrom": [
             "client_id"
           ],
+          "tableTo": "clients",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "shipments_transport_unit_id_transport_units_id_fk": {
           "name": "shipments_transport_unit_id_transport_units_id_fk",
           "tableFrom": "shipments",
-          "tableTo": "transport_units",
           "columnsFrom": [
             "transport_unit_id"
           ],
+          "tableTo": "transport_units",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "shipments_driver_id_drivers_id_fk": {
           "name": "shipments_driver_id_drivers_id_fk",
           "tableFrom": "shipments",
-          "tableTo": "drivers",
           "columnsFrom": [
             "driver_id"
           ],
+          "tableTo": "drivers",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "transport_units": {
+    "public.transport_units": {
       "name": "transport_units",
       "schema": "",
       "columns": {
@@ -524,18 +522,21 @@
     }
   },
   "enums": {
-    "role": {
+    "public.role": {
       "name": "role",
-      "values": {
-        "admin": "admin",
-        "client": "client"
-      }
+      "schema": "public",
+      "values": [
+        "admin",
+        "client"
+      ]
     }
   },
   "schemas": {},
   "_meta": {
-    "columns": {},
     "schemas": {},
-    "tables": {}
-  }
+    "tables": {},
+    "columns": {}
+  },
+  "id": "5c24b800-d0f5-478d-8ace-07f93ea8c992",
+  "prevId": "8e387e52-aa62-4281-9733-cbc02b97036f"
 }

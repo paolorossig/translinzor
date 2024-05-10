@@ -1,4 +1,6 @@
 {
+  "id": "f2e18931-3640-4d78-9283-af767c4a9047",
+  "prevId": "bc926ddd-3611-40aa-9c15-0d5004bca01f",
   "version": "6",
   "dialect": "postgresql",
   "tables": {
@@ -8,9 +10,10 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "uuid",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "default": "gen_random_uuid()"
         },
         "name": {
           "name": "name",
@@ -44,7 +47,7 @@
           "name": "ruc",
           "type": "bigint",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         }
       },
       "indexes": {},
@@ -53,17 +56,17 @@
       "uniqueConstraints": {
         "companies_name_unique": {
           "name": "companies_name_unique",
+          "nullsNotDistinct": false,
           "columns": [
             "name"
-          ],
-          "nullsNotDistinct": false
+          ]
         },
         "companies_ruc_unique": {
           "name": "companies_ruc_unique",
+          "nullsNotDistinct": false,
           "columns": [
             "ruc"
-          ],
-          "nullsNotDistinct": false
+          ]
         }
       }
     },
@@ -79,7 +82,7 @@
         },
         "client_id": {
           "name": "client_id",
-          "type": "integer",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },
@@ -107,39 +110,39 @@
         "costumers_client_id_clients_id_fk": {
           "name": "costumers_client_id_clients_id_fk",
           "tableFrom": "costumers",
+          "tableTo": "clients",
           "columnsFrom": [
             "client_id"
           ],
-          "tableTo": "clients",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         },
         "costumers_company_id_companies_id_fk": {
           "name": "costumers_company_id_companies_id_fk",
           "tableFrom": "costumers",
+          "tableTo": "companies",
           "columnsFrom": [
             "company_id"
           ],
-          "tableTo": "companies",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "costumers_client_id_company_id_unique": {
           "name": "costumers_client_id_company_id_unique",
+          "nullsNotDistinct": false,
           "columns": [
             "client_id",
             "company_id"
-          ],
-          "nullsNotDistinct": false
+          ]
         }
       }
     },
@@ -176,19 +179,27 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true
-        },
-        "is_active": {
-          "name": "is_active",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": true,
-          "default": true
         }
       },
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "drivers_dni_unique": {
+          "name": "drivers_dni_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "dni"
+          ]
+        },
+        "drivers_license_number_unique": {
+          "name": "drivers_license_number_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "license_number"
+          ]
+        }
+      }
     },
     "public.orders": {
       "name": "orders",
@@ -210,7 +221,7 @@
           "name": "shipment_id",
           "type": "integer",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "client_order_id": {
           "name": "client_order_id",
@@ -255,6 +266,12 @@
           "notNull": true,
           "default": "now()"
         },
+        "started_at": {
+          "name": "started_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
         "delivered_at": {
           "name": "delivered_at",
           "type": "timestamp",
@@ -279,39 +296,39 @@
         "orders_costumer_id_costumers_id_fk": {
           "name": "orders_costumer_id_costumers_id_fk",
           "tableFrom": "orders",
+          "tableTo": "costumers",
           "columnsFrom": [
             "costumer_id"
           ],
-          "tableTo": "costumers",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         },
         "orders_shipment_id_shipments_id_fk": {
           "name": "orders_shipment_id_shipments_id_fk",
           "tableFrom": "orders",
+          "tableTo": "shipments",
           "columnsFrom": [
             "shipment_id"
           ],
-          "tableTo": "shipments",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "orders_costumer_id_client_order_id_unique": {
           "name": "orders_costumer_id_client_order_id_unique",
+          "nullsNotDistinct": false,
           "columns": [
             "costumer_id",
             "client_order_id"
-          ],
-          "nullsNotDistinct": false
+          ]
         }
       }
     },
@@ -327,7 +344,7 @@
         },
         "client_id": {
           "name": "client_id",
-          "type": "integer",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },
@@ -343,6 +360,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "route": {
+          "name": "route",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
         "delivery_date": {
           "name": "delivery_date",
           "type": "timestamp",
@@ -355,6 +378,12 @@
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
+        },
+        "started_at": {
+          "name": "started_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {},
@@ -362,41 +391,41 @@
         "shipments_client_id_clients_id_fk": {
           "name": "shipments_client_id_clients_id_fk",
           "tableFrom": "shipments",
+          "tableTo": "clients",
           "columnsFrom": [
             "client_id"
           ],
-          "tableTo": "clients",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         },
         "shipments_transport_unit_id_transport_units_id_fk": {
           "name": "shipments_transport_unit_id_transport_units_id_fk",
           "tableFrom": "shipments",
+          "tableTo": "transport_units",
           "columnsFrom": [
             "transport_unit_id"
           ],
-          "tableTo": "transport_units",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         },
         "shipments_driver_id_drivers_id_fk": {
           "name": "shipments_driver_id_drivers_id_fk",
           "tableFrom": "shipments",
+          "tableTo": "drivers",
           "columnsFrom": [
             "driver_id"
           ],
-          "tableTo": "drivers",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "no action"
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -453,28 +482,105 @@
           "type": "integer",
           "primaryKey": false,
           "notNull": false
-        },
-        "is_active": {
-          "name": "is_active",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": true,
-          "default": true
         }
       },
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "transport_units_license_plate_unique": {
+          "name": "transport_units_license_plate_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "license_plate"
+          ]
+        }
+      }
+    },
+    "public.users": {
+      "name": "users",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "displayName": {
+          "name": "displayName",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "role": {
+          "name": "role",
+          "type": "role",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "client_id": {
+          "name": "client_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "users_id_users_id_fk": {
+          "name": "users_id_users_id_fk",
+          "tableFrom": "users",
+          "tableTo": "users",
+          "schemaTo": "auth",
+          "columnsFrom": [
+            "id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "users_client_id_clients_id_fk": {
+          "name": "users_client_id_clients_id_fk",
+          "tableFrom": "users",
+          "tableTo": "clients",
+          "columnsFrom": [
+            "client_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     }
   },
-  "enums": {},
+  "enums": {
+    "public.role": {
+      "name": "role",
+      "schema": "public",
+      "values": [
+        "admin",
+        "client"
+      ]
+    }
+  },
   "schemas": {},
   "_meta": {
+    "columns": {},
     "schemas": {},
-    "tables": {},
-    "columns": {}
-  },
-  "id": "9cd5d4d1-2349-418e-9872-d16a71da320e",
-  "prevId": "a12fe629-601e-411e-8c8c-2d43fd08c209"
+    "tables": {}
+  }
 }

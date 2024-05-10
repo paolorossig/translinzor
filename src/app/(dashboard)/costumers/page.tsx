@@ -15,8 +15,8 @@ import { channelOptions } from '@/lib/constants'
 import { columns } from './columns'
 
 export default async function CostumersPage() {
-  const { profile, isAdmin } = await useAuth()
-  const data = await getCostumers({ clientId: profile.clientId })
+  const { user, isAdmin } = await useAuth()
+  const data = await getCostumers({ clientId: user.clientId })
 
   return (
     <>
