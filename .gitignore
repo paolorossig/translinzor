@@ -38,3 +38,6 @@ next-env.d.ts
 # others
 /src/app/(local)
 /src/db/data.ts
+
+# Sentry Config File
+.sentryclirc
