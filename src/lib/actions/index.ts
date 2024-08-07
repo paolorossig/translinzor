@@ -637,3 +637,18 @@ export async function createLaSirenaCostumer(input: CreateCostumerInput) {
     return respondError(err)
   }
 }
+
+export async function trackOrder(code: string) {
+  const order = await db.query.orders.findFirst({
+    where: (orders, { eq }) => eq(orders.clientOrderId, Number(code)),
+  })
+
+  if (!order) {
+    return respondError('El pedido que está buscando no existe')
+  }
+
+  return {
+    success: true as const,
+    order: { ...order, status: getOrderStatus(order) },
+  }
+}

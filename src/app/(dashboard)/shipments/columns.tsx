@@ -27,7 +27,6 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -53,30 +52,6 @@ import { catchError, cn, handleServerActionResponse } from '@/lib/utils'
 type ShipmentColumns = ColumnDef<ShipmentsByClient[number]>[]
 
 const columns: ShipmentColumns = [
-  {
-    id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Seleccionar todo"
-        className="translate-y-[2px]"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Seleccionar fila"
-        className="translate-y-[2px]"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
   {
     accessorKey: 'id',
     header: 'ID',
