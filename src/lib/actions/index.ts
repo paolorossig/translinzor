@@ -3,7 +3,7 @@
 import { unstable_noStore as noStore, revalidatePath } from 'next/cache'
 import { notFound } from 'next/navigation'
 import { format } from 'date-fns'
-import { eq, gte, lte } from 'drizzle-orm'
+import { count, countDistinct, eq, gte, lte } from 'drizzle-orm'
 
 import {
   getOrderStatus,
@@ -650,5 +650,23 @@ export async function trackOrder(code: string) {
   return {
     success: true as const,
     order: { ...order, status: getOrderStatus(order) },
+  }
+}
+
+export async function getMetrics() {
+  const totalShipments = await db
+    .select({ count: count(shipments.id) })
+    .from(shipments)
+
+  const totalOrders = await db.select({ count: count(orders.id) }).from(orders)
+
+  const totalDaysWithShipments = await db
+    .select({ count: countDistinct(shipments.deliveryDate) })
+    .from(shipments)
+
+  return {
+    totalShipments: totalShipments[0]?.count ?? 0,
+    totalOrders: totalOrders[0]?.count ?? 0,
+    totalDaysWithShipments: totalDaysWithShipments[0]?.count ?? 0,
   }
 }
