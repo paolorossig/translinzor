@@ -37,4 +37,4 @@ export async function getAllUsers() {
   return users
 }
 
-export type Users = Awaited<ReturnType<typeof getAllUsers>>
+export type User = Awaited<ReturnType<typeof getAllUsers>>[number]

@@ -3,9 +3,9 @@
 import type { ColumnDef } from '@tanstack/react-table'
 
 import { Badge } from '@/components/ui/badge'
-import type { Users } from '@/lib/auth/server'
+import type { User } from '@/lib/auth/server'
 
-export const columns: ColumnDef<Users[number]>[] = [
+export const columns: ColumnDef<User>[] = [
   {
     accessorKey: 'displayName',
     header: 'Nombre',
@@ -17,14 +17,11 @@ export const columns: ColumnDef<Users[number]>[] = [
   {
     accessorKey: 'role',
     header: 'Rol',
-    cell: ({ row }) => {
-      const { role } = row.original
-      return (
-        <Badge variant={role === 'admin' ? 'default' : 'secondary'}>
-          {role}
-        </Badge>
-      )
-    },
+    cell: ({ row }) => (
+      <Badge variant={row.original.role === 'admin' ? 'default' : 'secondary'}>
+        {row.original.role}
+      </Badge>
+    ),
   },
   {
     accessorKey: 'client.name',
