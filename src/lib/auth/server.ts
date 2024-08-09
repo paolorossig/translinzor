@@ -4,7 +4,7 @@ import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 
 import { db } from '@/db'
 
-export async function useAuth() {
+export async function auth() {
   const cookieStore = cookies()
   const supabase = createServerComponentClient({ cookies: () => cookieStore })
   const {
@@ -28,3 +28,13 @@ export async function useAuth() {
 
   return { supabaseUser, user, isAdmin, isClient }
 }
+
+export async function getAllUsers() {
+  const users = await db.query.users.findMany({
+    with: { client: true },
+    orderBy: (users, { asc }) => asc(users.role),
+  })
+  return users
+}
+
+export type Users = Awaited<ReturnType<typeof getAllUsers>>

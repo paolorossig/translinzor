@@ -2,7 +2,7 @@ import { LineChartIcon } from 'lucide-react'
 
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { getHistoryShipmentMetrics } from '@/lib/actions'
-import { useAuth } from '@/lib/auth'
+import { auth } from '@/lib/auth/server'
 
 import EffectivenessChart from './effectiveness-chart'
 import { DateRangeWithSearchParams } from './with-search-params'
@@ -40,8 +40,7 @@ async function EffectivenessChartWrapper({
   from,
   to,
 }: HistoryEffectivenessProps) {
-  const { user } = await useAuth()
-
+  const { user } = await auth()
   const metrics = await getHistoryShipmentMetrics({
     from,
     to,

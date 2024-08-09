@@ -3,7 +3,7 @@
 import type { ColumnDef } from '@tanstack/react-table'
 
 import { Badge } from '@/components/ui/badge'
-import type { Users } from '@/lib/auth/actions'
+import type { Users } from '@/lib/auth/server'
 
 export const columns: ColumnDef<Users[number]>[] = [
   {

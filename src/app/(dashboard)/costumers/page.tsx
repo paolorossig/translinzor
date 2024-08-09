@@ -9,13 +9,13 @@ import {
   DataTableWrapper,
 } from '@/components/ui/data-table'
 import { getCostumers } from '@/lib/actions'
-import { useAuth } from '@/lib/auth'
+import { auth } from '@/lib/auth/server'
 import { channelOptions } from '@/lib/constants'
 
 import { columns } from './columns'
 
 export default async function CostumersPage() {
-  const { user, isAdmin } = await useAuth()
+  const { user, isAdmin } = await auth()
   const data = await getCostumers({ clientId: user.clientId })
 
   return (
