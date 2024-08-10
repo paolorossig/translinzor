@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useTransition } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { parse } from 'date-fns'
 import { LinkIcon, UploadIcon, XIcon } from 'lucide-react'
 import { defaultStyles, FileIcon } from 'react-file-icon'
 import { useForm } from 'react-hook-form'
@@ -46,6 +47,8 @@ const excelAcceptedMimeTypes = {
   ],
 }
 
+const dateRegex = /\b\d{2}-\d{2}-\d{2}\b/g
+
 export function ShipmentBulkUpload() {
   const [open, setOpen] = useState(false)
   const [excelFile, setExcelFile] = useState<ArrayBuffer | null>(null)
@@ -89,13 +92,19 @@ export function ShipmentBulkUpload() {
   }, [excelFile, form])
 
   const onDrop = (acceptedFiles: File[]) => {
-    if (!acceptedFiles[0]) return
+    const file = acceptedFiles[0]
+    if (!file) return
 
     const reader = new FileReader()
-    reader.readAsArrayBuffer(acceptedFiles[0])
+    reader.readAsArrayBuffer(file)
     reader.onload = (e) => setExcelFile(e.target?.result as ArrayBuffer | null)
     reader.onabort = () => console.log('file reading was aborted')
     reader.onerror = () => console.log('file reading has failed')
+
+    const dateMatch = file.name.match(dateRegex)
+    if (dateMatch) {
+      form.setValue('deliveryDate', parse(dateMatch[0], 'dd-MM-yy', new Date()))
+    }
   }
 
   const submitBulkData = (data: CreateBulkShipmentsInput) => {
