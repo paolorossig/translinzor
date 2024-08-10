@@ -92,6 +92,13 @@
       "when": 1715316407658,
       "tag": "0012_rename_profiles_to_users",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1723192118806,
+      "tag": "0013_drop_companies_table",
+      "breakpoints": true
     }
   ]
 }

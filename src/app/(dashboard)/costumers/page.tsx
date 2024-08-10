@@ -27,7 +27,7 @@ export default async function CostumersPage() {
         <DataTableWrapper columns={columns} data={data}>
           <DataTableHeader actionArea={isAdmin && <CreateCostumerButton />}>
             <DataTableFilterInput
-              columnName="company_name"
+              columnName="name"
               placeholder="Filtrar clientes..."
             />
             <div className="flex w-full space-x-2 sm:w-fit">

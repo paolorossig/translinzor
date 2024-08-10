@@ -47,7 +47,7 @@ export function CreateCostumerForm() {
       >
         <FormField
           control={form.control}
-          name="company_name"
+          name="name"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Nombre*</FormLabel>
@@ -55,25 +55,6 @@ export function CreateCostumerForm() {
                 <Input
                   type="text"
                   placeholder="Ej. Empresa SAC"
-                  disabled={isPending}
-                  value={field.value}
-                  onChange={field.onChange}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="company_ruc"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>RUC</FormLabel>
-              <FormControl>
-                <Input
-                  type="number"
-                  placeholder="Ej. 20123456789"
                   disabled={isPending}
                   value={field.value}
                   onChange={field.onChange}

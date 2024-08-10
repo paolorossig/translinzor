@@ -13,13 +13,7 @@ import {
 } from '@/components/modules/shipments/order-status'
 import { clientIds } from '@/config/clients'
 import { db } from '@/db'
-import {
-  companies,
-  costumers,
-  orders,
-  shipments,
-  type CreateOrder,
-} from '@/db/schema'
+import { costumers, orders, shipments, type CreateOrder } from '@/db/schema'
 import { catchError } from '@/lib/utils'
 import type { CreateCostumerInput } from '@/lib/validations/costumers'
 import type {
@@ -33,10 +27,8 @@ export async function getCostumers({ clientId }: { clientId?: string | null }) {
   return await db.query.costumers.findMany({
     columns: {
       internalCode: true,
+      name: true,
       channel: true,
-    },
-    with: {
-      company: true,
     },
     where: (costumers, { eq }) =>
       clientId ? eq(costumers.clientId, clientId) : undefined,
@@ -202,13 +194,7 @@ export type HistoryShipmentMetrics = Awaited<
 export async function getShipmentById(shipmentId: number) {
   const shipment = await db.query.shipments.findFirst({
     with: {
-      orders: {
-        with: {
-          costumer: {
-            with: { company: true },
-          },
-        },
-      },
+      orders: { with: { costumer: true } },
       driver: true,
       transportUnit: true,
     },
@@ -586,21 +572,12 @@ export async function updateOrderStatus(input: UpdateOrderStatusInput) {
 }
 
 export async function createLaSirenaCostumer(input: CreateCostumerInput) {
-  const [company] = await db.query.companies.findMany({
-    where: (companies, { eq, or }) =>
+  const costumer = await db.query.costumers.findFirst({
+    where: (costumers, { eq, or }) =>
       or(
-        eq(companies.name, input.company_name),
-        input.company_ruc ? eq(companies.ruc, input.company_ruc) : undefined,
+        eq(costumers.internalCode, input.internal_code),
+        eq(costumers.name, input.name),
       ),
-  })
-
-  if (company) {
-    return respondError('El cliente ya existe en la base de datos')
-  }
-
-  const [costumer] = await db.query.costumers.findMany({
-    where: (costumers, { eq }) =>
-      eq(costumers.internalCode, input.internal_code),
   })
 
   if (costumer) {
@@ -608,25 +585,11 @@ export async function createLaSirenaCostumer(input: CreateCostumerInput) {
   }
 
   try {
-    await db.transaction(async (tx) => {
-      const [createdCompany] = await tx
-        .insert(companies)
-        .values({
-          name: input.company_name,
-          ruc: input.company_ruc,
-        })
-        .returning({ id: companies.id })
-
-      if (!createdCompany) {
-        throw new Error('create company failed')
-      }
-
-      await tx.insert(costumers).values({
-        clientId: clientIds.laSirena,
-        companyId: createdCompany.id,
-        internalCode: input.internal_code,
-        channel: input.channel,
-      })
+    await db.insert(costumers).values({
+      clientId: clientIds.laSirena,
+      internalCode: input.internal_code,
+      name: input.name,
+      channel: input.channel,
     })
 
     revalidatePath('/costumers')
