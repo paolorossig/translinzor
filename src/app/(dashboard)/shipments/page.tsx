@@ -7,13 +7,13 @@ import {
   DataTableResetFilter,
   DataTableWrapper,
 } from '@/components/ui/data-table'
-import { getShipmentsByClientId } from '@/lib/actions'
-import { useAuth } from '@/lib/auth'
+import { getShipmentsByClientId } from '@/db/queries'
+import { auth } from '@/lib/auth/server'
 
 import { adminColumns, clientColumns } from './columns'
 
 export default async function ShipmentsPage() {
-  const { isAdmin, user } = await useAuth()
+  const { isAdmin, user } = await auth()
   const shipments = await getShipmentsByClientId(user.clientId)
 
   const columns = isAdmin ? adminColumns : clientColumns

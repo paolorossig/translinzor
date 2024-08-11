@@ -1,5 +1,5 @@
 {
-  "version": "6",
+  "version": "7",
   "dialect": "postgresql",
   "tables": {
     "public.drivers": {
@@ -137,5 +137,6 @@
     "columns": {}
   },
   "id": "7d7661fb-1e17-4936-8ba7-2b7eb7a03f61",
-  "prevId": "00000000-0000-0000-0000-000000000000"
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "sequences": {}
 }

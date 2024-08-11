@@ -2,11 +2,13 @@
 
 import { useEffect, useState, useTransition } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { parse } from 'date-fns'
 import { LinkIcon, UploadIcon, XIcon } from 'lucide-react'
 import { defaultStyles, FileIcon } from 'react-file-icon'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import * as xlsx from 'xlsx'
+import { z } from 'zod'
 
 import { Dropzone } from '@/components/dropzone'
 import { Button } from '@/components/ui/button'
@@ -31,13 +33,14 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { clientIds } from '@/config/clients'
-import { createBulkShipments } from '@/lib/actions'
+import { createBulkShipmentsAction } from '@/lib/actions'
+import { createBulkShipmentsSchema } from '@/lib/actions/schema'
 import {
-  createBulkShipmentsSchema,
   headersMap,
   parseShipmentBulkUpload,
-  type CreateBulkShipmentsInput,
 } from '@/lib/validations/shipments'
+
+type CreateBulkShipmentsInput = z.infer<typeof createBulkShipmentsSchema>
 
 const excelAcceptedMimeTypes = {
   'application/vnd.ms-excel': ['.xls'],
@@ -45,6 +48,8 @@ const excelAcceptedMimeTypes = {
     '.xlsx',
   ],
 }
+
+const dateRegex = /\b\d{2}-\d{2}-\d{2}\b/g
 
 export function ShipmentBulkUpload() {
   const [open, setOpen] = useState(false)
@@ -89,22 +94,30 @@ export function ShipmentBulkUpload() {
   }, [excelFile, form])
 
   const onDrop = (acceptedFiles: File[]) => {
-    if (!acceptedFiles[0]) return
+    const file = acceptedFiles[0]
+    if (!file) return
 
     const reader = new FileReader()
-    reader.readAsArrayBuffer(acceptedFiles[0])
+    reader.readAsArrayBuffer(file)
     reader.onload = (e) => setExcelFile(e.target?.result as ArrayBuffer | null)
     reader.onabort = () => console.log('file reading was aborted')
     reader.onerror = () => console.log('file reading has failed')
+
+    const dateMatch = file.name.match(dateRegex)
+    if (dateMatch) {
+      form.setValue('deliveryDate', parse(dateMatch[0], 'dd-MM-yy', new Date()))
+    }
   }
 
   const submitBulkData = (data: CreateBulkShipmentsInput) => {
     startTransition(() => {
       toast.promise(
-        createBulkShipments(data).then((result) => {
+        createBulkShipmentsAction(data).then((result) => {
           form.reset(defaultValues)
 
-          if (!result.success) return Promise.reject(result.message)
+          if (result?.serverError) {
+            return Promise.reject(result.serverError)
+          }
 
           setOpen(false)
           return Promise.resolve(result)

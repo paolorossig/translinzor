@@ -8,14 +8,14 @@ import {
   DataTableResetFilter,
   DataTableWrapper,
 } from '@/components/ui/data-table'
-import { getCostumers } from '@/lib/actions'
-import { useAuth } from '@/lib/auth'
+import { getCostumers } from '@/db/queries'
+import { auth } from '@/lib/auth/server'
 import { channelOptions } from '@/lib/constants'
 
 import { columns } from './columns'
 
 export default async function CostumersPage() {
-  const { user, isAdmin } = await useAuth()
+  const { user, isAdmin } = await auth()
   const data = await getCostumers({ clientId: user.clientId })
 
   return (
@@ -27,7 +27,7 @@ export default async function CostumersPage() {
         <DataTableWrapper columns={columns} data={data}>
           <DataTableHeader actionArea={isAdmin && <CreateCostumerButton />}>
             <DataTableFilterInput
-              columnName="company_name"
+              columnName="name"
               placeholder="Filtrar clientes..."
             />
             <div className="flex w-full space-x-2 sm:w-fit">

@@ -3,8 +3,10 @@
 import { useEffect, useState, useTransition } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { CheckIcon, ChevronsUpDownIcon, Loader2Icon } from 'lucide-react'
+import { useAction } from 'next-safe-action/hooks'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
+import { z } from 'zod'
 
 import { Icons } from '@/components/icons'
 import { Button } from '@/components/ui/button'
@@ -31,18 +33,17 @@ import {
 } from '@/components/ui/popover'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Skeleton } from '@/components/ui/skeleton'
+import type { OrderStatusOptions } from '@/db/queries'
 import {
-  getOrderStatusOptionsByShipmentId,
-  updateOrderStatus,
-  type OrderStatusOptions,
+  getOrderStatusOptionsAction,
+  updateOrderStatusAction,
 } from '@/lib/actions'
+import { updateOrderStatusSchema } from '@/lib/actions/schema'
 import { catchError, cn } from '@/lib/utils'
-import {
-  updateOrderStatusSchema,
-  type UpdateOrderStatusInput,
-} from '@/lib/validations/shipments'
 
 import { OrderStatus } from './order-status'
+
+type UpdateOrderStatusInput = z.infer<typeof updateOrderStatusSchema>
 
 function OptionsSkeleton() {
   return (
@@ -65,6 +66,14 @@ export function OrderStatusForm({
 }: OrderStatusFormProps) {
   const [isPending, startTransition] = useTransition()
   const [options, setOptions] = useState<OrderStatusOptions | null>(null)
+  const updateOrderStatus = useAction(updateOrderStatusAction, {
+    onSuccess: () => {
+      toast.success('Orden actualizada exitosamente.')
+      form.reset(defaultValues)
+      closeSheet()
+    },
+    onError: ({ error }) => void toast.error(error.serverError),
+  })
 
   const defaultValues = {
     orderId: undefined,
@@ -79,8 +88,10 @@ export function OrderStatusForm({
   useEffect(() => {
     startTransition(async () => {
       try {
-        const data = await getOrderStatusOptionsByShipmentId(Number(shipmentId))
-        setOptions(data)
+        const response = await getOrderStatusOptionsAction({
+          shipmentId: Number(shipmentId),
+        })
+        if (response?.data) setOptions(response.data)
       } catch (err) {
         catchError(err)
       }
@@ -100,29 +111,12 @@ export function OrderStatusForm({
     }
   }, [form, isRefusedStatusSelected])
 
-  const onSubmit = (data: UpdateOrderStatusInput) => {
-    startTransition(() => {
-      toast.promise(
-        updateOrderStatus(data).then((result) => {
-          form.reset(defaultValues)
-          closeSheet()
-
-          if (!result.success) return Promise.reject(result.message)
-
-          return Promise.resolve(result)
-        }),
-        {
-          loading: 'Actualizando...',
-          success: 'Orden actualizada exitosamente.',
-          error: (err: string) => err,
-        },
-      )
-    })
-  }
-
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="my-6 space-y-4">
+      <form
+        onSubmit={form.handleSubmit(updateOrderStatus.execute)}
+        className="my-6 space-y-4"
+      >
         <FormField
           control={form.control}
           name="orderId"
@@ -253,7 +247,10 @@ export function OrderStatusForm({
               />
             )}
             <div className="flex justify-end">
-              <Button type="submit" disabled={isPending}>
+              <Button
+                type="submit"
+                disabled={isPending || updateOrderStatus.isExecuting}
+              >
                 Guardar
               </Button>
             </div>

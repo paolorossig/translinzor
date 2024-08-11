@@ -3,8 +3,8 @@ import { LineChartIcon } from 'lucide-react'
 
 import { BarChartSkeleton } from '@/components/charts/chart-skeletons'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
-import { getShipmentMetrics } from '@/lib/actions'
-import { useAuth } from '@/lib/auth'
+import { getShipmentMetrics } from '@/db/queries'
+import { auth } from '@/lib/auth/server'
 
 import EffectivenessChart from './effectiveness-chart'
 import { DatePickerWithSearchParams } from './with-search-params'
@@ -39,8 +39,7 @@ export default function DayEffectivenessReport({
 }
 
 async function EffectivenessChartWrapper({ date }: DayEffectivenessProps) {
-  const { user } = await useAuth()
-
+  const { user } = await auth()
   const metrics = await getShipmentMetrics({
     date,
     clientId: user.clientId,

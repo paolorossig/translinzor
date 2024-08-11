@@ -10,7 +10,7 @@ import {
   DataTableResetFilter,
   DataTableWrapper,
 } from '@/components/ui/data-table'
-import { getShipmentById } from '@/lib/actions'
+import { getShipmentById } from '@/db/queries'
 import { Option } from '@/types'
 
 import { columns } from './columns'
@@ -23,15 +23,12 @@ export default async function ShipmentPage({
   params: { shipmentId },
 }: ShipmentPageProps) {
   const shipment = await getShipmentById(Number(shipmentId))
-  const { orders } = shipment
 
-  const costumers = orders.reduce((acc, curr) => {
-    const costumerName = curr.costumer.company.name
-
+  const costumers = shipment.orders.reduce((acc, curr) => {
+    const costumerName = curr.costumer.name
     if (!acc.some((c) => c.label === costumerName)) {
       acc.push({ value: costumerName, label: costumerName })
     }
-
     return acc
   }, [] as Option[])
 
@@ -68,7 +65,7 @@ export default async function ShipmentPage({
         </div>
         <div>
           <h2 className="text-lg font-medium text-primary/90">Órdenes</h2>
-          <DataTableWrapper columns={columns} data={orders}>
+          <DataTableWrapper columns={columns} data={shipment.orders}>
             <DataTableHeader>
               <DataTableFilterInput
                 columnName="orderNumber"

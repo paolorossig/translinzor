@@ -2,7 +2,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useState, useTransition } from 'react'
+import { useState } from 'react'
 import type { ColumnDef } from '@tanstack/react-table'
 import {
   CalendarIcon,
@@ -10,6 +10,7 @@ import {
   MoreHorizontalIcon,
   TrashIcon,
 } from 'lucide-react'
+import { useAction } from 'next-safe-action/hooks'
 import { toast } from 'sonner'
 
 import { AssignmentForm } from '@/components/modules/shipments'
@@ -42,12 +43,9 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet'
-import {
-  deleteShipment,
-  startShipment,
-  type ShipmentsByClient,
-} from '@/lib/actions'
-import { catchError, cn, handleServerActionResponse } from '@/lib/utils'
+import type { ShipmentsByClient } from '@/db/queries'
+import { deleteShipmentAction, startShipmentAction } from '@/lib/actions'
+import { cn } from '@/lib/utils'
 
 type ShipmentColumns = ColumnDef<ShipmentsByClient[number]>[]
 
@@ -136,9 +134,19 @@ export const adminColumns: ShipmentColumns = [
     cell: ({ row }) => {
       const [open, setOpen] = useState(false)
       const [dialog, setDialog] = useState<AdminDialog>()
-      const [isPending, startTransition] = useTransition()
-
-      const { id, deliveryDate, driverId, transportUnitId, startedAt } =
+      const startShipment = useAction(startShipmentAction, {
+        onSuccess: () => void toast.success('Envío iniciado'),
+        onError: ({ error }) =>
+          void toast.error(error.serverError ?? 'No se pudo iniciar el envío'),
+      })
+      const deleteShipment = useAction(deleteShipmentAction, {
+        onSuccess: () => void toast.success('Envío eliminado'),
+        onError: ({ error }) =>
+          void toast.error(error.serverError ?? 'No se pudo eliminar el envío'),
+      })
+      const isPending = startShipment.isExecuting || deleteShipment.isExecuting
+      const shipmentId = row.original.id
+      const { deliveryDate, driverId, transportUnitId, startedAt } =
         row.original
 
       const closeSheet = () => setOpen(false)
@@ -149,26 +157,6 @@ export const adminColumns: ShipmentColumns = [
       const openAssignmentDialog = () => {
         setDialog(AdminDialog.ASSIGNMENT)
         setOpen(true)
-      }
-      const onStartClick = () => {
-        startTransition(async () => {
-          const response = await startShipment(id)
-          if (response.success) {
-            toast.success('Envío iniciado')
-          } else {
-            toast.error(response.message)
-          }
-        })
-      }
-      const onDeleteClick = () => {
-        startTransition(() => {
-          toast.promise(deleteShipment(id).then(handleServerActionResponse), {
-            loading: 'Eliminando...',
-            success: 'Envío eliminado',
-            error: (err: unknown) =>
-              catchError(err, 'No se pudo eliminar el envío'),
-          })
-        })
       }
 
       return (
@@ -218,7 +206,9 @@ export const adminColumns: ShipmentColumns = [
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                <AlertDialogAction onClick={onDeleteClick}>
+                <AlertDialogAction
+                  onClick={() => deleteShipment.execute({ shipmentId })}
+                >
                   Continuar
                 </AlertDialogAction>
               </AlertDialogFooter>
@@ -238,13 +228,16 @@ export const adminColumns: ShipmentColumns = [
                 </SheetHeader>
                 {!startedAt ? (
                   <div className="my-6 flex justify-end">
-                    <Button onClick={onStartClick} disabled={isPending}>
+                    <Button
+                      onClick={() => startShipment.execute({ shipmentId })}
+                      disabled={isPending}
+                    >
                       Iniciar entrega
                     </Button>
                   </div>
                 ) : (
                   <OrderStatusForm
-                    shipmentId={id.toString()}
+                    shipmentId={shipmentId.toString()}
                     closeSheet={closeSheet}
                   />
                 )}
@@ -259,7 +252,7 @@ export const adminColumns: ShipmentColumns = [
                   </SheetDescription>
                 </SheetHeader>
                 <AssignmentForm
-                  shipmentId={id.toString()}
+                  shipmentId={shipmentId}
                   deliveryDate={deliveryDate}
                   driverId={driverId?.toString()}
                   transportUnitId={transportUnitId?.toString()}

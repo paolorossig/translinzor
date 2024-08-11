@@ -1,7 +1,7 @@
 import { useSearchParams } from 'next/navigation'
 import { useCallback } from 'react'
 
-import { searchParamsSchema } from '../validations/params'
+import { searchParamsSchema } from '@/lib/validations/params'
 
 export function useQueryString() {
   const rawParams = useSearchParams()

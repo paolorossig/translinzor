@@ -6,14 +6,14 @@ import { ThemeToggle } from '@/components/layout/theme'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { dashboardConfig } from '@/config/dashboard'
-import { useAuth } from '@/lib/auth'
+import { auth } from '@/lib/auth/server'
 
 export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const { user } = await useAuth()
+  const { user } = await auth()
   const { displayName, role } = user
   const userNavigation = dashboardConfig.navigationByUserRole[role]
 

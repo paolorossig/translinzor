@@ -8,8 +8,10 @@ import {
   ChevronsUpDownIcon,
   Loader2Icon,
 } from 'lucide-react'
+import { useAction } from 'next-safe-action/hooks'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
+import { z } from 'zod'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -33,16 +35,12 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover'
 import { Skeleton } from '@/components/ui/skeleton'
-import {
-  assignShipment,
-  getAvailableAssignmentOptions,
-  type AssignmentInfo,
-} from '@/lib/actions'
-import { catchError, cn } from '@/lib/utils'
-import {
-  assignShipmentSchema,
-  type AssignShipmentInput,
-} from '@/lib/validations/shipments'
+import { assignShipmentAction, getAvailabilityAction } from '@/lib/actions'
+import { assignShipmentSchema } from '@/lib/actions/schema'
+import { cn } from '@/lib/utils'
+import { Option } from '@/types'
+
+type AssignShipmentInput = z.infer<typeof assignShipmentSchema>
 
 function OptionsSkeleton() {
   return (
@@ -56,10 +54,15 @@ function OptionsSkeleton() {
 
 interface AssignmentFormProps {
   deliveryDate: Date
-  shipmentId: string
+  shipmentId: number
   driverId?: string
   transportUnitId?: string
   closeSheet: () => void
+}
+
+interface Availability {
+  drivers: Option[]
+  transportUnits: Option[]
 }
 
 export function AssignmentForm({
@@ -68,7 +71,7 @@ export function AssignmentForm({
   ...defaultValues
 }: AssignmentFormProps) {
   const [isPending, startTransition] = useTransition()
-  const [data, setData] = useState<AssignmentInfo | null>(null)
+  const [data, setData] = useState<Availability | null>(null)
 
   const form = useForm<AssignShipmentInput>({
     resolver: zodResolver(assignShipmentSchema),
@@ -77,40 +80,28 @@ export function AssignmentForm({
 
   useEffect(() => {
     startTransition(async () => {
-      try {
-        const data = await getAvailableAssignmentOptions(deliveryDate)
-        setData(data)
-      } catch (err) {
-        catchError(err)
-      }
+      const response = await getAvailabilityAction(deliveryDate)
+      if (response?.data) setData(response.data)
     })
 
     return () => setData(null)
   }, [deliveryDate])
 
-  const onSubmit = (data: AssignShipmentInput) => {
-    startTransition(() => {
-      toast.promise(
-        assignShipment(data).then((result) => {
-          form.reset(defaultValues)
-          closeSheet()
-
-          if (!result.success) return Promise.reject(result.message)
-
-          return Promise.resolve(result)
-        }),
-        {
-          loading: 'Asignando...',
-          success: 'Asignación realizada exitosamente.',
-          error: (err: string) => err,
-        },
-      )
-    })
-  }
+  const assignShipment = useAction(assignShipmentAction, {
+    onSuccess: () => {
+      toast.success('Asignación realizada exitosamente.')
+      form.reset(defaultValues)
+      closeSheet()
+    },
+    onError: ({ error }) => void toast.error(error.serverError),
+  })
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="my-6 space-y-4">
+      <form
+        onSubmit={form.handleSubmit(assignShipment.execute)}
+        className="my-6 space-y-4"
+      >
         <FormField
           control={form.control}
           name="transportUnitId"
@@ -169,7 +160,7 @@ export function AssignmentForm({
                           >
                             <CheckIcon
                               className={cn(
-                                'mr-2 h-4 w-4',
+                                'mr-2 h-4 w-4 shrink-0',
                                 unit.value === field.value
                                   ? 'opacity-100'
                                   : 'opacity-0',
@@ -253,7 +244,7 @@ export function AssignmentForm({
                           >
                             <CheckIcon
                               className={cn(
-                                'mr-2 h-4 w-4',
+                                'mr-2 h-4 w-4 shrink-0',
                                 driver.value === field.value
                                   ? 'opacity-100'
                                   : 'opacity-0',

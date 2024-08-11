@@ -1,6 +1,5 @@
 import { relations } from 'drizzle-orm'
 import {
-  bigint,
   integer,
   numeric,
   pgEnum,
@@ -35,17 +34,6 @@ export const drivers = pgTable('drivers', {
 })
 
 export type Driver = typeof drivers.$inferSelect
-
-export const companies = pgTable('companies', {
-  id: serial('id').primaryKey(),
-  name: text('name').unique().notNull(),
-  // If there is no ruc, it is a natural person
-  ruc: bigint('ruc', { mode: 'number' }).unique(),
-})
-
-export const companiesRelations = relations(companies, ({ many }) => ({
-  costumers: many(costumers),
-}))
 
 const SupabaseAuthSchema = pgSchema('auth')
 const SupabaseAuthUsers = SupabaseAuthSchema.table('users', {
@@ -92,14 +80,12 @@ export const costumers = pgTable(
     clientId: uuid('client_id')
       .references(() => clients.id)
       .notNull(),
-    companyId: integer('company_id')
-      .references(() => companies.id)
-      .notNull(),
     internalCode: text('internal_code').notNull(),
+    name: text('name').notNull(),
     channel: text('channel'),
   },
   (t) => ({
-    uniq: unique().on(t.clientId, t.companyId),
+    uniq: unique().on(t.clientId, t.internalCode),
   }),
 )
 
@@ -108,12 +94,7 @@ export const costumersRelations = relations(costumers, ({ one, many }) => ({
     fields: [costumers.clientId],
     references: [clients.id],
   }),
-  company: one(companies, {
-    fields: [costumers.companyId],
-    references: [companies.id],
-  }),
   orders: many(orders),
-  shipments: many(shipments),
 }))
 
 export const orders = pgTable(
