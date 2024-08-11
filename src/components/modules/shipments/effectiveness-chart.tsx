@@ -13,7 +13,7 @@ import {
 } from 'recharts'
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import type { HistoryShipmentMetrics, ShipmentMetrics } from '@/lib/actions'
+import type { HistoryShipmentMetrics, ShipmentMetrics } from '@/db/queries'
 import { useMediaQuery } from '@/lib/hooks/use-media-query'
 import { keyMirror } from '@/lib/utils'
 

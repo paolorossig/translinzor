@@ -43,11 +43,8 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet'
-import {
-  deleteShipmentAction,
-  startShipmentAction,
-  type ShipmentsByClient,
-} from '@/lib/actions'
+import type { ShipmentsByClient } from '@/db/queries'
+import { deleteShipmentAction, startShipmentAction } from '@/lib/actions'
 import { cn } from '@/lib/utils'
 
 type ShipmentColumns = ColumnDef<ShipmentsByClient[number]>[]

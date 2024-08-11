@@ -8,7 +8,7 @@ import {
   DataTableResetFilter,
   DataTableWrapper,
 } from '@/components/ui/data-table'
-import { getCostumers } from '@/lib/actions'
+import { getCostumers } from '@/db/queries'
 import { auth } from '@/lib/auth/server'
 import { channelOptions } from '@/lib/constants'
 

@@ -35,13 +35,10 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover'
 import { Skeleton } from '@/components/ui/skeleton'
-import {
-  assignShipmentAction,
-  getAvailableAssignmentOptions,
-  type AssignmentInfo,
-} from '@/lib/actions'
+import { assignShipmentAction, getAvailabilityAction } from '@/lib/actions'
 import { assignShipmentSchema } from '@/lib/actions/schema'
-import { catchError, cn } from '@/lib/utils'
+import { cn } from '@/lib/utils'
+import { Option } from '@/types'
 
 type AssignShipmentInput = z.infer<typeof assignShipmentSchema>
 
@@ -63,13 +60,18 @@ interface AssignmentFormProps {
   closeSheet: () => void
 }
 
+interface Availability {
+  drivers: Option[]
+  transportUnits: Option[]
+}
+
 export function AssignmentForm({
   deliveryDate,
   closeSheet,
   ...defaultValues
 }: AssignmentFormProps) {
   const [isPending, startTransition] = useTransition()
-  const [data, setData] = useState<AssignmentInfo | null>(null)
+  const [data, setData] = useState<Availability | null>(null)
 
   const form = useForm<AssignShipmentInput>({
     resolver: zodResolver(assignShipmentSchema),
@@ -78,12 +80,8 @@ export function AssignmentForm({
 
   useEffect(() => {
     startTransition(async () => {
-      try {
-        const data = await getAvailableAssignmentOptions(deliveryDate)
-        setData(data)
-      } catch (err) {
-        catchError(err)
-      }
+      const response = await getAvailabilityAction(deliveryDate)
+      if (response?.data) setData(response.data)
     })
 
     return () => setData(null)

@@ -43,3 +43,5 @@ export const createCostumerSchema = z.object({
   internal_code: z.string({ required_error: 'Requerido' }),
   channel: z.string().optional(),
 })
+
+export const getAvailabilitySchema = z.date()

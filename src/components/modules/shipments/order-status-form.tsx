@@ -33,10 +33,10 @@ import {
 } from '@/components/ui/popover'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Skeleton } from '@/components/ui/skeleton'
+import type { OrderStatusOptions } from '@/db/queries'
 import {
-  getOrderStatusOptionsByShipmentId,
+  getOrderStatusOptionsAction,
   updateOrderStatusAction,
-  type OrderStatusOptions,
 } from '@/lib/actions'
 import { updateOrderStatusSchema } from '@/lib/actions/schema'
 import { catchError, cn } from '@/lib/utils'
@@ -88,8 +88,10 @@ export function OrderStatusForm({
   useEffect(() => {
     startTransition(async () => {
       try {
-        const data = await getOrderStatusOptionsByShipmentId(Number(shipmentId))
-        setOptions(data)
+        const response = await getOrderStatusOptionsAction({
+          shipmentId: Number(shipmentId),
+        })
+        if (response?.data) setOptions(response.data)
       } catch (err) {
         catchError(err)
       }

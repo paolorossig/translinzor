@@ -1,7 +1,7 @@
 import { CalendarIcon, ListOrderedIcon, TruckIcon } from 'lucide-react'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { getMetrics } from '@/lib/actions'
+import { getMetrics } from '@/db/queries'
 
 export default async function Home() {
   const metrics = await getMetrics()

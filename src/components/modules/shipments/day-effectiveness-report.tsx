@@ -3,7 +3,7 @@ import { LineChartIcon } from 'lucide-react'
 
 import { BarChartSkeleton } from '@/components/charts/chart-skeletons'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
-import { getShipmentMetrics } from '@/lib/actions'
+import { getShipmentMetrics } from '@/db/queries'
 import { auth } from '@/lib/auth/server'
 
 import EffectivenessChart from './effectiveness-chart'

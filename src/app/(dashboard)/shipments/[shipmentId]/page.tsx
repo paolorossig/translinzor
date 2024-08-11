@@ -10,7 +10,7 @@ import {
   DataTableResetFilter,
   DataTableWrapper,
 } from '@/components/ui/data-table'
-import { getShipmentById } from '@/lib/actions'
+import { getShipmentById } from '@/db/queries'
 import { Option } from '@/types'
 
 import { columns } from './columns'

@@ -1,7 +1,7 @@
 import { LineChartIcon } from 'lucide-react'
 
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
-import { getHistoryShipmentMetrics } from '@/lib/actions'
+import { getHistoryShipmentMetrics } from '@/db/queries'
 import { auth } from '@/lib/auth/server'
 
 import EffectivenessChart from './effectiveness-chart'
