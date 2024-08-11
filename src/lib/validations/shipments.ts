@@ -1,9 +1,8 @@
 import { z } from 'zod'
 
-import { OrderStatus } from '@/components/modules/shipments/order-status'
 import { removeAccents } from '@/lib/utils'
 
-const shipmentBulkUploadSchema = z.object({
+export const shipmentBulkUploadSchema = z.object({
   route: z.string(),
   internalCode: z.string(),
   clientOrderId: z.number(),
@@ -44,40 +43,3 @@ export const parseShipmentBulkUpload = (
     })
     .filter(Boolean) as ShipmentBulkUploadRow[]
 }
-
-export const createBulkShipmentsSchema = z.object({
-  clientId: z.string({ required_error: 'Requerido' }),
-  deliveryDate: z.date({ required_error: 'Requerido' }),
-  bundledOrders: z.array(shipmentBulkUploadSchema),
-})
-
-export type CreateBulkShipmentsInput = z.infer<typeof createBulkShipmentsSchema>
-
-export const assignShipmentSchema = z.object({
-  shipmentId: z.string({ required_error: 'Requerido' }),
-  transportUnitId: z.string({ required_error: 'Requerido' }),
-  driverId: z.string({ required_error: 'Requerido' }),
-})
-
-export type AssignShipmentInput = z.infer<typeof assignShipmentSchema>
-
-export const updateOrderStatusSchema = z
-  .object({
-    orderId: z.number({ required_error: 'Requerido' }),
-    status: z.enum([OrderStatus.DELIVERED, OrderStatus.REFUSED], {
-      required_error: 'Requerido',
-    }),
-    refusedReason: z.string().optional(),
-  })
-  .superRefine(({ status, refusedReason }, refinementContext) => {
-    if (status === OrderStatus.REFUSED && !refusedReason) {
-      return refinementContext.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: 'Requerido',
-        path: ['refusedReason'],
-      })
-    }
-    return true
-  })
-
-export type UpdateOrderStatusInput = z.infer<typeof updateOrderStatusSchema>

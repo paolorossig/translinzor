@@ -8,6 +8,7 @@ import { defaultStyles, FileIcon } from 'react-file-icon'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import * as xlsx from 'xlsx'
+import { z } from 'zod'
 
 import { Dropzone } from '@/components/dropzone'
 import { Button } from '@/components/ui/button'
@@ -32,13 +33,14 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { clientIds } from '@/config/clients'
-import { createBulkShipments } from '@/lib/actions'
+import { createBulkShipmentsAction } from '@/lib/actions'
+import { createBulkShipmentsSchema } from '@/lib/actions/schema'
 import {
-  createBulkShipmentsSchema,
   headersMap,
   parseShipmentBulkUpload,
-  type CreateBulkShipmentsInput,
 } from '@/lib/validations/shipments'
+
+type CreateBulkShipmentsInput = z.infer<typeof createBulkShipmentsSchema>
 
 const excelAcceptedMimeTypes = {
   'application/vnd.ms-excel': ['.xls'],
@@ -110,10 +112,12 @@ export function ShipmentBulkUpload() {
   const submitBulkData = (data: CreateBulkShipmentsInput) => {
     startTransition(() => {
       toast.promise(
-        createBulkShipments(data).then((result) => {
+        createBulkShipmentsAction(data).then((result) => {
           form.reset(defaultValues)
 
-          if (!result.success) return Promise.reject(result.message)
+          if (result?.serverError) {
+            return Promise.reject(result.serverError)
+          }
 
           setOpen(false)
           return Promise.resolve(result)

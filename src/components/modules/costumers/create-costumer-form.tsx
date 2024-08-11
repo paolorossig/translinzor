@@ -1,9 +1,10 @@
 'use client'
 
-import { useTransition } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useAction } from 'next-safe-action/hooks'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
+import { z } from 'zod'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -15,34 +16,29 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { createLaSirenaCostumer } from '@/lib/actions'
-import {
-  createCostumerSchema,
-  type CreateCostumerInput,
-} from '@/lib/validations/costumers'
+import { clientIds } from '@/config/clients'
+import { createCostumerAction } from '@/lib/actions'
+import { createCostumerSchema } from '@/lib/actions/schema'
+
+type CreateCostumerInput = z.infer<typeof createCostumerSchema>
 
 export function CreateCostumerForm() {
-  const [isPending, startTransition] = useTransition()
+  const createCostumer = useAction(createCostumerAction, {
+    onSuccess: () => void toast.success('Cliente creado exitosamente'),
+    onError: ({ error }) => void toast.error(error.serverError),
+  })
 
   const form = useForm<CreateCostumerInput>({
     resolver: zodResolver(createCostumerSchema),
+    defaultValues: {
+      clientId: clientIds.laSirena,
+    },
   })
-
-  const createCostumer = (input: CreateCostumerInput) => {
-    startTransition(async () => {
-      const response = await createLaSirenaCostumer(input)
-      if (response.success) {
-        toast.success('Cliente creado exitosamente')
-      } else {
-        toast.error(response.message)
-      }
-    })
-  }
 
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(createCostumer)}
+        onSubmit={form.handleSubmit(createCostumer.execute)}
         className="my-4 flex flex-col gap-y-2"
       >
         <FormField
@@ -55,7 +51,7 @@ export function CreateCostumerForm() {
                 <Input
                   type="text"
                   placeholder="Ej. Empresa SAC"
-                  disabled={isPending}
+                  disabled={createCostumer.isExecuting}
                   value={field.value}
                   onChange={field.onChange}
                 />
@@ -74,7 +70,7 @@ export function CreateCostumerForm() {
                 <Input
                   type="text"
                   placeholder="Ej. 0123456"
-                  disabled={isPending}
+                  disabled={createCostumer.isExecuting}
                   value={field.value}
                   onChange={field.onChange}
                 />
@@ -93,7 +89,7 @@ export function CreateCostumerForm() {
                 <Input
                   type="text"
                   placeholder="Ej. VCORP"
-                  disabled={isPending}
+                  disabled={createCostumer.isExecuting}
                   value={field.value}
                   onChange={field.onChange}
                 />
@@ -102,7 +98,7 @@ export function CreateCostumerForm() {
             </FormItem>
           )}
         />
-        <Button disabled={isPending} className="mt-4 self-end">
+        <Button disabled={createCostumer.isExecuting} className="mt-4 self-end">
           Crear
         </Button>
       </form>
