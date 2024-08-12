@@ -233,9 +233,9 @@ export async function getOrderStatusOptions(shipmentId: number) {
     orderBy: (order, { asc }) => asc(order.orderNumber),
   })
 
-  const orderStatusOptions: Option<number>[] = orders.map((order) => ({
+  const orderStatusOptions: Option[] = orders.map((order) => ({
     label: order.orderNumber,
-    value: order.id,
+    value: order.id.toString(),
     icon: getOrderStatus(order),
     disabled: isOrderFinalized(order),
   }))
