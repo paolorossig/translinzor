@@ -19,13 +19,13 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import type { OrderStatusOptions } from '@/db/queries'
 import {
   getOrderStatusOptionsAction,
   updateOrderStatusAction,
 } from '@/lib/actions'
 import { updateOrderStatusSchema } from '@/lib/actions/schema'
 import { catchError } from '@/lib/utils'
+import type { Option } from '@/types'
 
 import { OrderStatus } from './order-status'
 
@@ -41,7 +41,7 @@ export function OrderStatusForm({
   closeSheet,
 }: OrderStatusFormProps) {
   const [isPending, startTransition] = useTransition()
-  const [options, setOptions] = useState<OrderStatusOptions | null>(null)
+  const [options, setOptions] = useState<Option[] | null>(null)
   const updateOrderStatus = useAction(updateOrderStatusAction, {
     onSuccess: () => {
       toast.success('Orden actualizada exitosamente.')

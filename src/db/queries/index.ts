@@ -1,7 +1,17 @@
 import { unstable_noStore as noStore } from 'next/cache'
 import { notFound } from 'next/navigation'
 import { format } from 'date-fns'
-import { and, count, countDistinct, eq, gte, isNull, lte } from 'drizzle-orm'
+import {
+  and,
+  asc,
+  count,
+  countDistinct,
+  desc,
+  eq,
+  gte,
+  isNull,
+  lte,
+} from 'drizzle-orm'
 
 import {
   getOrderStatus,
@@ -9,7 +19,13 @@ import {
   summarizeOrderStatus,
 } from '@/components/modules/shipments/order-status'
 import { db } from '@/db'
-import { drivers, orders, shipments, transportUnits } from '@/db/schema'
+import {
+  costumers,
+  drivers,
+  orders,
+  shipments,
+  transportUnits,
+} from '@/db/schema'
 import type { Option } from '@/types'
 
 export async function getCostumers({ clientId }: { clientId?: string | null }) {
@@ -19,8 +35,7 @@ export async function getCostumers({ clientId }: { clientId?: string | null }) {
       name: true,
       channel: true,
     },
-    where: (costumers, { eq }) =>
-      clientId ? eq(costumers.clientId, clientId) : undefined,
+    where: clientId ? eq(costumers.clientId, clientId) : undefined,
   })
 }
 
@@ -29,7 +44,7 @@ export type CostumersByClient = Awaited<ReturnType<typeof getCostumers>>
 export async function getShipmentsByClientId(clientId: string | null) {
   noStore()
 
-  const shipments = await db.query.shipments.findMany({
+  const _shipments = await db.query.shipments.findMany({
     columns: {
       id: true,
       clientId: true,
@@ -45,16 +60,13 @@ export async function getShipmentsByClientId(clientId: string | null) {
       driver: true,
       transportUnit: true,
     },
-    orderBy: (shipments, { desc, asc }) => [
-      desc(shipments.deliveryDate),
-      asc(shipments.id),
-    ],
+    orderBy: [desc(shipments.deliveryDate), asc(shipments.id)],
     ...(clientId
       ? { where: (shipments, { eq }) => eq(shipments.clientId, clientId) }
       : {}),
   })
 
-  return shipments.map((shipment) => {
+  return _shipments.map((shipment) => {
     const { orders, ...restShipment } = shipment
 
     const ordersSummary = {
@@ -72,71 +84,57 @@ export type ShipmentsByClient = Awaited<
 >
 
 interface ShipmentMetricsInput {
-  clientId?: string | null
   date: Date
+  clientId?: string | null
 }
 
-export async function getShipmentMetrics(input: ShipmentMetricsInput) {
+export async function getShipmentMetrics({
+  date,
+  clientId,
+}: ShipmentMetricsInput) {
   noStore()
 
-  const shipments = await db.query.shipments.findMany({
-    columns: {
-      id: true,
-      route: true,
-    },
-    with: {
-      orders: true,
-    },
-    where: (shipments, { eq, and }) =>
-      and(
-        input.clientId ? eq(shipments.clientId, input.clientId) : undefined,
-        eq(shipments.deliveryDate, input.date),
-      ),
+  const _shipments = await db.query.shipments.findMany({
+    columns: { id: true, route: true },
+    with: { orders: true },
+    where: and(
+      eq(shipments.deliveryDate, date),
+      clientId ? eq(shipments.clientId, clientId) : undefined,
+    ),
+    orderBy: asc(shipments.route),
   })
 
-  const orderStatusCountByShipment = shipments.map(({ id, route, orders }) => {
-    const ordersSummary = summarizeOrderStatus(orders)
-
-    return {
-      id,
-      route,
-      ...ordersSummary,
-    }
+  return _shipments.map(({ id, route, orders }) => {
+    return { id, route, ...summarizeOrderStatus(orders) }
   })
-
-  return orderStatusCountByShipment
 }
 
 export type ShipmentMetrics = Awaited<ReturnType<typeof getShipmentMetrics>>
 
 interface HistoryShipmentMetricsInput {
-  clientId?: string | null
   from: Date
   to: Date
+  clientId?: string | null
 }
 
-export async function getHistoryShipmentMetrics(
-  input: HistoryShipmentMetricsInput,
-) {
+export async function getHistoryShipmentMetrics({
+  from,
+  to,
+  clientId,
+}: HistoryShipmentMetricsInput) {
   noStore()
 
-  const shipments = await db.query.shipments.findMany({
-    columns: {
-      id: true,
-      deliveryDate: true,
-    },
-    with: {
-      orders: true,
-    },
-    where: (shipments, { eq, and }) =>
-      and(
-        input.clientId ? eq(shipments.clientId, input.clientId) : undefined,
-        gte(shipments.deliveryDate, input.from),
-        lte(shipments.deliveryDate, input.to),
-      ),
+  const _shipments = await db.query.shipments.findMany({
+    columns: { id: true, deliveryDate: true },
+    with: { orders: true },
+    where: and(
+      clientId ? eq(shipments.clientId, clientId) : undefined,
+      gte(shipments.deliveryDate, from),
+      lte(shipments.deliveryDate, to),
+    ),
   })
 
-  const groupedByDeliveryDate = shipments.reduce(
+  const groupedByDeliveryDate = _shipments.reduce(
     (acc, curr) => {
       const key = format(curr.deliveryDate, 'yyyy-MM-dd')
 
@@ -148,22 +146,16 @@ export async function getHistoryShipmentMetrics(
 
       return acc
     },
-    {} as Record<string, (typeof shipments)[number]>,
+    {} as Record<string, (typeof _shipments)[number]>,
   )
 
-  const orderStatusCountByShipment = Object.values(groupedByDeliveryDate).map(
-    ({ id, deliveryDate, orders }) => {
-      const ordersSummary = summarizeOrderStatus(orders)
-
-      return {
-        id,
-        deliveryDate: format(deliveryDate, 'dd/MM/yyyy'),
-        ...ordersSummary,
-      }
-    },
+  return Object.values(groupedByDeliveryDate).map(
+    ({ id, deliveryDate, orders }) => ({
+      id,
+      deliveryDate: format(deliveryDate, 'dd/MM/yyyy'),
+      ...summarizeOrderStatus(orders),
+    }),
   )
-
-  return orderStatusCountByShipment
 }
 
 export type HistoryShipmentMetrics = Awaited<
@@ -177,7 +169,7 @@ export async function getShipmentById(shipmentId: number) {
       driver: true,
       transportUnit: true,
     },
-    where: (shipments, { eq }) => eq(shipments.id, shipmentId),
+    where: eq(shipments.id, shipmentId),
   })
 
   if (!shipment) {
@@ -243,13 +235,9 @@ export async function getOrderStatusOptions(shipmentId: number) {
   return orderStatusOptions
 }
 
-export type OrderStatusOptions = Awaited<
-  ReturnType<typeof getOrderStatusOptions>
->
-
 export async function trackOrder(code: string) {
   const order = await db.query.orders.findFirst({
-    where: (orders, { eq }) => eq(orders.clientOrderId, Number(code)),
+    where: eq(orders.clientOrderId, Number(code)),
   })
 
   if (!order) {
