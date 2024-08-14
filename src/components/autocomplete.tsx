@@ -9,6 +9,7 @@ import {
   CommandGroup,
   CommandInput,
   CommandItem,
+  CommandList,
 } from '@/components/ui/command'
 import {
   Popover,
@@ -55,45 +56,46 @@ export default function Autocomplete({
       </PopoverTrigger>
       <PopoverContent className="p-0">
         <Command>
-          <CommandInput
-            placeholder="Buscar..."
-            disabled={isLoading}
-            onBlur={() => setOpen(false)}
-          />
+          <CommandInput placeholder="Buscar..." disabled={isLoading} />
           {!isLoading && (
             <CommandEmpty>No se han encontrado resultados.</CommandEmpty>
           )}
           <CommandGroup>
-            {isLoading ? (
-              <div className="space-y-1 overflow-hidden px-1 py-2">
-                <Skeleton className="h-8 rounded-sm" />
-                <Skeleton className="h-8 rounded-sm" />
-                <Skeleton className="h-8 rounded-sm" />
-              </div>
-            ) : (
-              options?.map((option) => {
-                const Icon = option.icon ? Icons[option.icon] : null
-                return (
-                  <CommandItem
-                    key={option.value}
-                    value={option.label}
-                    disabled={option.disabled}
-                    onSelect={() => onValueChange?.(option.value)}
-                  >
-                    <CheckIcon
-                      className={cn(
-                        'mr-2 h-4 w-4 flex-shrink-0',
-                        option.value === value ? 'opacity-100' : 'opacity-0',
-                      )}
-                    />
-                    {Icon && <Icon className="mr-2 h-4 w-4" />}
-                    <span className="overflow-x-clip whitespace-nowrap">
-                      {option.label}
-                    </span>
-                  </CommandItem>
-                )
-              })
-            )}
+            <CommandList>
+              {isLoading ? (
+                <div className="space-y-1 overflow-hidden px-1 py-2">
+                  <Skeleton className="h-8 rounded-sm" />
+                  <Skeleton className="h-8 rounded-sm" />
+                  <Skeleton className="h-8 rounded-sm" />
+                </div>
+              ) : (
+                options?.map((option) => {
+                  const Icon = option.icon ? Icons[option.icon] : null
+                  return (
+                    <CommandItem
+                      key={option.value}
+                      value={option.label}
+                      disabled={option.disabled}
+                      onSelect={() => {
+                        onValueChange?.(option.value)
+                        setOpen(false)
+                      }}
+                    >
+                      <CheckIcon
+                        className={cn(
+                          'mr-2 h-4 w-4 flex-shrink-0',
+                          option.value === value ? 'opacity-100' : 'opacity-0',
+                        )}
+                      />
+                      {Icon && <Icon className="mr-2 h-4 w-4" />}
+                      <span className="overflow-x-clip whitespace-nowrap">
+                        {option.label}
+                      </span>
+                    </CommandItem>
+                  )
+                })
+              )}
+            </CommandList>
           </CommandGroup>
         </Command>
       </PopoverContent>

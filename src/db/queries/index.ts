@@ -61,9 +61,7 @@ export async function getShipmentsByClientId(clientId: string | null) {
       transportUnit: true,
     },
     orderBy: [desc(shipments.deliveryDate), asc(shipments.id)],
-    ...(clientId
-      ? { where: (shipments, { eq }) => eq(shipments.clientId, clientId) }
-      : {}),
+    where: clientId ? eq(shipments.clientId, clientId) : undefined,
   })
 
   return _shipments.map((shipment) => {
@@ -83,15 +81,13 @@ export type ShipmentsByClient = Awaited<
   ReturnType<typeof getShipmentsByClientId>
 >
 
-interface ShipmentMetricsInput {
-  date: Date
-  clientId?: string | null
-}
-
 export async function getShipmentMetrics({
   date,
   clientId,
-}: ShipmentMetricsInput) {
+}: {
+  date: Date
+  clientId?: string | null
+}) {
   noStore()
 
   const _shipments = await db.query.shipments.findMany({
@@ -111,17 +107,15 @@ export async function getShipmentMetrics({
 
 export type ShipmentMetrics = Awaited<ReturnType<typeof getShipmentMetrics>>
 
-interface HistoryShipmentMetricsInput {
-  from: Date
-  to: Date
-  clientId?: string | null
-}
-
 export async function getHistoryShipmentMetrics({
   from,
   to,
   clientId,
-}: HistoryShipmentMetricsInput) {
+}: {
+  from: Date
+  to: Date
+  clientId?: string | null
+}) {
   noStore()
 
   const _shipments = await db.query.shipments.findMany({
