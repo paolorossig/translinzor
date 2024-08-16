@@ -7,25 +7,36 @@ import {
   CartesianGrid,
   Label,
   LabelList,
-  ResponsiveContainer,
   XAxis,
   YAxis,
 } from 'recharts'
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from '@/components/ui/chart'
 import type { getShipmentMetrics } from '@/db/queries'
 import { useMediaQuery } from '@/lib/hooks/use-media-query'
 import { toPercent } from '@/lib/utils'
 
-const COLORS = {
-  delivered: '#5CC2BC',
-  refused: '#E35B64',
-}
-
-const LABELS = {
+const X_AXIS_LABELS = {
   route: 'Ruta',
   deliveryDate: 'Fecha de entrega',
 }
+
+const chartConfig = {
+  deliveredRate: {
+    label: 'Entregados',
+    color: '#5CC2BC',
+  },
+  refusedRate: {
+    label: 'Rechazados',
+    color: '#E35B64',
+  },
+} satisfies ChartConfig
 
 interface EffectivenessChartProps {
   data: Awaited<ReturnType<typeof getShipmentMetrics>>
@@ -50,8 +61,13 @@ export function EffectivenessChart({
   }))
 
   return (
-    <ResponsiveContainer width="100%" height={350}>
-      <BarChart data={metrics} maxBarSize={40}>
+    <ChartContainer config={chartConfig} className="min-h-[250px] w-full">
+      <BarChart data={metrics} maxBarSize={40} accessibilityLayer>
+        <CartesianGrid
+          vertical={false}
+          syncWithTicks={true}
+          strokeDasharray="3 3"
+        />
         <XAxis
           dataKey="aggregator"
           fontSize={12}
@@ -59,7 +75,7 @@ export function EffectivenessChart({
           axisLine={false}
         >
           <Label
-            value={LABELS[aggregator]}
+            value={X_AXIS_LABELS[aggregator]}
             position="insideBottom"
             offset={-2}
             fontSize={12}
@@ -72,16 +88,20 @@ export function EffectivenessChart({
           domain={[0, 1]}
           tickFormatter={(value: number) => toPercent(value)}
         />
-        <CartesianGrid
-          vertical={false}
-          syncWithTicks={true}
-          strokeDasharray="3 3"
+        <ChartTooltip
+          content={<ChartTooltipContent />}
+          labelFormatter={(value: string) =>
+            aggregator === 'route'
+              ? `${X_AXIS_LABELS[aggregator]}: ${value}`
+              : value
+          }
+          formatter={(value: number) => toPercent(value, 1)}
         />
         <Bar
           name="Entregado"
           dataKey="deliveredRate"
           stackId="rateMetrics"
-          fill={COLORS.delivered}
+          fill="var(--color-deliveredRate)"
         >
           {isDesktop && (
             <LabelList
@@ -97,10 +117,10 @@ export function EffectivenessChart({
           name="Rechazado"
           dataKey="refusedRate"
           stackId="rateMetrics"
-          fill={COLORS.refused}
+          fill="var(--color-refusedRate)"
         />
       </BarChart>
-    </ResponsiveContainer>
+    </ChartContainer>
   )
 }
 
