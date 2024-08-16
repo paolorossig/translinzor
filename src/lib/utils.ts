@@ -55,3 +55,25 @@ export function roundNumber(num: number, dec = 0) {
 export function toPercent(decimal: number, fixed = 0) {
   return `${roundNumber(decimal * 100, fixed)}%`
 }
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type AnyObject = Record<string, any>
+
+export function flattenObject(ob: AnyObject): AnyObject {
+  const toReturn: AnyObject = {}
+  for (const i in ob) {
+    if (!ob.hasOwnProperty(i)) continue
+    if (typeof ob[i] === 'object' && ob[i] !== null) {
+      const flatObject = flattenObject(ob[i] as AnyObject)
+      for (const x in flatObject) {
+        if (!flatObject.hasOwnProperty(x)) continue
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        toReturn[i + '.' + x] = flatObject[x]
+      }
+    } else {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      toReturn[i] = ob[i]
+    }
+  }
+  return toReturn
+}

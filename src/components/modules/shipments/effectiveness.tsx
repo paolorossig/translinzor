@@ -1,16 +1,25 @@
 'use client'
 
 import { startTransition } from 'react'
-import { LineChartIcon } from 'lucide-react'
+import { DownloadIcon, LineChartIcon } from 'lucide-react'
 import { parseAsIsoDateTime, parseAsStringLiteral, useQueryStates } from 'nuqs'
+import * as xlsx from 'xlsx'
 
+import { BarChartSkeleton } from '@/components/charts/chart-skeletons'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { DatePicker } from '@/components/ui/date-picker'
 import { DateRangePicker } from '@/components/ui/date-range-picker'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { getPastMonday, getToday } from '@/lib/utils'
+import type { getShipmentMetrics } from '@/db/queries'
+import { AnyObject, flattenObject, getPastMonday, getToday } from '@/lib/utils'
 
-export function Effectiveness({ children }: { children: React.ReactNode }) {
+interface EffectivenessProps {
+  children: React.ReactNode
+  data?: Awaited<ReturnType<typeof getShipmentMetrics>>
+}
+
+export function EffectivenessWrapper({ children, data }: EffectivenessProps) {
   const today = getToday()
   const [params, setParams] = useQueryStates(
     {
@@ -24,6 +33,19 @@ export function Effectiveness({ children }: { children: React.ReactNode }) {
     },
     { startTransition },
   )
+
+  const downloadMetrics = () => {
+    if (!data) return
+
+    const _data = JSON.parse(JSON.stringify(data)) as AnyObject[]
+    const worksheet = xlsx.utils.json_to_sheet(_data.map(flattenObject))
+    const workbook = xlsx.utils.book_new()
+    xlsx.utils.book_append_sheet(workbook, worksheet, 'Metrics')
+    xlsx.writeFile(
+      workbook,
+      `Efectividad de entregas - ${new Date().toISOString()}.xlsx`,
+    )
+  }
 
   return (
     <Tabs
@@ -47,21 +69,35 @@ export function Effectiveness({ children }: { children: React.ReactNode }) {
               Efectividad de entregas
             </h2>
           </div>
-          <TabsContent value="route">
-            <DatePicker
-              date={params.date}
-              onSelect={(date) => date && setParams({ date })}
-            />
-          </TabsContent>
-          <TabsContent value="deliveryDate">
-            <DateRangePicker
-              date={params}
-              onSelect={(dateRange) => dateRange && setParams(dateRange)}
-            />
-          </TabsContent>
+          <div className="flex gap-2">
+            <TabsContent value="route">
+              <DatePicker
+                date={params.date}
+                onSelect={(date) => date && setParams({ date })}
+              />
+            </TabsContent>
+            <TabsContent value="deliveryDate">
+              <DateRangePicker
+                date={params}
+                onSelect={(dateRange) => dateRange && setParams(dateRange)}
+              />
+            </TabsContent>
+            <Button variant="outline" size="icon" onClick={downloadMetrics}>
+              <span className="sr-only">Descargar</span>
+              <DownloadIcon className="h-4 w-4" />
+            </Button>
+          </div>
         </CardHeader>
         <CardContent className="pl-0">{children}</CardContent>
       </Card>
     </Tabs>
+  )
+}
+
+export function EffectivenessSkeleton() {
+  return (
+    <EffectivenessWrapper>
+      <BarChartSkeleton />
+    </EffectivenessWrapper>
   )
 }
