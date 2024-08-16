@@ -1,6 +1,5 @@
 import { unstable_noStore as noStore } from 'next/cache'
 import { notFound } from 'next/navigation'
-import { format } from 'date-fns'
 import {
   and,
   asc,
@@ -16,7 +15,6 @@ import {
 import {
   getOrderStatus,
   isOrderFinalized,
-  summarizeOrderStatus,
 } from '@/components/modules/shipments/order-status'
 import { db } from '@/db'
 import {
@@ -79,81 +77,6 @@ export async function getShipmentsByClientId(clientId: string | null) {
 
 export type ShipmentsByClient = Awaited<
   ReturnType<typeof getShipmentsByClientId>
->
-
-export async function getShipmentMetrics({
-  date,
-  clientId,
-}: {
-  date: Date
-  clientId?: string | null
-}) {
-  noStore()
-
-  const _shipments = await db.query.shipments.findMany({
-    columns: { id: true, route: true },
-    with: { orders: true },
-    where: and(
-      eq(shipments.deliveryDate, date),
-      clientId ? eq(shipments.clientId, clientId) : undefined,
-    ),
-    orderBy: asc(shipments.route),
-  })
-
-  return _shipments.map(({ id, route, orders }) => {
-    return { id, route, ...summarizeOrderStatus(orders) }
-  })
-}
-
-export type ShipmentMetrics = Awaited<ReturnType<typeof getShipmentMetrics>>
-
-export async function getHistoryShipmentMetrics({
-  from,
-  to,
-  clientId,
-}: {
-  from: Date
-  to: Date
-  clientId?: string | null
-}) {
-  noStore()
-
-  const _shipments = await db.query.shipments.findMany({
-    columns: { id: true, deliveryDate: true },
-    with: { orders: true },
-    where: and(
-      clientId ? eq(shipments.clientId, clientId) : undefined,
-      gte(shipments.deliveryDate, from),
-      lte(shipments.deliveryDate, to),
-    ),
-  })
-
-  const groupedByDeliveryDate = _shipments.reduce(
-    (acc, curr) => {
-      const key = format(curr.deliveryDate, 'yyyy-MM-dd')
-
-      if (acc[key]) {
-        acc[key]?.orders.push(...curr.orders)
-      } else {
-        acc[key] = curr
-      }
-
-      return acc
-    },
-    {} as Record<string, (typeof _shipments)[number]>,
-  )
-
-  return Object.values(groupedByDeliveryDate).map(
-    ({ id, deliveryDate, orders }) => ({
-      id,
-      deliveryDate: format(deliveryDate, 'dd/MM/yyyy'),
-      ...summarizeOrderStatus(orders),
-    }),
-  )
-}
-
-export type HistoryShipmentMetrics = Awaited<
-  ReturnType<typeof getHistoryShipmentMetrics>
 >
 
 export async function getShipmentById(shipmentId: number) {
@@ -263,4 +186,45 @@ export async function getMetrics() {
     totalOrders: totalOrders[0]?.count ?? 0,
     totalDaysWithShipments: totalDaysWithShipments[0]?.count ?? 0,
   }
+}
+
+export async function getShipmentMetrics(
+  params: {
+    clientId: string | null
+  } & (
+    | {
+        aggregator: 'route'
+        date: Date
+      }
+    | {
+        aggregator: 'deliveryDate'
+        from: Date
+        to: Date
+        timePeriod?: 'day' | 'week' | 'month'
+      }
+  ),
+) {
+  return await db
+    .select({
+      aggregator: shipments[params.aggregator],
+      orders: {
+        count: count(orders.id),
+        delivered: count(orders.deliveredAt),
+        refused: count(orders.refusedAt),
+      },
+    })
+    .from(shipments)
+    .leftJoin(orders, eq(orders.shipmentId, shipments.id))
+    .where(
+      and(
+        params.clientId ? eq(shipments.clientId, params.clientId) : undefined,
+        params.aggregator === 'route'
+          ? eq(shipments.deliveryDate, params.date)
+          : and(
+              gte(shipments.deliveryDate, params.from),
+              lte(shipments.deliveryDate, params.to),
+            ),
+      ),
+    )
+    .groupBy(shipments[params.aggregator])
 }

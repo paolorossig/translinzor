@@ -22,7 +22,3 @@ export type Option<T = string> = {
   icon?: IconName
   disabled?: boolean
 }
-
-export type ServerActionResponse =
-  | { success: true }
-  | { success: false; message: string }
