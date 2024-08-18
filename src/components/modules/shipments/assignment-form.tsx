@@ -2,25 +2,13 @@
 
 import { useEffect, useState, useTransition } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
-import {
-  BadgeMinusIcon,
-  CheckIcon,
-  ChevronsUpDownIcon,
-  Loader2Icon,
-} from 'lucide-react'
 import { useAction } from 'next-safe-action/hooks'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
 
+import Autocomplete from '@/components/autocomplete'
 import { Button } from '@/components/ui/button'
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-} from '@/components/ui/command'
 import {
   Form,
   FormControl,
@@ -29,28 +17,11 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover'
-import { Skeleton } from '@/components/ui/skeleton'
 import { assignShipmentAction, getAvailabilityAction } from '@/lib/actions'
 import { assignShipmentSchema } from '@/lib/actions/schema'
-import { cn } from '@/lib/utils'
 import { Option } from '@/types'
 
 type AssignShipmentInput = z.infer<typeof assignShipmentSchema>
-
-function OptionsSkeleton() {
-  return (
-    <div className="space-y-1 overflow-hidden px-1 py-2">
-      <Skeleton className="h-8 rounded-sm" />
-      <Skeleton className="h-8 rounded-sm" />
-      <Skeleton className="h-8 rounded-sm" />
-    </div>
-  )
-}
 
 interface AssignmentFormProps {
   deliveryDate: Date
@@ -110,80 +81,15 @@ export function AssignmentForm({
               <FormLabel className="text-primary">
                 Unidad de transporte
               </FormLabel>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <FormControl>
-                    <Button
-                      variant="outline"
-                      role="combobox"
-                      className={cn(
-                        'justify-between',
-                        !field.value && 'text-muted-foreground',
-                      )}
-                    >
-                      {field.value
-                        ? data?.transportUnits.find(
-                            (unit) => unit.value === field.value,
-                          )?.label
-                        : 'Selecciona la unidad...'}
-                      {isPending ? (
-                        <Loader2Icon className="ml-2 h-4 w-4 shrink-0 animate-spin opacity-50" />
-                      ) : (
-                        <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                      )}
-                    </Button>
-                  </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className="p-0">
-                  <Command>
-                    <CommandInput
-                      placeholder="Busca la unidad..."
-                      disabled={isPending}
-                    />
-                    {!isPending && (
-                      <CommandEmpty>
-                        No se han encontrado resultados.
-                      </CommandEmpty>
-                    )}
-                    <CommandGroup>
-                      {isPending ? (
-                        <OptionsSkeleton />
-                      ) : (
-                        data?.transportUnits.map((unit) => (
-                          <CommandItem
-                            key={unit.value}
-                            value={unit.label}
-                            disabled={unit.disabled}
-                            onSelect={() => {
-                              form.setValue('transportUnitId', unit.value)
-                            }}
-                          >
-                            <CheckIcon
-                              className={cn(
-                                'mr-2 h-4 w-4 shrink-0',
-                                unit.value === field.value
-                                  ? 'opacity-100'
-                                  : 'opacity-0',
-                              )}
-                            />
-                            <span className="overflow-x-clip whitespace-nowrap">
-                              {unit.label}
-                            </span>
-                            <BadgeMinusIcon
-                              className={cn(
-                                'ml-2 h-4 w-4 text-destructive/50',
-                                unit.disabled && unit.value !== field.value
-                                  ? 'opacity-100'
-                                  : 'opacity-0',
-                              )}
-                            />
-                          </CommandItem>
-                        ))
-                      )}
-                    </CommandGroup>
-                  </Command>
-                </PopoverContent>
-              </Popover>
+              <FormControl>
+                <Autocomplete
+                  options={data?.transportUnits ?? []}
+                  isLoading={isPending}
+                  placeholder="Selecciona la unidad..."
+                  value={field.value}
+                  onValueChange={field.onChange}
+                />
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}
@@ -194,80 +100,15 @@ export function AssignmentForm({
           render={({ field }) => (
             <FormItem className="flex flex-col">
               <FormLabel className="text-primary">Conductor</FormLabel>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <FormControl>
-                    <Button
-                      variant="outline"
-                      role="combobox"
-                      className={cn(
-                        'justify-between',
-                        !field.value && 'text-muted-foreground',
-                      )}
-                    >
-                      {field.value
-                        ? data?.drivers.find(
-                            (driver) => driver.value === field.value,
-                          )?.label
-                        : 'Selecciona el conductor...'}
-                      {isPending ? (
-                        <Loader2Icon className="ml-2 h-4 w-4 shrink-0 animate-spin opacity-50" />
-                      ) : (
-                        <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                      )}
-                    </Button>
-                  </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className="p-0">
-                  <Command>
-                    <CommandInput
-                      placeholder="Busca el conductor..."
-                      disabled={isPending}
-                    />
-                    {!isPending && (
-                      <CommandEmpty>
-                        No se han encontrado resultados.
-                      </CommandEmpty>
-                    )}
-                    <CommandGroup>
-                      {isPending ? (
-                        <OptionsSkeleton />
-                      ) : (
-                        data?.drivers.map((driver) => (
-                          <CommandItem
-                            key={driver.value}
-                            value={driver.label}
-                            disabled={driver.disabled}
-                            onSelect={() => {
-                              form.setValue('driverId', driver.value)
-                            }}
-                          >
-                            <CheckIcon
-                              className={cn(
-                                'mr-2 h-4 w-4 shrink-0',
-                                driver.value === field.value
-                                  ? 'opacity-100'
-                                  : 'opacity-0',
-                              )}
-                            />
-                            <span className="overflow-x-clip whitespace-nowrap">
-                              {driver.label}
-                            </span>
-                            <BadgeMinusIcon
-                              className={cn(
-                                'ml-2 h-4 w-4 text-destructive/50',
-                                driver.disabled && driver.value !== field.value
-                                  ? 'opacity-100'
-                                  : 'opacity-0',
-                              )}
-                            />
-                          </CommandItem>
-                        ))
-                      )}
-                    </CommandGroup>
-                  </Command>
-                </PopoverContent>
-              </Popover>
+              <FormControl>
+                <Autocomplete
+                  options={data?.drivers ?? []}
+                  isLoading={isPending}
+                  placeholder="Selecciona la conductor..."
+                  value={field.value}
+                  onValueChange={field.onChange}
+                />
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}

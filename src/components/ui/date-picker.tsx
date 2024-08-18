@@ -24,7 +24,7 @@ export function DatePicker({ date, onSelect, className }: DatePickerProps) {
     <Popover>
       <PopoverTrigger asChild>
         <Button
-          variant={'outline'}
+          variant="outline"
           className={cn(
             'text-left font-normal',
             !date && 'text-muted-foreground',

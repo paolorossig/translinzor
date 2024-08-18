@@ -1,7 +1,17 @@
-import * as z from 'zod'
+import {
+  createSearchParamsCache,
+  parseAsIsoDateTime,
+  parseAsStringLiteral,
+} from 'nuqs/server'
 
-export const searchParamsSchema = z.object({
-  date: z.string().optional(),
-  from: z.string().optional(),
-  to: z.string().optional(),
-})
+export const searchParamsParser = {
+  date: parseAsIsoDateTime,
+  from: parseAsIsoDateTime,
+  to: parseAsIsoDateTime,
+  aggregator: parseAsStringLiteral([
+    'route',
+    'deliveryDate',
+  ] as const).withDefault('route'),
+}
+
+export const searchParamsCache = createSearchParamsCache(searchParamsParser)
