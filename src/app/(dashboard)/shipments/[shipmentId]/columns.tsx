@@ -19,7 +19,7 @@ import type { ShipmentById } from '@/db/queries'
 
 export const columns: ColumnDef<ShipmentById['orders'][number]>[] = [
   {
-    accessorKey: 'costumer.company.name',
+    accessorKey: 'costumer.name',
     header: 'Cliente',
     filterFn: (row, id, value) => {
       return (value as string).includes(row.getValue(id))

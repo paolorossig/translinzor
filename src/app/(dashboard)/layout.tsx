@@ -4,7 +4,14 @@ import NavBreadcrumb from '@/components/layout/nav-breadcrumb'
 import Sidebar from '@/components/layout/sidebar'
 import { ThemeToggle } from '@/components/layout/theme'
 import { Button } from '@/components/ui/button'
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet'
 import { dashboardConfig } from '@/config/dashboard'
 import { auth } from '@/lib/auth/server'
 
@@ -32,6 +39,12 @@ export default async function DashboardLayout({
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="w-72 px-0">
+              <SheetHeader className="sr-only">
+                <SheetTitle>Barra lateral</SheetTitle>
+                <SheetDescription>
+                  Botón para abrir el menú lateral de Translinzor
+                </SheetDescription>
+              </SheetHeader>
               <Sidebar
                 displayName={displayName}
                 userNavigation={userNavigation}

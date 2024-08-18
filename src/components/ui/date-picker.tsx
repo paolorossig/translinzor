@@ -35,7 +35,7 @@ export function DatePicker({ date, onSelect, className }: DatePickerProps) {
           {date ? date.toLocaleDateString('es') : <span>Elija una fecha</span>}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0">
+      <PopoverContent className="p-0">
         <Calendar
           mode="single"
           selected={date}
