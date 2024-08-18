@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
 
 import {
-  EffectivenessChart,
+  Effectiveness,
   EffectivenessSkeleton,
 } from '@/components/modules/shipments'
 import { getShipmentMetrics } from '@/db/queries'
@@ -42,5 +42,5 @@ async function EffectivenessServer() {
     ...params,
   })
 
-  return <EffectivenessChart data={data} aggregator={aggregator} />
+  return <Effectiveness data={data} aggregator={aggregator} />
 }

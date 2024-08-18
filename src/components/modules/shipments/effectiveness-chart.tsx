@@ -1,5 +1,6 @@
 'use client'
 
+import { forwardRef } from 'react'
 import { AlertCircleIcon } from 'lucide-react'
 import {
   Bar,
@@ -22,8 +23,6 @@ import type { getShipmentMetrics } from '@/db/queries'
 import { useMediaQuery } from '@/lib/hooks/use-media-query'
 import { toPercent } from '@/lib/utils'
 
-import { EffectivenessWrapper } from './effectiveness'
-
 const X_AXIS_LABELS = {
   route: 'Ruta',
   deliveryDate: 'Fecha de entrega',
@@ -40,15 +39,15 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
-interface EffectivenessChartProps {
+export interface EffectivenessChartProps {
   data: Awaited<ReturnType<typeof getShipmentMetrics>>
   aggregator: 'route' | 'deliveryDate'
 }
 
-export function EffectivenessChart({
-  data,
-  aggregator,
-}: EffectivenessChartProps) {
+export const EffectivenessChart = forwardRef<
+  HTMLDivElement,
+  EffectivenessChartProps
+>(({ data, aggregator }, ref) => {
   const isDesktop = useMediaQuery('(min-width: 640px)')
 
   if (!data.length) return <EmptyState />
@@ -63,70 +62,73 @@ export function EffectivenessChart({
   }))
 
   return (
-    <EffectivenessWrapper data={data}>
-      <ChartContainer config={chartConfig} className="min-h-[250px] w-full">
-        <BarChart data={metrics} maxBarSize={40} accessibilityLayer>
-          <CartesianGrid
-            vertical={false}
-            syncWithTicks={true}
-            strokeDasharray="3 3"
-          />
-          <XAxis
-            dataKey="aggregator"
+    <ChartContainer
+      ref={ref}
+      config={chartConfig}
+      className="min-h-[250px] w-full"
+    >
+      <BarChart data={metrics} maxBarSize={40} accessibilityLayer>
+        <CartesianGrid
+          vertical={false}
+          syncWithTicks={true}
+          strokeDasharray="3 3"
+        />
+        <XAxis
+          dataKey="aggregator"
+          fontSize={12}
+          tickLine={false}
+          axisLine={false}
+        >
+          <Label
+            value={X_AXIS_LABELS[aggregator]}
+            position="insideBottom"
+            offset={-2}
             fontSize={12}
-            tickLine={false}
-            axisLine={false}
-          >
-            <Label
-              value={X_AXIS_LABELS[aggregator]}
-              position="insideBottom"
-              offset={-2}
+          />
+        </XAxis>
+        <YAxis
+          fontSize={12}
+          tickLine={false}
+          axisLine={false}
+          domain={[0, 1]}
+          tickFormatter={(value: number) => toPercent(value)}
+        />
+        <ChartTooltip
+          content={<ChartTooltipContent />}
+          labelFormatter={(value: string) =>
+            aggregator === 'route'
+              ? `${X_AXIS_LABELS[aggregator]}: ${value}`
+              : value
+          }
+          formatter={(value: number) => toPercent(value, 1)}
+        />
+        <Bar
+          name="Entregado"
+          dataKey="deliveredRate"
+          stackId="rateMetrics"
+          fill="var(--color-deliveredRate)"
+        >
+          {isDesktop && (
+            <LabelList
+              dataKey="deliveredRate"
               fontSize={12}
+              formatter={(value: number) => toPercent(value, 1)}
+              position="inside"
+              fill="#FFFFFF"
             />
-          </XAxis>
-          <YAxis
-            fontSize={12}
-            tickLine={false}
-            axisLine={false}
-            domain={[0, 1]}
-            tickFormatter={(value: number) => toPercent(value)}
-          />
-          <ChartTooltip
-            content={<ChartTooltipContent />}
-            labelFormatter={(value: string) =>
-              aggregator === 'route'
-                ? `${X_AXIS_LABELS[aggregator]}: ${value}`
-                : value
-            }
-            formatter={(value: number) => toPercent(value, 1)}
-          />
-          <Bar
-            name="Entregado"
-            dataKey="deliveredRate"
-            stackId="rateMetrics"
-            fill="var(--color-deliveredRate)"
-          >
-            {isDesktop && (
-              <LabelList
-                dataKey="deliveredRate"
-                fontSize={12}
-                formatter={(value: number) => toPercent(value, 1)}
-                position="inside"
-                fill="#FFFFFF"
-              />
-            )}
-          </Bar>
-          <Bar
-            name="Rechazado"
-            dataKey="refusedRate"
-            stackId="rateMetrics"
-            fill="var(--color-refusedRate)"
-          />
-        </BarChart>
-      </ChartContainer>
-    </EffectivenessWrapper>
+          )}
+        </Bar>
+        <Bar
+          name="Rechazado"
+          dataKey="refusedRate"
+          stackId="rateMetrics"
+          fill="var(--color-refusedRate)"
+        />
+      </BarChart>
+    </ChartContainer>
   )
-}
+})
+EffectivenessChart.displayName = 'EffectivenessChart'
 
 function EmptyState() {
   return (
