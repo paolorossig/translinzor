@@ -54,7 +54,7 @@ export default function Autocomplete({
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="p-0">
+      <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
         <Command>
           <CommandInput placeholder="Buscar..." disabled={isLoading} />
           {!isLoading && (
