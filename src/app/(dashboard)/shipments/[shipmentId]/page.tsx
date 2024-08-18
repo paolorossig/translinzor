@@ -73,7 +73,7 @@ export default async function ShipmentPage({
               />
               <div className="flex w-full space-x-2 sm:w-fit">
                 <DataTableFacetedFilter
-                  columnName="costumer_company.name"
+                  columnName="costumer_name"
                   title="Cliente"
                   options={costumers}
                 />
