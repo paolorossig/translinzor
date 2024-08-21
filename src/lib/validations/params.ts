@@ -1,15 +1,16 @@
+import { startOfDay, startOfWeek } from 'date-fns'
 import {
   createSearchParamsCache,
   parseAsIsoDateTime,
   parseAsStringLiteral,
 } from 'nuqs/server'
 
-import { getPastMonday, getToday } from '@/lib/utils'
-
 export const searchParamsParser = {
-  date: parseAsIsoDateTime.withDefault(getToday()),
-  from: parseAsIsoDateTime.withDefault(getPastMonday(getToday())),
-  to: parseAsIsoDateTime.withDefault(getToday()),
+  date: parseAsIsoDateTime.withDefault(startOfDay(new Date())),
+  from: parseAsIsoDateTime.withDefault(
+    startOfWeek(new Date(), { weekStartsOn: 1 }),
+  ),
+  to: parseAsIsoDateTime.withDefault(startOfDay(new Date())),
   aggregator: parseAsStringLiteral([
     'route',
     'deliveryDate',

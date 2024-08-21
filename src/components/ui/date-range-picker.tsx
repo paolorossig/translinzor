@@ -1,7 +1,6 @@
 'use client'
 
 import * as React from 'react'
-import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
 import { CalendarIcon } from 'lucide-react'
 import { DateRange, type SelectRangeEventHandler } from 'react-day-picker'
@@ -13,7 +12,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import { cn } from '@/lib/utils'
+import { cn, formatDate, formatDateRange } from '@/lib/utils'
 
 interface DateRangePickerProps {
   date: DateRange | undefined
@@ -33,23 +32,16 @@ export function DateRangePicker({
           <Button
             variant="outline"
             className={cn(
-              'w-[260px] justify-start text-left font-normal',
+              'justify-start text-left font-normal',
               !date && 'text-muted-foreground',
             )}
           >
             <CalendarIcon className="mr-2 h-4 w-4 capitalize" />
-            {date?.from ? (
-              date.to ? (
-                <>
-                  {format(date.from, 'LLL dd, y', { locale: es })} -{' '}
-                  {format(date.to, 'LLL dd, y', { locale: es })}
-                </>
-              ) : (
-                format(date.from, 'LLL dd, y', { locale: es })
-              )
-            ) : (
-              <span>Elija una fecha</span>
-            )}
+            {date?.from
+              ? date.to
+                ? formatDateRange(date.from, date.to)
+                : formatDate(date.from)
+              : 'Elija una fecha'}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="p-0" align="end">
