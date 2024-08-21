@@ -8,7 +8,7 @@ import {
   ImageIcon,
   LineChartIcon,
 } from 'lucide-react'
-import { parseAsIsoDateTime, parseAsStringLiteral, useQueryStates } from 'nuqs'
+import { useQueryStates } from 'nuqs'
 import { useGenerateImage } from 'recharts-to-png'
 import * as xlsx from 'xlsx'
 
@@ -24,7 +24,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { AnyObject, flattenObject, getPastMonday, getToday } from '@/lib/utils'
+import { AnyObject, flattenObject } from '@/lib/utils'
+import { searchParamsParser } from '@/lib/validations/params'
 
 import {
   EffectivenessChart,
@@ -74,19 +75,10 @@ function EffectivenessWrapper({
   onDataDownload,
   onImageDownload,
 }: EffectivenessProps) {
-  const today = getToday()
-  const [params, setParams] = useQueryStates(
-    {
-      aggregator: parseAsStringLiteral([
-        'route',
-        'deliveryDate',
-      ] as const).withDefault('route'),
-      date: parseAsIsoDateTime.withDefault(today),
-      from: parseAsIsoDateTime.withDefault(getPastMonday(today)),
-      to: parseAsIsoDateTime.withDefault(today),
-    },
-    { startTransition },
-  )
+  const [params, setParams] = useQueryStates(searchParamsParser, {
+    startTransition,
+  })
+  const dateRange = { from: params.from, to: params.to }
 
   return (
     <Tabs
@@ -119,7 +111,7 @@ function EffectivenessWrapper({
             </TabsContent>
             <TabsContent value="deliveryDate">
               <DateRangePicker
-                date={params}
+                date={dateRange}
                 onSelect={(dateRange) => dateRange && setParams(dateRange)}
               />
             </TabsContent>

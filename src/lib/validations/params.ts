@@ -4,10 +4,12 @@ import {
   parseAsStringLiteral,
 } from 'nuqs/server'
 
+import { getPastMonday, getToday } from '@/lib/utils'
+
 export const searchParamsParser = {
-  date: parseAsIsoDateTime,
-  from: parseAsIsoDateTime,
-  to: parseAsIsoDateTime,
+  date: parseAsIsoDateTime.withDefault(getToday()),
+  from: parseAsIsoDateTime.withDefault(getPastMonday(getToday())),
+  to: parseAsIsoDateTime.withDefault(getToday()),
   aggregator: parseAsStringLiteral([
     'route',
     'deliveryDate',
