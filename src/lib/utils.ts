@@ -13,29 +13,6 @@ export function removeAccents(str: string) {
   return str.normalize('NFD').replace(/\p{Diacritic}/gu, '')
 }
 
-export function catchError(err: unknown, defaultMessage?: string) {
-  if (err instanceof Error) return err.message
-  if (typeof err === 'string') return err
-
-  return defaultMessage ?? 'Algo salió mal, inténtalo de nuevo más tarde.'
-}
-
-/**
- * The `keyMirror` function in TypeScript creates an object with keys that have the same value as their
- * names.
- */
-export function keyMirror<T extends Record<string, unknown>>(
-  obj: T,
-): { [K in keyof T]: K } {
-  const result: Partial<{ [K in keyof T]: K }> = {}
-
-  for (const key in obj) {
-    result[key] = key
-  }
-
-  return result as { [K in keyof T]: K }
-}
-
 export function getToday() {
   const startOfToday = new Date()
   startOfToday.setHours(0, 0, 0, 0)
