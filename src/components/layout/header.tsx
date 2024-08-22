@@ -11,7 +11,7 @@ export default function Header() {
         <div className="flex items-center gap-x-4">
           <img
             className="h-16 w-auto"
-            src="/logo.png"
+            src="/assets/logo.png"
             alt="Logo of Translinzor"
           />
           <span className="font-sans text-2xl font-semibold tracking-tight text-primary">

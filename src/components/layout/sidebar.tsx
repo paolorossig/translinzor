@@ -41,7 +41,7 @@ export default function Sidebar({ displayName, userNavigation }: SidebarProps) {
       <Link href="/" className="flex h-16 shrink-0 items-center">
         <img
           className="h-16 w-auto"
-          src="/logo.png"
+          src="/assets/logo.png"
           alt="Logo of Translinzor"
         />
         <span className="font-sans text-2xl font-semibold tracking-tight text-primary">

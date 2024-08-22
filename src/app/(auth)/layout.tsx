@@ -21,13 +21,13 @@ export default function AuthLayout({
             <ThemeToggle />
           </div>
           <div className="relative hidden h-full flex-col bg-muted p-10 text-white dark:border-r lg:flex">
-            <div className="absolute inset-0 bg-[url(/trucks.jpg)] bg-cover">
+            <div className="absolute inset-0 bg-[url(/assets/trucks.jpg)] bg-cover">
               <div className="flex h-full w-full items-center justify-center backdrop-brightness-95 dark:backdrop-brightness-50" />
             </div>
             <div className="relative z-20 flex items-center">
               <img
                 className="h-16 w-auto"
-                src="/logo.png"
+                src="/assets/logo.png"
                 alt="Logo of Translinzor"
               />
               <span className="font-sans text-2xl font-semibold tracking-tight text-white">

@@ -19,7 +19,7 @@ export default async function LoginPage() {
         <picture className="lg:hidden">
           <img
             className="mx-auto h-16 w-16"
-            src="/logo-square.png"
+            src="/assets/logo-square.png"
             alt="Logo of Translinzor"
           />
         </picture>
