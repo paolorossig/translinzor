@@ -13,7 +13,7 @@ export const actionClient = createSafeActionClient({
 
 export const authActionClient = actionClient
   .use(async ({ next, clientInput }) => {
-    const result = await next({ ctx: null })
+    const result = await next()
 
     if (process.env.NODE_ENV === 'development') {
       console.log('Input ->', clientInput)

@@ -11,7 +11,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import { cn } from '@/lib/utils'
+import { cn, formatDate } from '@/lib/utils'
 
 interface DatePickerProps {
   date: Date | undefined
@@ -32,7 +32,7 @@ export function DatePicker({ date, onSelect, className }: DatePickerProps) {
           )}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
-          {date ? date.toLocaleDateString('es') : <span>Elija una fecha</span>}
+          {date ? formatDate(date) : <span>Elija una fecha</span>}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="p-0">

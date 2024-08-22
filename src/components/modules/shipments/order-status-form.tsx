@@ -24,7 +24,6 @@ import {
   updateOrderStatusAction,
 } from '@/lib/actions'
 import { updateOrderStatusSchema } from '@/lib/actions/schema'
-import { catchError } from '@/lib/utils'
 import type { Option } from '@/types'
 
 import { OrderStatus } from './order-status'
@@ -63,14 +62,10 @@ export function OrderStatusForm({
 
   useEffect(() => {
     startTransition(async () => {
-      try {
-        const response = await getOrderStatusOptionsAction({
-          shipmentId: Number(shipmentId),
-        })
-        if (response?.data) setOptions(response.data)
-      } catch (err) {
-        catchError(err)
-      }
+      const response = await getOrderStatusOptionsAction({
+        shipmentId: Number(shipmentId),
+      })
+      if (response?.data) setOptions(response.data)
     })
 
     return () => setOptions(null)
