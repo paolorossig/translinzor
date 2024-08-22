@@ -1,16 +1,14 @@
 /* eslint-disable @next/next/no-img-element */
-import { cookies } from 'next/headers'
 import Link from 'next/link'
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import { ChevronRightIcon } from 'lucide-react'
 
 import { LoginForm } from '@/components/auth/login-form'
 import { Icons } from '@/components/icons'
 import { Button } from '@/components/ui/button'
+import { createClient } from '@/lib/supabase/server'
 
 export default async function LoginPage() {
-  const cookieStore = cookies()
-  const supabase = createServerComponentClient({ cookies: () => cookieStore })
+  const supabase = createClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()
