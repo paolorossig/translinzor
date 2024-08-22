@@ -26,13 +26,3 @@ export async function auth() {
 
   return { supabaseUser, user, isAdmin, isClient }
 }
-
-export async function getAllUsers() {
-  const users = await db.query.users.findMany({
-    with: { client: true },
-    orderBy: (users, { asc }) => asc(users.role),
-  })
-  return users
-}
-
-export type User = Awaited<ReturnType<typeof getAllUsers>>[number]

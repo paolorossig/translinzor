@@ -3,7 +3,9 @@
 import type { ColumnDef } from '@tanstack/react-table'
 
 import { Badge } from '@/components/ui/badge'
-import type { User } from '@/lib/auth/server'
+import { getUsers } from '@/db/queries'
+
+type User = Awaited<ReturnType<typeof getUsers>>[number]
 
 export const columns: ColumnDef<User>[] = [
   {

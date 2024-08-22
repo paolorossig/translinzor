@@ -23,8 +23,16 @@ import {
   orders,
   shipments,
   transportUnits,
+  users,
 } from '@/db/schema'
 import type { Option } from '@/types'
+
+export async function getUsers() {
+  return await db.query.users.findMany({
+    with: { client: true },
+    orderBy: asc(users.role),
+  })
+}
 
 export async function getCostumers({ clientId }: { clientId?: string | null }) {
   return await db.query.costumers.findMany({
