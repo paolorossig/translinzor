@@ -38,7 +38,7 @@ export default async function DashboardLayout({
                 <MenuIcon className="h-6 w-6" aria-hidden="true" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-72 px-0">
+            <SheetContent side="left" className="w-72 p-0 pt-6">
               <SheetHeader className="sr-only">
                 <SheetTitle>Barra lateral</SheetTitle>
                 <SheetDescription>

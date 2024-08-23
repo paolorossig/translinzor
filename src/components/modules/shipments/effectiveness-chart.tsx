@@ -65,7 +65,7 @@ export const EffectivenessChart = forwardRef<
     <ChartContainer
       ref={ref}
       config={chartConfig}
-      className="min-h-[250px] w-full"
+      className="max-h-[500px] w-full"
     >
       <BarChart data={metrics} maxBarSize={40} accessibilityLayer>
         <CartesianGrid
