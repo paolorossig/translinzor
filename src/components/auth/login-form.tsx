@@ -1,6 +1,6 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useTransition } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { AuthError } from '@supabase/supabase-js'
@@ -43,6 +43,7 @@ type AuthSignInInput = z.infer<typeof authSignInSchema>
 export function LoginForm() {
   const router = useRouter()
   const supabase = createClient()
+  const searchParams = useSearchParams()
   const [isPending, startTransition] = useTransition()
 
   const form = useForm<AuthSignInInput>({
@@ -62,7 +63,7 @@ export function LoginForm() {
         return
       }
 
-      if (data.session) router.push('/')
+      if (data.session) router.push(`/${searchParams.get('return_to') ?? ''}`)
     })
   }
 
