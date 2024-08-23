@@ -1,27 +1,21 @@
 /* eslint-disable @next/next/no-img-element */
-import { cookies } from 'next/headers'
 import Link from 'next/link'
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import { ChevronRightIcon } from 'lucide-react'
 
 import { LoginForm } from '@/components/auth/login-form'
 import { Icons } from '@/components/icons'
 import { Button } from '@/components/ui/button'
+import { getUser } from '@/lib/auth/server'
 
 export default async function LoginPage() {
-  const cookieStore = cookies()
-  const supabase = createServerComponentClient({ cookies: () => cookieStore })
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
+  const user = await getUser()
   return (
     <section className="mx-auto flex w-full flex-col justify-center space-y-6 px-4 sm:w-[350px]">
       <div className="flex flex-col text-center">
         <picture className="lg:hidden">
           <img
             className="mx-auto h-16 w-16"
-            src="/logo-square.png"
+            src="/assets/logo-square.png"
             alt="Logo of Translinzor"
           />
         </picture>

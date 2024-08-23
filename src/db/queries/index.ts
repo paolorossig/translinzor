@@ -23,8 +23,16 @@ import {
   orders,
   shipments,
   transportUnits,
+  users,
 } from '@/db/schema'
 import type { Option } from '@/types'
+
+export async function getUsers() {
+  return await db.query.users.findMany({
+    with: { client: true },
+    orderBy: asc(users.role),
+  })
+}
 
 export async function getCostumers({ clientId }: { clientId?: string | null }) {
   return await db.query.costumers.findMany({
@@ -39,7 +47,7 @@ export async function getCostumers({ clientId }: { clientId?: string | null }) {
 
 export type CostumersByClient = Awaited<ReturnType<typeof getCostumers>>
 
-export async function getShipmentsByClientId(clientId: string | null) {
+export async function getShipmentsByClientId(clientId?: string | null) {
   noStore()
 
   const _shipments = await db.query.shipments.findMany({
@@ -190,7 +198,7 @@ export async function getMetrics() {
 
 export async function getShipmentMetrics(
   params: {
-    clientId: string | null
+    clientId?: string | null
   } & (
     | {
         aggregator: 'route'

@@ -9,14 +9,14 @@ import {
   DataTableWrapper,
 } from '@/components/ui/data-table'
 import { getCostumers } from '@/db/queries'
-import { auth } from '@/lib/auth/server'
+import { getUser } from '@/lib/auth/server'
 import { channelOptions } from '@/lib/constants'
 
 import { columns } from './columns'
 
 export default async function CostumersPage() {
-  const { user, isAdmin } = await auth()
-  const data = await getCostumers({ clientId: user.clientId })
+  const user = await getUser()
+  const data = await getCostumers({ clientId: user?.clientId })
 
   return (
     <>
@@ -25,7 +25,9 @@ export default async function CostumersPage() {
       </h1>
       <div>
         <DataTableWrapper columns={columns} data={data}>
-          <DataTableHeader actionArea={isAdmin && <CreateCostumerButton />}>
+          <DataTableHeader
+            actionArea={user?.isAdmin && <CreateCostumerButton />}
+          >
             <DataTableFilterInput
               columnName="name"
               placeholder="Filtrar clientes..."

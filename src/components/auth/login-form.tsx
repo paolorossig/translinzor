@@ -1,9 +1,8 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useTransition } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { AuthError } from '@supabase/supabase-js'
 import { Loader2Icon } from 'lucide-react'
 import { useForm } from 'react-hook-form'
@@ -20,6 +19,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { createClient } from '@/lib/supabase/client'
 
 const supabaseKnownErrors: Record<string, string> = {
   'Invalid login credentials': 'Credenciales de acceso inválidos',
@@ -31,7 +31,7 @@ const getUserErrorMessage = (error: AuthError) => {
   return supabaseKnownErrors[message] ?? defaultErrorMessage
 }
 
-export const authSignInSchema = z.object({
+const authSignInSchema = z.object({
   email: z
     .string({ required_error: 'Requerido' })
     .email({ message: 'Email inválido' }),
@@ -42,7 +42,8 @@ type AuthSignInInput = z.infer<typeof authSignInSchema>
 
 export function LoginForm() {
   const router = useRouter()
-  const supabase = createClientComponentClient()
+  const supabase = createClient()
+  const searchParams = useSearchParams()
   const [isPending, startTransition] = useTransition()
 
   const form = useForm<AuthSignInInput>({
@@ -62,7 +63,7 @@ export function LoginForm() {
         return
       }
 
-      if (data.session) router.push('/')
+      if (data.session) router.push(`/${searchParams.get('return_to') ?? ''}`)
     })
   }
 

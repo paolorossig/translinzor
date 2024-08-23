@@ -3,12 +3,12 @@
 /* eslint-disable @next/next/no-img-element */
 import Link from 'next/link'
 import { useRouter, useSelectedLayoutSegment } from 'next/navigation'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { LogOutIcon, SettingsIcon } from 'lucide-react'
 
 import { Icons } from '@/components/icons'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
+import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils'
 import type { UserNavigation } from '@/types'
 
@@ -20,7 +20,7 @@ interface SidebarProps {
 export default function Sidebar({ displayName, userNavigation }: SidebarProps) {
   const router = useRouter()
   const segment = useSelectedLayoutSegment()
-  const supabase = createClientComponentClient()
+  const supabase = createClient()
 
   const firstLetters = displayName
     .split(' ')
@@ -41,7 +41,7 @@ export default function Sidebar({ displayName, userNavigation }: SidebarProps) {
       <Link href="/" className="flex h-16 shrink-0 items-center">
         <img
           className="h-16 w-auto"
-          src="/logo.png"
+          src="/assets/logo.png"
           alt="Logo of Translinzor"
         />
         <span className="font-sans text-2xl font-semibold tracking-tight text-primary">

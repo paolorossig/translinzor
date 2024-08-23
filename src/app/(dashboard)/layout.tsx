@@ -13,15 +13,15 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet'
 import { dashboardConfig } from '@/config/dashboard'
-import { auth } from '@/lib/auth/server'
+import { getUser } from '@/lib/auth/server'
 
 export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const { user } = await auth()
-  const { displayName, role } = user
+  const user = await getUser()
+  const { displayName, role } = user!
   const userNavigation = dashboardConfig.navigationByUserRole[role]
 
   return (
@@ -38,7 +38,7 @@ export default async function DashboardLayout({
                 <MenuIcon className="h-6 w-6" aria-hidden="true" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-72 px-0">
+            <SheetContent side="left" className="w-72 p-0 pt-6">
               <SheetHeader className="sr-only">
                 <SheetTitle>Barra lateral</SheetTitle>
                 <SheetDescription>

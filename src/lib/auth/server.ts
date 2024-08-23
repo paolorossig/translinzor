@@ -1,40 +1,27 @@
-import { cookies } from 'next/headers'
-import { redirect } from 'next/navigation'
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
-
 import { db } from '@/db'
+import { createClient } from '@/lib/supabase/server'
 
-export async function auth() {
-  const cookieStore = cookies()
-  const supabase = createServerComponentClient({ cookies: () => cookieStore })
-  const {
-    data: { user: supabaseUser },
-  } = await supabase.auth.getUser()
+export async function getSession() {
+  const supabase = createClient()
+  return supabase.auth.getSession()
+}
 
-  if (!supabaseUser) redirect('/login')
+export async function getUser() {
+  const { data } = await getSession()
+
+  const userId = data.session?.user?.id
+  if (!userId) return null
 
   const user = await db.query.users.findFirst({
-    where: (users, { eq }) => eq(users.id, supabaseUser.id),
+    where: (users, { eq }) => eq(users.id, userId),
   })
-
   if (!user) {
-    console.log('User not found')
+    const supabase = createClient()
     await supabase.auth.signOut()
-    redirect('/login')
+    return null
   }
 
-  const isAdmin = user.role === 'admin'
-  const isClient = user.role === 'client'
+  const isAdmin = user?.role === 'admin'
 
-  return { supabaseUser, user, isAdmin, isClient }
+  return { ...user, isAdmin }
 }
-
-export async function getAllUsers() {
-  const users = await db.query.users.findMany({
-    with: { client: true },
-    orderBy: (users, { asc }) => asc(users.role),
-  })
-  return users
-}
-
-export type User = Awaited<ReturnType<typeof getAllUsers>>[number]
