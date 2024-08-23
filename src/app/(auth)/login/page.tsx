@@ -5,14 +5,10 @@ import { ChevronRightIcon } from 'lucide-react'
 import { LoginForm } from '@/components/auth/login-form'
 import { Icons } from '@/components/icons'
 import { Button } from '@/components/ui/button'
-import { createClient } from '@/lib/supabase/server'
+import { getUser } from '@/lib/auth/server'
 
 export default async function LoginPage() {
-  const supabase = createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
+  const user = await getUser()
   return (
     <section className="mx-auto flex w-full flex-col justify-center space-y-6 px-4 sm:w-[350px]">
       <div className="flex flex-col text-center">

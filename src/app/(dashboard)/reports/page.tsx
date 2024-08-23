@@ -5,7 +5,7 @@ import {
   EffectivenessSkeleton,
 } from '@/components/modules/shipments'
 import { getShipmentMetrics } from '@/db/queries'
-import { auth } from '@/lib/auth/server'
+import { getUser } from '@/lib/auth/server'
 import { searchParamsCache } from '@/lib/validations/params'
 import type { SearchParams } from '@/types'
 
@@ -30,7 +30,7 @@ export default function ReportsPage({ searchParams }: ReportsPageProps) {
 }
 
 async function EffectivenessServer() {
-  const { user } = await auth()
+  const user = await getUser()
   const { date, from, to, aggregator } = searchParamsCache.all()
   const params =
     aggregator === 'route'
@@ -38,7 +38,7 @@ async function EffectivenessServer() {
       : { aggregator, from: from!, to: to! }
 
   const data = await getShipmentMetrics({
-    clientId: user.clientId,
+    clientId: user?.clientId,
     ...params,
   })
 

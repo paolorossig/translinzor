@@ -13,15 +13,15 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet'
 import { dashboardConfig } from '@/config/dashboard'
-import { auth } from '@/lib/auth/server'
+import { getUser } from '@/lib/auth/server'
 
 export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const { user } = await auth()
-  const { displayName, role } = user
+  const user = await getUser()
+  const { displayName, role } = user!
   const userNavigation = dashboardConfig.navigationByUserRole[role]
 
   return (

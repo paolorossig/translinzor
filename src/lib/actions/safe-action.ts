@@ -1,6 +1,6 @@
 import { createSafeActionClient } from 'next-safe-action'
 
-import { auth } from '@/lib/auth/server'
+import { getUser } from '@/lib/auth/server'
 
 const DEFAULT_SERVER_ERROR_MESSAGE = 'Algo salió mal al ejecutar la operación.'
 
@@ -23,7 +23,7 @@ export const authActionClient = actionClient
     return result
   })
   .use(async ({ next }) => {
-    const { user } = await auth()
+    const user = await getUser()
     if (!user) throw new Error('No autorizado')
 
     return next({ ctx: { user } })

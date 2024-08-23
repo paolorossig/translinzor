@@ -1,28 +1,27 @@
-import { redirect } from 'next/navigation'
-
 import { db } from '@/db'
 import { createClient } from '@/lib/supabase/server'
 
-export async function auth() {
+export async function getSession() {
   const supabase = createClient()
-  const {
-    data: { user: supabaseUser },
-  } = await supabase.auth.getUser()
+  return supabase.auth.getSession()
+}
 
-  if (!supabaseUser) redirect('/login')
+export async function getUser() {
+  const { data } = await getSession()
+
+  const userId = data.session?.user?.id
+  if (!userId) return null
 
   const user = await db.query.users.findFirst({
-    where: (users, { eq }) => eq(users.id, supabaseUser.id),
+    where: (users, { eq }) => eq(users.id, userId),
   })
-
   if (!user) {
-    console.log('User not found')
+    const supabase = createClient()
     await supabase.auth.signOut()
-    redirect('/login')
+    return null
   }
 
-  const isAdmin = user.role === 'admin'
-  const isClient = user.role === 'client'
+  const isAdmin = user?.role === 'admin'
 
-  return { supabaseUser, user, isAdmin, isClient }
+  return { ...user, isAdmin }
 }
