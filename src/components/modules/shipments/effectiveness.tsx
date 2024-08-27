@@ -78,7 +78,7 @@ function EffectivenessWrapper({
   const [params, setParams] = useQueryStates(searchParamsParser, {
     startTransition,
   })
-  const dateRange = { from: params.from, to: params.to }
+  const range = { from: params.from, to: params.to }
 
   return (
     <Tabs
@@ -111,8 +111,8 @@ function EffectivenessWrapper({
             </TabsContent>
             <TabsContent value="deliveryDate">
               <DateRangePicker
-                date={dateRange}
-                onSelect={(dateRange) => dateRange && setParams(dateRange)}
+                range={range}
+                onSelect={(range) => range && setParams(range)}
               />
             </TabsContent>
             <DropdownMenu>
