@@ -24,22 +24,30 @@ export const headersMap: Record<string, keyof ShipmentBulkUploadRow> = {
   DIRECCION: 'destinationAddress',
   DISTRITO: 'destinationDistrict',
   'VALOR TOT.': 'totalValue',
+  'Suma de VALOR TOT.': 'totalValue',
 }
 
 export const parseShipmentBulkUpload = (
   data: Record<string, string | number>[],
 ) => {
-  return data
-    .map((row) => {
-      const mappedRow = Object.entries(row).reduce((acc, [key, value]) => {
-        const mappedKey = headersMap[key.trim()]
-        return mappedKey ? { ...acc, [mappedKey]: value } : acc
-      }, {})
+  const rowsWithErrors: Record<string, string | number>[] = []
 
-      const validation = shipmentBulkUploadSchema.safeParse(mappedRow)
-      if (!validation.success) return null
+  const parsedData = data.flatMap((row) => {
+    if (Object.values(row).includes('Total general')) return []
 
-      return validation.data
-    })
-    .filter(Boolean) as ShipmentBulkUploadRow[]
+    const mappedRow = Object.entries(row).reduce((acc, [key, value]) => {
+      const mappedKey = headersMap[key.trim()]
+      return mappedKey ? { ...acc, [mappedKey]: value } : acc
+    }, {})
+
+    const validation = shipmentBulkUploadSchema.safeParse(mappedRow)
+    if (!validation.success) {
+      rowsWithErrors.push(row)
+      return []
+    }
+
+    return validation.data
+  })
+
+  return { parsedData, rowsWithErrors }
 }

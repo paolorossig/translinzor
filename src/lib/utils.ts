@@ -14,6 +14,7 @@ import {
 import { formatWithOptions } from 'date-fns/fp'
 import { es } from 'date-fns/locale'
 import { twMerge } from 'tailwind-merge'
+import * as xlsx from 'xlsx'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -21,6 +22,10 @@ export function cn(...inputs: ClassValue[]) {
 
 export function wait(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+export function capitalize(str: string) {
+  return str.charAt(0).toUpperCase() + str.slice(1)
 }
 
 export function removeAccents(str: string) {
@@ -33,6 +38,19 @@ export function roundNumber(num: number, dec = 0) {
 
 export function toPercent(decimal: number, fixed = 0) {
   return `${roundNumber(decimal * 100, fixed)}%`
+}
+
+export function uniqueValues<T>(arr: T[]): T[]
+export function uniqueValues<T, K>(arr: T[], mapFn: (value: T) => K): K[]
+export function uniqueValues<T, K>(
+  arr: T[],
+  mapFn?: (value: T) => K,
+): K[] | T[] {
+  if (mapFn) {
+    const mappedArr = arr.map(mapFn)
+    return Array.from(new Set(mappedArr))
+  }
+  return Array.from(new Set(arr))
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -57,8 +75,11 @@ export function flattenObject(ob: AnyObject): AnyObject {
   return toReturn
 }
 
-export function capitalize(str: string) {
-  return str.charAt(0).toUpperCase() + str.slice(1)
+export function downloadExcel(data: AnyObject[], fileName: string) {
+  const worksheet = xlsx.utils.json_to_sheet(data)
+  const workbook = xlsx.utils.book_new()
+  xlsx.utils.book_append_sheet(workbook, worksheet)
+  xlsx.writeFile(workbook, fileName)
 }
 
 export function formatDate(date: Date) {

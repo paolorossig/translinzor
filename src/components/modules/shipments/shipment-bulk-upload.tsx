@@ -35,6 +35,7 @@ import {
 import { clientIds } from '@/config/clients'
 import { createBulkShipmentsAction } from '@/lib/actions'
 import { createBulkShipmentsSchema } from '@/lib/actions/schema'
+import { downloadExcel } from '@/lib/utils'
 import {
   headersMap,
   parseShipmentBulkUpload,
@@ -83,14 +84,24 @@ export function ShipmentBulkUpload() {
       return
     }
 
-    const parsedData = parseShipmentBulkUpload(data)
+    const { parsedData, rowsWithErrors } = parseShipmentBulkUpload(data)
+
     if (!parsedData.length) {
       toast.error('El archivo no contiene datos válidos.')
       return
     }
 
     form.setValue('bundledOrders', parsedData)
-    toast.success('El archivo se ha cargado correctamente.')
+
+    if (rowsWithErrors.length) {
+      downloadExcel(
+        rowsWithErrors,
+        `Errores en carga masiva  - ${new Date().toISOString()}.xlsx`,
+      )
+      toast.warning('El archivo se ha cargado parcialmente.')
+    } else {
+      toast.success('El archivo se ha cargado correctamente.')
+    }
   }, [excelFile, form])
 
   const onDrop = (acceptedFiles: File[]) => {

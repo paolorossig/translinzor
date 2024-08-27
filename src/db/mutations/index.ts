@@ -6,6 +6,7 @@ import {
 } from '@/components/modules/shipments/order-status'
 import { db } from '@/db'
 import { costumers, orders, shipments, type CreateOrder } from '@/db/schema'
+import { uniqueValues } from '@/lib/utils'
 import type { ShipmentBulkUploadRow } from '@/lib/validations/shipments'
 
 interface CreateBulkShipmentsParams {
@@ -19,23 +20,20 @@ export async function createBulkShipments({
   deliveryDate,
   bundledOrders,
 }: CreateBulkShipmentsParams) {
-  const uniqueInternalCodes = [
-    ...new Set(bundledOrders.map((order) => order.internalCode)),
-  ]
-
+  const internalCodes = uniqueValues(bundledOrders, (o) => o.internalCode)
   const foundCostumers = await db.query.costumers.findMany({
     columns: {
       id: true,
       internalCode: true,
     },
     where: and(
-      inArray(costumers.internalCode, uniqueInternalCodes),
+      inArray(costumers.internalCode, internalCodes),
       eq(costumers.clientId, clientId),
     ),
   })
 
-  if (foundCostumers.length !== uniqueInternalCodes.length) {
-    const missingCostumerIds = uniqueInternalCodes.filter(
+  if (foundCostumers.length !== internalCodes.length) {
+    const missingCostumerIds = internalCodes.filter(
       (code) =>
         !foundCostumers.some((costumer) => costumer.internalCode === code),
     )
@@ -47,14 +45,14 @@ export async function createBulkShipments({
 
   console.log('all costumers found')
 
-  const uniqueClientOrderIds = bundledOrders.map((order) => order.clientOrderId)
+  const clientOrderIds = bundledOrders.map((order) => order.clientOrderId)
 
   const existingOrders = await db.query.orders.findMany({
     columns: {
       id: true,
     },
     where: and(
-      inArray(orders.clientOrderId, uniqueClientOrderIds),
+      inArray(orders.clientOrderId, clientOrderIds),
       inArray(
         orders.costumerId,
         foundCostumers.map((costumer) => costumer.id),
