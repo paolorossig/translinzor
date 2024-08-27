@@ -5,9 +5,12 @@ import {
   OrderStatus,
 } from '@/components/modules/shipments/order-status'
 import { db } from '@/db'
-import { costumers, orders, shipments, type CreateOrder } from '@/db/schema'
-import { uniqueValues } from '@/lib/utils'
-import type { ShipmentBulkUploadRow } from '@/lib/validations/shipments'
+import { costumers, orders, shipments } from '@/db/schema'
+import { groupBy, uniqueValues } from '@/lib/utils'
+import {
+  mapUploadRowToCreateOrder,
+  type ShipmentBulkUploadRow,
+} from '@/lib/validations/shipments'
 
 interface CreateBulkShipmentsParams {
   clientId: string
@@ -34,19 +37,16 @@ export async function createBulkShipments({
 
   if (foundCostumers.length !== internalCodes.length) {
     const missingCostumerIds = internalCodes.filter(
-      (code) =>
-        !foundCostumers.some((costumer) => costumer.internalCode === code),
+      (code) => !foundCostumers.some((c) => c.internalCode === code),
     )
     console.log('Missing costumer IDs:', missingCostumerIds)
     throw new Error(
       'Al menos 1 cliente no ha sido encontrado en la base de datos',
     )
   }
-
   console.log('all costumers found')
 
   const clientOrderIds = bundledOrders.map((order) => order.clientOrderId)
-
   const existingOrders = await db.query.orders.findMany({
     columns: {
       id: true,
@@ -65,32 +65,12 @@ export async function createBulkShipments({
   }
   console.log('all orders in the file do not exist yet')
 
-  const internalCodeToCostumerIdMap = foundCostumers.reduce(
-    (acc, curr) => {
-      acc[curr.internalCode] = curr.id
-      return acc
-    },
-    {} as Record<string, number>,
-  )
-
-  const shipmentsOrdersMap = bundledOrders.reduce(
-    (acc, curr) => {
-      const { route, internalCode, clientOrderId, totalValue, ...rest } = curr
-      const order = {
-        clientOrderId,
-        costumerId: internalCodeToCostumerIdMap[internalCode]!,
-        totalValue: totalValue.toFixed(2),
-        ...rest,
-      }
-
-      acc[route] = [...(acc[route] ?? []), order]
-      return acc
-    },
-    {} as Record<string, Omit<CreateOrder, 'shipmentId'>[]>,
-  )
+  const ordersByRoute = groupBy(bundledOrders, (o) => o.route)
+  const costumerMap = new Map<string, number>()
+  foundCostumers.forEach((c) => costumerMap.set(c.internalCode, c.id))
 
   await db.transaction(async (tx) => {
-    for (const [route, bundledOrders] of Object.entries(shipmentsOrdersMap)) {
+    for (const [route, groupedOrders] of Object.entries(ordersByRoute)) {
       const [createdShipment] = await tx
         .insert(shipments)
         .values({
@@ -103,16 +83,18 @@ export async function createBulkShipments({
       if (!createdShipment) {
         throw new Error('create shipment failed')
       }
-
       console.log('created shipment id:', createdShipment.id)
 
       await tx.insert(orders).values(
-        bundledOrders.map((order) => ({
-          ...order,
-          shipmentId: createdShipment.id,
-        })),
+        groupedOrders.map((row) =>
+          mapUploadRowToCreateOrder({
+            row,
+            costumerId: costumerMap.get(row.internalCode)!,
+            shipmentId: createdShipment.id,
+          }),
+        ),
       )
-      console.log('# created orders:', bundledOrders.length)
+      console.log('# created orders:', groupedOrders.length)
     }
   })
 }

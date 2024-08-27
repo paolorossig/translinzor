@@ -1,5 +1,6 @@
 import { z } from 'zod'
 
+import type { CreateOrder } from '@/db/schema'
 import { removeAccents } from '@/lib/utils'
 
 export const shipmentBulkUploadSchema = z.object({
@@ -27,9 +28,9 @@ export const headersMap: Record<string, keyof ShipmentBulkUploadRow> = {
   'Suma de VALOR TOT.': 'totalValue',
 }
 
-export const parseShipmentBulkUpload = (
+export function parseShipmentBulkUpload(
   data: Record<string, string | number>[],
-) => {
+) {
   const rowsWithErrors: Record<string, string | number>[] = []
 
   const parsedData = data.flatMap((row) => {
@@ -50,4 +51,25 @@ export const parseShipmentBulkUpload = (
   })
 
   return { parsedData, rowsWithErrors }
+}
+
+export function mapUploadRowToCreateOrder({
+  row,
+  costumerId,
+  shipmentId,
+}: {
+  row: ShipmentBulkUploadRow
+  costumerId: number
+  shipmentId: number
+}): CreateOrder {
+  return {
+    costumerId,
+    shipmentId,
+    clientOrderId: row.clientOrderId,
+    orderNumber: row.orderNumber,
+    guideNumber: row.guideNumber,
+    destinationAddress: row.destinationAddress,
+    destinationDistrict: row.destinationDistrict,
+    totalValue: row.totalValue.toFixed(2),
+  }
 }
