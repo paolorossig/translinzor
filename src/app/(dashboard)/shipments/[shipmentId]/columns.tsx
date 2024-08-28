@@ -10,6 +10,7 @@ import {
   orderStatusOptions,
 } from '@/components/modules/shipments/order-status'
 import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
   Popover,
   PopoverContent,
@@ -17,7 +18,9 @@ import {
 } from '@/components/ui/popover'
 import type { ShipmentById } from '@/db/queries'
 
-export const columns: ColumnDef<ShipmentById['orders'][number]>[] = [
+type OrderColumns = ColumnDef<ShipmentById['orders'][number]>[]
+
+const columns: OrderColumns = [
   {
     accessorKey: 'costumer.name',
     header: 'Cliente',
@@ -81,3 +84,29 @@ export const columns: ColumnDef<ShipmentById['orders'][number]>[] = [
     },
   },
 ]
+
+export const adminColumns: OrderColumns = [
+  {
+    id: 'select',
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && 'indeterminate')
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  },
+  ...columns,
+]
+
+export const clientColumns: OrderColumns = columns

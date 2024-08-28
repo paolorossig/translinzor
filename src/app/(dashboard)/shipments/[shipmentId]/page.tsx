@@ -11,9 +11,10 @@ import {
   DataTableWrapper,
 } from '@/components/ui/data-table'
 import { getShipmentById } from '@/db/queries'
+import { getUser } from '@/lib/auth/server'
 import { Option } from '@/types'
 
-import { columns } from './columns'
+import { adminColumns, clientColumns } from './columns'
 
 interface ShipmentPageProps {
   params: { shipmentId: string }
@@ -22,6 +23,7 @@ interface ShipmentPageProps {
 export default async function ShipmentPage({
   params: { shipmentId },
 }: ShipmentPageProps) {
+  const user = await getUser()
   const shipment = await getShipmentById(Number(shipmentId))
 
   const costumers = shipment.orders.reduce((acc, curr) => {
@@ -31,6 +33,8 @@ export default async function ShipmentPage({
     }
     return acc
   }, [] as Option[])
+
+  const columns = user?.isAdmin ? adminColumns : clientColumns
 
   return (
     <>

@@ -139,9 +139,9 @@ interface UpdateOrderStatusParams {
   refusedReason?: string
 }
 
-export async function updateOrderStatus(input: UpdateOrderStatusParams) {
+export async function updateOrderStatus(params: UpdateOrderStatusParams) {
   const order = await db.query.orders.findFirst({
-    where: eq(orders.id, input.orderId),
+    where: eq(orders.id, params.orderId),
   })
 
   if (!order) {
@@ -155,16 +155,16 @@ export async function updateOrderStatus(input: UpdateOrderStatusParams) {
   await db
     .update(orders)
     .set(
-      input.status === OrderStatus.REFUSED
+      params.status === OrderStatus.REFUSED
         ? {
             refusedAt: new Date(),
-            refusedReason: input.refusedReason,
+            refusedReason: params.refusedReason,
           }
         : {
             deliveredAt: new Date(),
           },
     )
-    .where(eq(orders.id, input.orderId))
+    .where(eq(orders.id, params.orderId))
 }
 
 interface CreateCostumerParams {
@@ -175,12 +175,12 @@ interface CreateCostumerParams {
   channel?: string
 }
 
-export async function createCostumer(input: CreateCostumerParams) {
+export async function createCostumer(params: CreateCostumerParams) {
   const costumer = await db.query.costumers.findFirst({
     where: (costumers, { eq, or }) =>
       or(
-        eq(costumers.internalCode, input.internal_code),
-        eq(costumers.name, input.name),
+        eq(costumers.internalCode, params.internal_code),
+        eq(costumers.name, params.name),
       ),
   })
 
@@ -189,10 +189,10 @@ export async function createCostumer(input: CreateCostumerParams) {
   }
 
   await db.insert(costumers).values({
-    clientId: input.clientId,
-    internalCode: input.internal_code,
-    name: input.name,
-    channel: input.channel,
-    createdBy: input.userId,
+    clientId: params.clientId,
+    internalCode: params.internal_code,
+    name: params.name,
+    channel: params.channel,
+    createdBy: params.userId,
   })
 }

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 
 import { useState } from 'react'
@@ -72,7 +73,6 @@ interface DataTableContext<TData, TValue> {
 }
 
 export const [DataTableProvider, useDataTableContext] = createContext<
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   DataTableContext<any, any>
 >({
   name: 'DataTableContext',
@@ -93,13 +93,15 @@ export function DataTableWrapper<TData, TValue>({
 }: DataTableWrapper<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [rowSelection, setRowSelection] = useState({})
 
   const table = useReactTable({
     data,
     columns,
-    state: { sorting, columnFilters },
+    state: { sorting, columnFilters, rowSelection },
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
+    onRowSelectionChange: setRowSelection,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
