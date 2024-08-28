@@ -107,8 +107,6 @@ export const costumersRelations = relations(costumers, ({ one, many }) => ({
   orders: many(orders),
 }))
 
-export type CreateCostumer = typeof costumers.$inferInsert
-
 export const orders = pgTable('orders', {
   id: serial('id').primaryKey(),
   costumerId: integer('costumer_id')

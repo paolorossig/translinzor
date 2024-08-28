@@ -1,4 +1,4 @@
-import { and, eq, inArray } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 
 import {
   isOrderFinalized,
@@ -6,68 +6,57 @@ import {
 } from '@/components/modules/shipments/order-status'
 import { db } from '@/db'
 import { costumers, orders, shipments } from '@/db/schema'
-import { groupBy, uniqueValues } from '@/lib/utils'
+import { groupBy } from '@/lib/utils'
 import {
   mapUploadRowToCreateOrder,
   type ShipmentBulkUploadRow,
 } from '@/lib/validations/shipments'
 
 interface CreateBulkShipmentsParams {
+  userId: string
   clientId: string
   deliveryDate: Date
   bundledOrders: ShipmentBulkUploadRow[]
 }
 
 export async function createBulkShipments({
+  userId,
   clientId,
   deliveryDate,
   bundledOrders,
 }: CreateBulkShipmentsParams) {
-  const clientOrderIds = bundledOrders.map((order) => order.clientOrderId)
-  const existingOrders = await db
-    .select({ id: orders.id })
-    .from(orders)
-    .leftJoin(costumers, eq(orders.costumerId, costumers.id))
-    .where(
-      and(
-        inArray(orders.clientOrderId, clientOrderIds),
-        eq(costumers.clientId, clientId),
-      ),
+  const costumerValues = bundledOrders
+    .map((o) => ({
+      clientId,
+      name: o.costumerName,
+      internalCode: o.internalCode,
+      channel: o.channel,
+      createdBy: userId,
+    }))
+    .filter(
+      (value, index, self) =>
+        self.findIndex((c) => c.internalCode === value.internalCode) === index,
     )
-
-  if (existingOrders.length) {
-    throw new Error('Al menos 1 pedido ya existe en la base de datos')
-  }
-  console.log('all orders in the file do not exist yet')
-
-  const internalCodes = uniqueValues(bundledOrders, (o) => o.internalCode)
-  const foundCostumers = await db.query.costumers.findMany({
-    columns: {
-      id: true,
-      internalCode: true,
-    },
-    where: and(
-      inArray(costumers.internalCode, internalCodes),
-      eq(costumers.clientId, clientId),
-    ),
-  })
-
-  if (foundCostumers.length !== internalCodes.length) {
-    const missingCostumerIds = internalCodes.filter(
-      (code) => !foundCostumers.some((c) => c.internalCode === code),
-    )
-    console.log('Missing costumer IDs:', missingCostumerIds)
-    throw new Error(
-      'Al menos 1 cliente no ha sido encontrado en la base de datos',
-    )
-  }
-  console.log('all costumers found')
-
-  const ordersByRoute = groupBy(bundledOrders, (o) => o.route)
-  const costumerMap = new Map<string, number>()
-  foundCostumers.forEach((c) => costumerMap.set(c.internalCode, c.id))
 
   await db.transaction(async (tx) => {
+    const upsertedCostumers = await tx
+      .insert(costumers)
+      .values(costumerValues)
+      .onConflictDoUpdate({
+        target: [costumers.clientId, costumers.internalCode],
+        set: {
+          name: sql`excluded.name`,
+          channel: sql`excluded.channel`,
+          updatedAt: new Date(),
+        },
+      })
+      .returning({ id: costumers.id, internalCode: costumers.internalCode })
+    console.log('# upserted costumers:', upsertedCostumers.length)
+
+    const costumerMap = new Map<string, number>()
+    upsertedCostumers.forEach((c) => costumerMap.set(c.internalCode, c.id))
+    const ordersByRoute = groupBy(bundledOrders, (o) => o.route)
+
     for (const [route, groupedOrders] of Object.entries(ordersByRoute)) {
       const [createdShipment] = await tx
         .insert(shipments)
@@ -179,6 +168,7 @@ export async function updateOrderStatus(input: UpdateOrderStatusParams) {
 }
 
 interface CreateCostumerParams {
+  userId: string
   clientId: string
   name: string
   internal_code: string
@@ -203,5 +193,6 @@ export async function createCostumer(input: CreateCostumerParams) {
     internalCode: input.internal_code,
     name: input.name,
     channel: input.channel,
+    createdBy: input.userId,
   })
 }

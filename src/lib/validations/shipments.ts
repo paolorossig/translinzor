@@ -6,6 +6,8 @@ import { removeAccents } from '@/lib/utils'
 export const shipmentBulkUploadSchema = z.object({
   route: z.string(),
   internalCode: z.string(),
+  costumerName: z.string(),
+  channel: z.string(),
   clientOrderId: z.number(),
   orderNumber: z.string(),
   guideNumber: z.string(),
@@ -19,6 +21,8 @@ export type ShipmentBulkUploadRow = z.infer<typeof shipmentBulkUploadSchema>
 export const headersMap: Record<string, keyof ShipmentBulkUploadRow> = {
   CHOFER: 'route',
   'Cod. Cliente': 'internalCode',
+  'Razón Social': 'costumerName',
+  'Canal x Vend.': 'channel',
   'NRO VALE': 'clientOrderId',
   'NRO PEDIDO': 'orderNumber',
   'NRO GUIA': 'guideNumber',
