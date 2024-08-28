@@ -55,11 +55,12 @@ export const users = pgTable('users', {
 
 export type User = typeof users.$inferSelect
 
-export const usersRelations = relations(users, ({ one }) => ({
+export const usersRelations = relations(users, ({ one, many }) => ({
   client: one(clients, {
     fields: [users.clientId],
     references: [clients.id],
   }),
+  costumers: many(costumers),
 }))
 
 export const clients = pgTable('clients', {
@@ -83,6 +84,11 @@ export const costumers = pgTable(
     internalCode: text('internal_code').notNull(),
     name: text('name').notNull(),
     channel: text('channel'),
+    createdBy: uuid('created_by')
+      .references(() => users.id)
+      .notNull(),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at').defaultNow().notNull(),
   },
   (t) => ({
     uniq: unique().on(t.clientId, t.internalCode),
@@ -94,8 +100,14 @@ export const costumersRelations = relations(costumers, ({ one, many }) => ({
     fields: [costumers.clientId],
     references: [clients.id],
   }),
+  user: one(users, {
+    fields: [costumers.createdBy],
+    references: [users.id],
+  }),
   orders: many(orders),
 }))
+
+export type CreateCostumer = typeof costumers.$inferInsert
 
 export const orders = pgTable(
   'orders',
