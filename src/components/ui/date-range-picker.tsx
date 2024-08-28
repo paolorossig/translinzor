@@ -15,13 +15,13 @@ import {
 import { cn, formatDate, formatDateRange } from '@/lib/utils'
 
 interface DateRangePickerProps {
-  date: DateRange | undefined
+  range: DateRange | undefined
   onSelect: SelectRangeEventHandler
   className?: string
 }
 
 export function DateRangePicker({
-  date,
+  range,
   onSelect,
   className,
 }: DateRangePickerProps) {
@@ -33,14 +33,14 @@ export function DateRangePicker({
             variant="outline"
             className={cn(
               'justify-start text-left font-normal',
-              !date && 'text-muted-foreground',
+              !range && 'text-muted-foreground',
             )}
           >
             <CalendarIcon className="mr-2 h-4 w-4 capitalize" />
-            {date?.from
-              ? date.to
-                ? formatDateRange(date.from, date.to)
-                : formatDate(date.from)
+            {range?.from
+              ? range.to
+                ? formatDateRange(range.from, range.to)
+                : formatDate(range.from)
               : 'Elija una fecha'}
           </Button>
         </PopoverTrigger>
@@ -48,8 +48,8 @@ export function DateRangePicker({
           <Calendar
             initialFocus
             mode="range"
-            defaultMonth={date?.from}
-            selected={date}
+            defaultMonth={range?.from}
+            selected={range}
             onSelect={onSelect}
             numberOfMonths={2}
             locale={es}

@@ -28,19 +28,19 @@ import {
 
 export const createBulkShipmentsAction = authActionClient
   .schema(createBulkShipmentsSchema)
-  .action(async ({ parsedInput: payload }) => {
-    await createBulkShipments(payload)
+  .action(async ({ parsedInput, ctx: { user } }) => {
+    await createBulkShipments({ userId: user.id, ...parsedInput })
 
     revalidatePath('/shipments')
   })
 
 export const assignShipmentAction = authActionClient
   .schema(assignShipmentSchema)
-  .action(async ({ parsedInput: payload }) => {
+  .action(async ({ parsedInput }) => {
     await assignShipment({
-      driverId: Number(payload.driverId),
-      transportUnitId: Number(payload.transportUnitId),
-      shipmentId: Number(payload.shipmentId),
+      driverId: Number(parsedInput.driverId),
+      transportUnitId: Number(parsedInput.transportUnitId),
+      shipmentId: Number(parsedInput.shipmentId),
     })
 
     revalidatePath('/shipments')
@@ -48,41 +48,41 @@ export const assignShipmentAction = authActionClient
 
 export const startShipmentAction = authActionClient
   .schema(modifyShipmentSchema)
-  .action(async ({ parsedInput: payload }) => {
-    await startShipment(payload)
+  .action(async ({ parsedInput }) => {
+    await startShipment(parsedInput)
 
     revalidatePath('/shipments')
   })
 
 export const deleteShipmentAction = authActionClient
   .schema(modifyShipmentSchema)
-  .action(async ({ parsedInput: payload }) => {
-    await deleteShipment(payload)
+  .action(async ({ parsedInput }) => {
+    await deleteShipment(parsedInput)
 
     revalidatePath('/shipments')
   })
 
 export const updateOrderStatusAction = authActionClient
   .schema(updateOrderStatusSchema)
-  .action(async ({ parsedInput: payload }) => {
-    await updateOrderStatus(payload)
+  .action(async ({ parsedInput }) => {
+    await updateOrderStatus(parsedInput)
 
     revalidatePath('/shipments')
   })
 
 export const createCostumerAction = authActionClient
   .schema(createCostumerSchema)
-  .action(async ({ parsedInput: payload }) => {
-    await createCostumer(payload)
+  .action(async ({ parsedInput, ctx: { user } }) => {
+    await createCostumer({ userId: user.id, ...parsedInput })
 
     revalidatePath('/shipments')
   })
 
 export const getAvailabilityAction = authActionClient
   .schema(getAvailabilitySchema)
-  .action(async ({ parsedInput: payload }) => {
+  .action(async ({ parsedInput }) => {
     const { drivers, transportUnits } =
-      await getDriversAndTransportAvailability(payload)
+      await getDriversAndTransportAvailability(parsedInput)
 
     const driverOptions: Option[] = drivers.map((driver) => ({
       label: `${driver.lastName}, ${driver.name}`,
@@ -101,6 +101,6 @@ export const getAvailabilityAction = authActionClient
 
 export const getOrderStatusOptionsAction = authActionClient
   .schema(modifyShipmentSchema)
-  .action(async ({ parsedInput: payload }) => {
-    return await getOrderStatusOptions(payload.shipmentId)
+  .action(async ({ parsedInput }) => {
+    return await getOrderStatusOptions(parsedInput.shipmentId)
   })

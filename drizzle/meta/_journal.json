@@ -99,6 +99,20 @@
       "when": 1723192118806,
       "tag": "0013_drop_companies_table",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1724854080061,
+      "tag": "0014_add_create_and_update_columns_to_costumers",
+      "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "7",
+      "when": 1724860272940,
+      "tag": "0015_drop_orders_unique_constraint",
+      "breakpoints": true
     }
   ]
 }

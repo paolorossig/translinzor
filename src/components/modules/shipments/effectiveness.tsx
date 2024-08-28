@@ -10,7 +10,6 @@ import {
 } from 'lucide-react'
 import { useQueryStates } from 'nuqs'
 import { useGenerateImage } from 'recharts-to-png'
-import * as xlsx from 'xlsx'
 
 import { BarChartSkeleton } from '@/components/charts/chart-skeletons'
 import { Button } from '@/components/ui/button'
@@ -24,7 +23,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { AnyObject, flattenObject } from '@/lib/utils'
+import { AnyObject, downloadExcel, flattenObject } from '@/lib/utils'
 import { searchParamsParser } from '@/lib/validations/params'
 
 import {
@@ -40,13 +39,11 @@ export function Effectiveness({ data, aggregator }: EffectivenessChartProps) {
 
   const downloadMetricsData = () => {
     if (!data) return
-
     const _data = JSON.parse(JSON.stringify(data)) as AnyObject[]
-    const worksheet = xlsx.utils.json_to_sheet(_data.map(flattenObject))
-    const workbook = xlsx.utils.book_new()
-    xlsx.utils.book_append_sheet(workbook, worksheet, 'Metrics')
-    const fileName = `Efectividad de entregas - ${new Date().toISOString()}.xlsx`
-    xlsx.writeFile(workbook, fileName)
+    downloadExcel(
+      _data.map(flattenObject),
+      `Efectividad de entregas - ${new Date().toISOString()}.xlsx`,
+    )
   }
 
   const downloadMetricsImage = useCallback(async () => {
@@ -78,7 +75,7 @@ function EffectivenessWrapper({
   const [params, setParams] = useQueryStates(searchParamsParser, {
     startTransition,
   })
-  const dateRange = { from: params.from, to: params.to }
+  const range = { from: params.from, to: params.to }
 
   return (
     <Tabs
@@ -111,8 +108,8 @@ function EffectivenessWrapper({
             </TabsContent>
             <TabsContent value="deliveryDate">
               <DateRangePicker
-                date={dateRange}
-                onSelect={(dateRange) => dateRange && setParams(dateRange)}
+                range={range}
+                onSelect={(range) => range && setParams(range)}
               />
             </TabsContent>
             <DropdownMenu>

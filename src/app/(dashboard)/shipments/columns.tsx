@@ -51,10 +51,6 @@ type ShipmentColumns = ColumnDef<ShipmentsByClient[number]>[]
 
 const columns: ShipmentColumns = [
   {
-    accessorKey: 'id',
-    header: 'ID',
-  },
-  {
     accessorKey: 'deliveryDate',
     header: 'Fecha de entrega',
     cell: ({ row }) => {

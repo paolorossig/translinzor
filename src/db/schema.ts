@@ -55,11 +55,12 @@ export const users = pgTable('users', {
 
 export type User = typeof users.$inferSelect
 
-export const usersRelations = relations(users, ({ one }) => ({
+export const usersRelations = relations(users, ({ one, many }) => ({
   client: one(clients, {
     fields: [users.clientId],
     references: [clients.id],
   }),
+  costumers: many(costumers),
 }))
 
 export const clients = pgTable('clients', {
@@ -83,6 +84,11 @@ export const costumers = pgTable(
     internalCode: text('internal_code').notNull(),
     name: text('name').notNull(),
     channel: text('channel'),
+    createdBy: uuid('created_by')
+      .references(() => users.id)
+      .notNull(),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at').defaultNow().notNull(),
   },
   (t) => ({
     uniq: unique().on(t.clientId, t.internalCode),
@@ -94,37 +100,35 @@ export const costumersRelations = relations(costumers, ({ one, many }) => ({
     fields: [costumers.clientId],
     references: [clients.id],
   }),
+  user: one(users, {
+    fields: [costumers.createdBy],
+    references: [users.id],
+  }),
   orders: many(orders),
 }))
 
-export const orders = pgTable(
-  'orders',
-  {
-    id: serial('id').primaryKey(),
-    costumerId: integer('costumer_id')
-      .references(() => costumers.id)
-      .notNull(),
-    shipmentId: integer('shipment_id')
-      .references(() => shipments.id, {
-        onDelete: 'cascade',
-      })
-      .notNull(),
-    clientOrderId: integer('client_order_id').notNull(),
-    orderNumber: text('order_number').notNull(),
-    guideNumber: text('guide_number').notNull(),
-    destinationAddress: text('destination_address').notNull(),
-    destinationDistrict: text('destination_district').notNull(),
-    totalValue: numeric('total_value').notNull(),
-    createdAt: timestamp('created_at').defaultNow().notNull(),
-    startedAt: timestamp('started_at'),
-    deliveredAt: timestamp('delivered_at'),
-    refusedAt: timestamp('refused_at'),
-    refusedReason: text('refused_reason'),
-  },
-  (t) => ({
-    uniq: unique().on(t.costumerId, t.clientOrderId),
-  }),
-)
+export const orders = pgTable('orders', {
+  id: serial('id').primaryKey(),
+  costumerId: integer('costumer_id')
+    .references(() => costumers.id)
+    .notNull(),
+  shipmentId: integer('shipment_id')
+    .references(() => shipments.id, {
+      onDelete: 'cascade',
+    })
+    .notNull(),
+  clientOrderId: integer('client_order_id').notNull(),
+  orderNumber: text('order_number').notNull(),
+  guideNumber: text('guide_number').notNull(),
+  destinationAddress: text('destination_address').notNull(),
+  destinationDistrict: text('destination_district').notNull(),
+  totalValue: numeric('total_value').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  startedAt: timestamp('started_at'),
+  deliveredAt: timestamp('delivered_at'),
+  refusedAt: timestamp('refused_at'),
+  refusedReason: text('refused_reason'),
+})
 
 export const ordersRelations = relations(orders, ({ one }) => ({
   costumer: one(costumers, {
