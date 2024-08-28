@@ -1,0 +1,1 @@
+ALTER TABLE "orders" DROP CONSTRAINT "orders_costumer_id_client_order_id_unique";

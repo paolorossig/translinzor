@@ -109,34 +109,28 @@ export const costumersRelations = relations(costumers, ({ one, many }) => ({
 
 export type CreateCostumer = typeof costumers.$inferInsert
 
-export const orders = pgTable(
-  'orders',
-  {
-    id: serial('id').primaryKey(),
-    costumerId: integer('costumer_id')
-      .references(() => costumers.id)
-      .notNull(),
-    shipmentId: integer('shipment_id')
-      .references(() => shipments.id, {
-        onDelete: 'cascade',
-      })
-      .notNull(),
-    clientOrderId: integer('client_order_id').notNull(),
-    orderNumber: text('order_number').notNull(),
-    guideNumber: text('guide_number').notNull(),
-    destinationAddress: text('destination_address').notNull(),
-    destinationDistrict: text('destination_district').notNull(),
-    totalValue: numeric('total_value').notNull(),
-    createdAt: timestamp('created_at').defaultNow().notNull(),
-    startedAt: timestamp('started_at'),
-    deliveredAt: timestamp('delivered_at'),
-    refusedAt: timestamp('refused_at'),
-    refusedReason: text('refused_reason'),
-  },
-  (t) => ({
-    uniq: unique().on(t.costumerId, t.clientOrderId),
-  }),
-)
+export const orders = pgTable('orders', {
+  id: serial('id').primaryKey(),
+  costumerId: integer('costumer_id')
+    .references(() => costumers.id)
+    .notNull(),
+  shipmentId: integer('shipment_id')
+    .references(() => shipments.id, {
+      onDelete: 'cascade',
+    })
+    .notNull(),
+  clientOrderId: integer('client_order_id').notNull(),
+  orderNumber: text('order_number').notNull(),
+  guideNumber: text('guide_number').notNull(),
+  destinationAddress: text('destination_address').notNull(),
+  destinationDistrict: text('destination_district').notNull(),
+  totalValue: numeric('total_value').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  startedAt: timestamp('started_at'),
+  deliveredAt: timestamp('delivered_at'),
+  refusedAt: timestamp('refused_at'),
+  refusedReason: text('refused_reason'),
+})
 
 export const ordersRelations = relations(orders, ({ one }) => ({
   costumer: one(costumers, {
