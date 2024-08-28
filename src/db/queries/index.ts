@@ -145,12 +145,12 @@ export async function getDriversAndTransportAvailability(date: Date) {
 }
 
 export async function getOrderStatusOptions(shipmentId: number) {
-  const orders = await db.query.orders.findMany({
-    where: (order, { eq }) => eq(order.shipmentId, shipmentId),
-    orderBy: (order, { asc }) => asc(order.orderNumber),
+  const _orders = await db.query.orders.findMany({
+    where: eq(orders.shipmentId, shipmentId),
+    orderBy: asc(orders.orderNumber),
   })
 
-  const orderStatusOptions: Option[] = orders.map((order) => ({
+  const orderStatusOptions: Option[] = _orders.map((order) => ({
     label: order.orderNumber,
     value: order.id.toString(),
     icon: getOrderStatus(order),

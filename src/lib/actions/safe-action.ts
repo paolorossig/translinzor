@@ -28,3 +28,9 @@ export const authActionClient = actionClient
 
     return next({ ctx: { user } })
   })
+
+export const adminActionClient = authActionClient.use(async ({ next, ctx }) => {
+  if (!ctx.user.isAdmin) throw new Error('No autorizado')
+
+  return next()
+})
