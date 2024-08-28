@@ -23,6 +23,23 @@ export async function createBulkShipments({
   deliveryDate,
   bundledOrders,
 }: CreateBulkShipmentsParams) {
+  const clientOrderIds = bundledOrders.map((order) => order.clientOrderId)
+  const existingOrders = await db
+    .select({ id: orders.id })
+    .from(orders)
+    .leftJoin(costumers, eq(orders.costumerId, costumers.id))
+    .where(
+      and(
+        inArray(orders.clientOrderId, clientOrderIds),
+        eq(costumers.clientId, clientId),
+      ),
+    )
+
+  if (existingOrders.length) {
+    throw new Error('Al menos 1 pedido ya existe en la base de datos')
+  }
+  console.log('all orders in the file do not exist yet')
+
   const internalCodes = uniqueValues(bundledOrders, (o) => o.internalCode)
   const foundCostumers = await db.query.costumers.findMany({
     columns: {
@@ -45,25 +62,6 @@ export async function createBulkShipments({
     )
   }
   console.log('all costumers found')
-
-  const clientOrderIds = bundledOrders.map((order) => order.clientOrderId)
-  const existingOrders = await db.query.orders.findMany({
-    columns: {
-      id: true,
-    },
-    where: and(
-      inArray(orders.clientOrderId, clientOrderIds),
-      inArray(
-        orders.costumerId,
-        foundCostumers.map((costumer) => costumer.id),
-      ),
-    ),
-  })
-
-  if (existingOrders.length) {
-    throw new Error('Al menos 1 pedido ya existe en la base de datos')
-  }
-  console.log('all orders in the file do not exist yet')
 
   const ordersByRoute = groupBy(bundledOrders, (o) => o.route)
   const costumerMap = new Map<string, number>()
