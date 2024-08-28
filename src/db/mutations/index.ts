@@ -1,4 +1,4 @@
-import { eq, sql } from 'drizzle-orm'
+import { eq, inArray, sql } from 'drizzle-orm'
 
 import {
   isOrderFinalized,
@@ -165,6 +165,10 @@ export async function updateOrderStatus(params: UpdateOrderStatusParams) {
           },
     )
     .where(eq(orders.id, params.orderId))
+}
+
+export async function deleteOrders({ orderIds }: { orderIds: number[] }) {
+  await db.delete(orders).where(inArray(orders.id, orderIds))
 }
 
 interface CreateCostumerParams {

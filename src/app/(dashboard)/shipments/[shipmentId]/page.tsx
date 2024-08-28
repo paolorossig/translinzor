@@ -1,18 +1,10 @@
 import { CalendarIcon, CarIcon, LayersIcon, UserRoundIcon } from 'lucide-react'
 
-import { orderStatusOptions } from '@/components/modules/shipments/order-status'
-import {
-  DataTable,
-  DataTableFacetedFilter,
-  DataTableFilterInput,
-  DataTableHeader,
-  DataTablePagination,
-  DataTableResetFilter,
-  DataTableWrapper,
-} from '@/components/ui/data-table'
+import { OrdersTable } from '@/components/modules/shipments/orders-table'
+import { DataTableWrapper } from '@/components/ui/data-table'
 import { getShipmentById } from '@/db/queries'
 import { getUser } from '@/lib/auth/server'
-import { Option } from '@/types'
+import type { Option } from '@/types'
 
 import { adminColumns, clientColumns } from './columns'
 
@@ -70,27 +62,7 @@ export default async function ShipmentPage({
         <div>
           <h2 className="text-lg font-medium text-primary/90">Órdenes</h2>
           <DataTableWrapper columns={columns} data={shipment.orders}>
-            <DataTableHeader>
-              <DataTableFilterInput
-                columnName="orderNumber"
-                placeholder="Filtrar órdenes..."
-              />
-              <div className="flex w-full space-x-2 sm:w-fit">
-                <DataTableFacetedFilter
-                  columnName="costumer_name"
-                  title="Cliente"
-                  options={costumers}
-                />
-                <DataTableFacetedFilter
-                  columnName="status"
-                  title="Estado"
-                  options={orderStatusOptions}
-                />
-                <DataTableResetFilter />
-              </div>
-            </DataTableHeader>
-            <DataTable />
-            <DataTablePagination />
+            <OrdersTable costumers={costumers} />
           </DataTableWrapper>
         </div>
       </section>

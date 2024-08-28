@@ -37,6 +37,10 @@ export const updateOrderStatusSchema = z
     return true
   })
 
+export const deleteOrdersSchema = z.object({
+  orderIds: z.array(z.number({ required_error: 'Requerido' })),
+})
+
 export const createCostumerSchema = z.object({
   clientId: z.string({ required_error: 'Requerido' }),
   name: z.string({ required_error: 'Requerido' }),

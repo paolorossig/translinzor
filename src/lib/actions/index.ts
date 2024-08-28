@@ -6,6 +6,7 @@ import {
   assignShipment,
   createBulkShipments,
   createCostumer,
+  deleteOrders,
   deleteShipment,
   startShipment,
   updateOrderStatus,
@@ -21,6 +22,7 @@ import {
   assignShipmentSchema,
   createBulkShipmentsSchema,
   createCostumerSchema,
+  deleteOrdersSchema,
   getAvailabilitySchema,
   modifyShipmentSchema,
   updateOrderStatusSchema,
@@ -66,6 +68,14 @@ export const updateOrderStatusAction = adminActionClient
   .schema(updateOrderStatusSchema)
   .action(async ({ parsedInput }) => {
     await updateOrderStatus(parsedInput)
+
+    revalidatePath('/shipments')
+  })
+
+export const deleteOrdersAction = adminActionClient
+  .schema(deleteOrdersSchema)
+  .action(async ({ parsedInput }) => {
+    await deleteOrders(parsedInput)
 
     revalidatePath('/shipments')
   })

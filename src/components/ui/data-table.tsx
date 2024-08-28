@@ -323,15 +323,33 @@ export function DataTableResetFilter() {
   )
 }
 
-export function DataTable({ className }: { className?: string }) {
+export type SelectionHeader = {
+  table: TableType<any>
+  selectedRows: any[]
+  totalSelectedRows: number
+}
+
+interface DataTableProps {
+  className?: string
+  selectionHeader?: (params: SelectionHeader) => React.ReactNode
+}
+
+export function DataTable({ className, selectionHeader }: DataTableProps) {
   const { table, columns } = useDataTableContext()
+  const isRowSelected =
+    table.getIsAllPageRowsSelected() || table.getIsSomePageRowsSelected()
+  const selectedRows = table
+    .getSelectedRowModel()
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    .rows.map((row) => row.original)
+  const totalSelectedRows = Object.keys(table.getState().rowSelection).length
 
   return (
     <div className={cn('overflow-hidden rounded-md border', className)}>
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id} className="bg-secondary/30">
+            <TableRow key={headerGroup.id} className="relative bg-secondary/30">
               {headerGroup.headers.map((header) => {
                 return (
                   <TableHead key={header.id} colSpan={header.colSpan}>
@@ -344,6 +362,11 @@ export function DataTable({ className }: { className?: string }) {
                   </TableHead>
                 )
               })}
+              {isRowSelected && selectionHeader && (
+                <TableHead className="absolute inset-0 left-8 items-center bg-[#FBFBFC]">
+                  {selectionHeader({ table, selectedRows, totalSelectedRows })}
+                </TableHead>
+              )}
             </TableRow>
           ))}
         </TableHeader>
