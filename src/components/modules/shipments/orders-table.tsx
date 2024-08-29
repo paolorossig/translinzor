@@ -97,6 +97,7 @@ function OrdersTableSelectionHeader({
 
   const handleUpdateOrders = (value: Option<OrderStatus>) =>
     toast.promise(
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
       updateOrdersStatus.executeAsync({ orderIds, status: value.value as any }),
       {
         loading: 'Actualizando órdenes...',
