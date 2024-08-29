@@ -363,7 +363,7 @@ export function DataTable({ className, selectionHeader }: DataTableProps) {
                 )
               })}
               {isRowSelected && selectionHeader && (
-                <TableHead className="absolute inset-0 left-8 items-center bg-[#FBFBFC]">
+                <TableHead className="absolute inset-0 left-8 items-center bg-[#FBFBFC] dark:bg-[#0C0F13]">
                   {selectionHeader({ table, selectedRows, totalSelectedRows })}
                 </TableHead>
               )}
