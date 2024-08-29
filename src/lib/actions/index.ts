@@ -6,6 +6,7 @@ import {
   assignShipment,
   createBulkShipments,
   createCostumer,
+  deleteOrders,
   deleteShipment,
   startShipment,
   updateOrderStatus,
@@ -16,17 +17,19 @@ import {
 } from '@/db/queries'
 import { Option } from '@/types'
 
-import { authActionClient } from './safe-action'
+import { adminActionClient } from './safe-action'
 import {
   assignShipmentSchema,
   createBulkShipmentsSchema,
   createCostumerSchema,
+  deleteOrdersSchema,
   getAvailabilitySchema,
   modifyShipmentSchema,
+  updateMultipleOrderStatusSchema,
   updateOrderStatusSchema,
 } from './schema'
 
-export const createBulkShipmentsAction = authActionClient
+export const createBulkShipmentsAction = adminActionClient
   .schema(createBulkShipmentsSchema)
   .action(async ({ parsedInput, ctx: { user } }) => {
     await createBulkShipments({ userId: user.id, ...parsedInput })
@@ -34,7 +37,7 @@ export const createBulkShipmentsAction = authActionClient
     revalidatePath('/shipments')
   })
 
-export const assignShipmentAction = authActionClient
+export const assignShipmentAction = adminActionClient
   .schema(assignShipmentSchema)
   .action(async ({ parsedInput }) => {
     await assignShipment({
@@ -46,7 +49,7 @@ export const assignShipmentAction = authActionClient
     revalidatePath('/shipments')
   })
 
-export const startShipmentAction = authActionClient
+export const startShipmentAction = adminActionClient
   .schema(modifyShipmentSchema)
   .action(async ({ parsedInput }) => {
     await startShipment(parsedInput)
@@ -54,7 +57,7 @@ export const startShipmentAction = authActionClient
     revalidatePath('/shipments')
   })
 
-export const deleteShipmentAction = authActionClient
+export const deleteShipmentAction = adminActionClient
   .schema(modifyShipmentSchema)
   .action(async ({ parsedInput }) => {
     await deleteShipment(parsedInput)
@@ -62,7 +65,7 @@ export const deleteShipmentAction = authActionClient
     revalidatePath('/shipments')
   })
 
-export const updateOrderStatusAction = authActionClient
+export const updateOrderStatusAction = adminActionClient
   .schema(updateOrderStatusSchema)
   .action(async ({ parsedInput }) => {
     await updateOrderStatus(parsedInput)
@@ -70,7 +73,25 @@ export const updateOrderStatusAction = authActionClient
     revalidatePath('/shipments')
   })
 
-export const createCostumerAction = authActionClient
+export const updateMultipleOrderStatusAction = adminActionClient
+  .schema(updateMultipleOrderStatusSchema)
+  .action(async ({ parsedInput }) => {
+    for (const orderId of parsedInput.orderIds) {
+      await updateOrderStatus({ orderId, status: parsedInput.status })
+    }
+
+    revalidatePath('/shipments')
+  })
+
+export const deleteOrdersAction = adminActionClient
+  .schema(deleteOrdersSchema)
+  .action(async ({ parsedInput }) => {
+    await deleteOrders(parsedInput)
+
+    revalidatePath('/shipments')
+  })
+
+export const createCostumerAction = adminActionClient
   .schema(createCostumerSchema)
   .action(async ({ parsedInput, ctx: { user } }) => {
     await createCostumer({ userId: user.id, ...parsedInput })
@@ -78,7 +99,7 @@ export const createCostumerAction = authActionClient
     revalidatePath('/shipments')
   })
 
-export const getAvailabilityAction = authActionClient
+export const getAvailabilityAction = adminActionClient
   .schema(getAvailabilitySchema)
   .action(async ({ parsedInput }) => {
     const { drivers, transportUnits } =
@@ -99,7 +120,7 @@ export const getAvailabilityAction = authActionClient
     return { drivers: driverOptions, transportUnits: transportUnitOptions }
   })
 
-export const getOrderStatusOptionsAction = authActionClient
+export const getOrderStatusOptionsAction = adminActionClient
   .schema(modifyShipmentSchema)
   .action(async ({ parsedInput }) => {
     return await getOrderStatusOptions(parsedInput.shipmentId)
