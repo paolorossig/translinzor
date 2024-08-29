@@ -1,9 +1,10 @@
 'use client'
 
-import { TrashIcon, XIcon } from 'lucide-react'
+import { ChartNoAxesColumnIncreasingIcon, TrashIcon, XIcon } from 'lucide-react'
 import { useAction } from 'next-safe-action/hooks'
 import { toast } from 'sonner'
 
+import { Icons } from '@/components/icons'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,11 +26,21 @@ import {
   DataTableResetFilter,
   SelectionHeader,
 } from '@/components/ui/data-table'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { Separator } from '@/components/ui/separator'
-import { deleteOrdersAction } from '@/lib/actions'
+import {
+  deleteOrdersAction,
+  updateMultipleOrderStatusAction,
+} from '@/lib/actions'
 import type { Option } from '@/types'
 
-import { orderStatusOptions } from './order-status'
+import { OrderStatus, orderStatusOptions } from './order-status'
 
 interface OrdersTableProps {
   costumers: Option[]
@@ -77,15 +88,36 @@ function OrdersTableSelectionHeader({
     table.getIsAllPageRowsSelected()
   const resetRowsSelection = () => table.toggleAllPageRowsSelected(false)
 
-  const deleteOrders = useAction(deleteOrdersAction, {
+  const updateOrdersStatus = useAction(updateMultipleOrderStatusAction, {
     onSuccess: () => {
-      toast.success('Órdenes eliminadas correctamente')
       resetRowsSelection()
       needsToResetFilters && table.resetColumnFilters()
     },
-    onError: ({ error }) =>
-      void toast.error(error.serverError ?? 'No se pudo eliminar las órdenes'),
   })
+
+  const handleUpdateOrders = (value: Option<OrderStatus>) =>
+    toast.promise(
+      updateOrdersStatus.executeAsync({ orderIds, status: value.value as any }),
+      {
+        loading: 'Actualizando órdenes...',
+        success: 'Órdenes actualizadas correctamente',
+        error: 'No se pudo actualizar las órdenes',
+      },
+    )
+
+  const deleteOrders = useAction(deleteOrdersAction, {
+    onSuccess: () => {
+      resetRowsSelection()
+      needsToResetFilters && table.resetColumnFilters()
+    },
+  })
+
+  const handleDeleteOrders = () =>
+    toast.promise(deleteOrders.executeAsync({ orderIds }), {
+      loading: 'Eliminando órdenes...',
+      success: 'Órdenes eliminadas correctamente',
+      error: 'No se pudo eliminar las órdenes',
+    })
 
   return (
     <div className="flex h-full items-center justify-center gap-4">
@@ -99,6 +131,31 @@ function OrdersTableSelectionHeader({
         <XIcon className="ml-1 h-4 w-4" />
       </Button>
       <Separator orientation="vertical" className="h-8" />
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button size="sm" variant="secondary" className="h-8">
+            <ChartNoAxesColumnIncreasingIcon className="mr-1 h-4 w-4" />
+            Cambiar estado
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuGroup>
+            {orderStatusOptions.map((status) => {
+              if (status.value !== OrderStatus.DELIVERED) return null
+              const Icon = status.icon && Icons[status.icon]
+              return (
+                <DropdownMenuItem
+                  key={status.value}
+                  onClick={() => handleUpdateOrders(status)}
+                >
+                  {Icon && <Icon className="mr-2 h-4 w-4" />}
+                  {status.label}
+                </DropdownMenuItem>
+              )
+            })}
+          </DropdownMenuGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
       <AlertDialog>
         <AlertDialogTrigger asChild>
           <Button size="sm" variant="destructive" className="h-8">
@@ -115,9 +172,7 @@ function OrdersTableSelectionHeader({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => deleteOrders.execute({ orderIds })}
-            >
+            <AlertDialogAction onClick={handleDeleteOrders}>
               Continuar
             </AlertDialogAction>
           </AlertDialogFooter>

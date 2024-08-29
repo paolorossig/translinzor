@@ -37,6 +37,14 @@ export const updateOrderStatusSchema = z
     return true
   })
 
+export const updateMultipleOrderStatusSchema = z.object({
+  orderIds: z.array(z.number({ required_error: 'Requerido' })),
+  status: z.enum(
+    [OrderStatus.SCHEDULED, OrderStatus.ON_ROUTE, OrderStatus.DELIVERED],
+    { required_error: 'Requerido' },
+  ),
+})
+
 export const deleteOrdersSchema = z.object({
   orderIds: z.array(z.number({ required_error: 'Requerido' })),
 })

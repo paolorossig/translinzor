@@ -25,6 +25,7 @@ import {
   deleteOrdersSchema,
   getAvailabilitySchema,
   modifyShipmentSchema,
+  updateMultipleOrderStatusSchema,
   updateOrderStatusSchema,
 } from './schema'
 
@@ -68,6 +69,16 @@ export const updateOrderStatusAction = adminActionClient
   .schema(updateOrderStatusSchema)
   .action(async ({ parsedInput }) => {
     await updateOrderStatus(parsedInput)
+
+    revalidatePath('/shipments')
+  })
+
+export const updateMultipleOrderStatusAction = adminActionClient
+  .schema(updateMultipleOrderStatusSchema)
+  .action(async ({ parsedInput }) => {
+    for (const orderId of parsedInput.orderIds) {
+      await updateOrderStatus({ orderId, status: parsedInput.status })
+    }
 
     revalidatePath('/shipments')
   })
