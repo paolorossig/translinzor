@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button'
 import {
   Command,
   CommandEmpty,
-  CommandGroup,
   CommandInput,
   CommandItem,
   CommandList,
@@ -37,7 +36,7 @@ export default function Autocomplete({
 }: AutocompleteProps) {
   const [open, setOpen] = useState(false)
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={setOpen} modal={true}>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
@@ -60,43 +59,41 @@ export default function Autocomplete({
           {!isLoading && (
             <CommandEmpty>No se han encontrado resultados.</CommandEmpty>
           )}
-          <CommandGroup>
-            <CommandList>
-              {isLoading ? (
-                <div className="space-y-1 overflow-hidden px-1 py-2">
-                  <Skeleton className="h-8 rounded-sm" />
-                  <Skeleton className="h-8 rounded-sm" />
-                  <Skeleton className="h-8 rounded-sm" />
-                </div>
-              ) : (
-                options?.map((option) => {
-                  const Icon = option.icon ? Icons[option.icon] : null
-                  return (
-                    <CommandItem
-                      key={option.value}
-                      value={option.label}
-                      disabled={option.disabled}
-                      onSelect={() => {
-                        onValueChange?.(option.value)
-                        setOpen(false)
-                      }}
-                    >
-                      <CheckIcon
-                        className={cn(
-                          'mr-2 h-4 w-4 flex-shrink-0',
-                          option.value === value ? 'opacity-100' : 'opacity-0',
-                        )}
-                      />
-                      {Icon && <Icon className="mr-2 h-4 w-4" />}
-                      <span className="overflow-x-clip whitespace-nowrap">
-                        {option.label}
-                      </span>
-                    </CommandItem>
-                  )
-                })
-              )}
-            </CommandList>
-          </CommandGroup>
+          <CommandList>
+            {isLoading ? (
+              <div className="space-y-1 overflow-hidden px-1 py-2">
+                <Skeleton className="h-8 rounded-sm" />
+                <Skeleton className="h-8 rounded-sm" />
+                <Skeleton className="h-8 rounded-sm" />
+              </div>
+            ) : (
+              options?.map((option) => {
+                const Icon = option.icon ? Icons[option.icon] : null
+                return (
+                  <CommandItem
+                    key={option.value}
+                    value={option.label}
+                    disabled={option.disabled}
+                    onSelect={() => {
+                      onValueChange?.(option.value)
+                      setOpen(false)
+                    }}
+                  >
+                    <CheckIcon
+                      className={cn(
+                        'mr-2 h-4 w-4 flex-shrink-0',
+                        option.value === value ? 'opacity-100' : 'opacity-0',
+                      )}
+                    />
+                    {Icon && <Icon className="mr-2 h-4 w-4" />}
+                    <span className="overflow-x-clip whitespace-nowrap">
+                      {option.label}
+                    </span>
+                  </CommandItem>
+                )
+              })
+            )}
+          </CommandList>
         </Command>
       </PopoverContent>
     </Popover>
