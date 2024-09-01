@@ -29,6 +29,10 @@ const columns: OrderColumns = [
     },
   },
   {
+    accessorKey: 'clientOrderId',
+    header: 'Número de vale',
+  },
+  {
     accessorKey: 'orderNumber',
     header: 'Número de pedido',
   },

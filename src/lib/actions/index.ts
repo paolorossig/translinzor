@@ -12,6 +12,7 @@ import {
   updateOrderStatus,
 } from '@/db/mutations'
 import {
+  getCostumers,
   getDriversAndTransportAvailability,
   getOrderStatusOptions,
 } from '@/db/queries'
@@ -24,6 +25,7 @@ import {
   createCostumerSchema,
   deleteOrdersSchema,
   getAvailabilitySchema,
+  getCostumersSchema,
   modifyShipmentSchema,
   updateMultipleOrderStatusSchema,
   updateOrderStatusSchema,
@@ -124,4 +126,10 @@ export const getOrderStatusOptionsAction = adminActionClient
   .schema(modifyShipmentSchema)
   .action(async ({ parsedInput }) => {
     return await getOrderStatusOptions(parsedInput.shipmentId)
+  })
+
+export const getCostumersAction = adminActionClient
+  .schema(getCostumersSchema)
+  .action(async ({ parsedInput }) => {
+    return await getCostumers(parsedInput)
   })

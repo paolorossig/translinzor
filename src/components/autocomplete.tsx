@@ -25,6 +25,9 @@ interface AutocompleteProps {
   onValueChange?: (value: string) => void
   placeholder?: string
   isLoading?: boolean
+  shouldFilter?: boolean
+  searchQuery?: string
+  setSearchQuery?: (value: string) => void
 }
 
 export default function Autocomplete({
@@ -32,7 +35,10 @@ export default function Autocomplete({
   value,
   onValueChange,
   placeholder,
+  searchQuery,
+  setSearchQuery,
   isLoading = false,
+  shouldFilter = true,
 }: AutocompleteProps) {
   const [open, setOpen] = useState(false)
   return (
@@ -54,8 +60,13 @@ export default function Autocomplete({
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
-        <Command>
-          <CommandInput placeholder="Buscar..." disabled={isLoading} />
+        <Command shouldFilter={shouldFilter}>
+          <CommandInput
+            placeholder="Buscar..."
+            value={searchQuery}
+            onValueChange={setSearchQuery}
+            disabled={isLoading}
+          />
           {!isLoading && (
             <CommandEmpty>No se han encontrado resultados.</CommandEmpty>
           )}

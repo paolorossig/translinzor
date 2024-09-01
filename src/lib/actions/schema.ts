@@ -18,6 +18,17 @@ export const assignShipmentSchema = modifyShipmentSchema.extend({
   driverId: z.string({ required_error: 'Requerido' }),
 })
 
+export const createOrderSchema = z.object({
+  costumerId: z.string({ required_error: 'Requerido' }),
+  shipmentId: z.number({ required_error: 'Requerido' }),
+  clientOrderId: z.coerce.number({ required_error: 'Requerido' }),
+  orderNumber: z.string({ required_error: 'Requerido' }),
+  guideNumber: z.string({ required_error: 'Requerido' }),
+  destinationAddress: z.string({ required_error: 'Requerido' }),
+  destinationDistrict: z.string({ required_error: 'Requerido' }),
+  totalValue: z.coerce.number({ required_error: 'Requerido' }),
+})
+
 export const updateOrderStatusSchema = z
   .object({
     orderId: z.number({ required_error: 'Requerido' }),
@@ -57,3 +68,11 @@ export const createCostumerSchema = z.object({
 })
 
 export const getAvailabilitySchema = z.date()
+
+export const getCostumersSchema = z
+  .object({
+    clientId: z.string().nullable().optional(),
+    search: z.string().optional(),
+    limit: z.number().optional(),
+  })
+  .optional()

@@ -8,6 +8,7 @@ import {
   desc,
   eq,
   gte,
+  ilike,
   isNull,
   lte,
 } from 'drizzle-orm'
@@ -34,14 +35,26 @@ export async function getUsers() {
   })
 }
 
-export async function getCostumers({ clientId }: { clientId?: string | null }) {
+export async function getCostumers({
+  clientId,
+  search,
+  limit,
+}: {
+  clientId?: string | null
+  search?: string
+  limit?: number
+} = {}) {
   return await db.query.costumers.findMany({
     columns: {
       internalCode: true,
       name: true,
       channel: true,
     },
-    where: clientId ? eq(costumers.clientId, clientId) : undefined,
+    where: and(
+      clientId ? eq(costumers.clientId, clientId) : undefined,
+      search ? ilike(costumers.name, `%${search}%`) : undefined,
+    ),
+    limit,
   })
 }
 

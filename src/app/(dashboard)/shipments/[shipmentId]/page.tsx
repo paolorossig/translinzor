@@ -62,7 +62,11 @@ export default async function ShipmentPage({
         <div>
           <h2 className="text-lg font-medium text-primary/90">Órdenes</h2>
           <DataTableWrapper columns={columns} data={shipment.orders}>
-            <OrdersTable costumers={costumers} />
+            <OrdersTable
+              costumers={costumers}
+              shipmentId={Number(shipmentId)}
+              isAdmin={user?.isAdmin}
+            />
           </DataTableWrapper>
         </div>
       </section>
