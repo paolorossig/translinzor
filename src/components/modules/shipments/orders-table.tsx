@@ -69,7 +69,7 @@ export function OrdersTable({
         />
         <div className="flex w-full space-x-2 sm:w-fit">
           <DataTableFacetedFilter
-            columnName="costumer_name"
+            columnName="costumerId"
             title="Cliente"
             options={costumers}
           />

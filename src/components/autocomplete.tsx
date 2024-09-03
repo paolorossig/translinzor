@@ -21,8 +21,9 @@ import type { Option } from '@/types'
 
 interface AutocompleteProps {
   options?: Option[]
-  value?: string
-  onValueChange?: (value: string) => void
+  value?: string | number
+  onValueChange?: (value: string | number) => void
+  defaultValue?: string
   placeholder?: string
   isLoading?: boolean
   shouldFilter?: boolean
@@ -36,11 +37,22 @@ export default function Autocomplete({
   searchQuery,
   setSearchQuery,
   placeholder,
+  defaultValue,
   options = [],
   isLoading = false,
   shouldFilter = true,
 }: AutocompleteProps) {
   const [open, setOpen] = useState(false)
+  const [inputValue, setInputValue] = useState(
+    defaultValue ?? options.find((option) => option.value === value)?.label,
+  )
+
+  const handleOnSelect = (option: Option) => {
+    setInputValue(option.label)
+    onValueChange?.(option.value)
+    setOpen(false)
+  }
+
   return (
     <Popover open={open} onOpenChange={setOpen} modal={true}>
       <PopoverTrigger asChild>
@@ -49,9 +61,7 @@ export default function Autocomplete({
           role="combobox"
           className={cn('justify-between', !value && 'text-muted-foreground')}
         >
-          {value
-            ? options.find((option) => option.value === value)?.label
-            : placeholder}
+          {inputValue ?? placeholder}
           {isLoading ? (
             <Loader2Icon className="ml-2 h-4 w-4 shrink-0 animate-spin opacity-50" />
           ) : (
@@ -82,12 +92,9 @@ export default function Autocomplete({
                 return (
                   <CommandItem
                     key={option.value}
-                    value={option.label}
+                    value={option.value}
                     disabled={option.disabled}
-                    onSelect={() => {
-                      onValueChange?.(option.value)
-                      setOpen(false)
-                    }}
+                    onSelect={() => handleOnSelect(option)}
                   >
                     <CheckIcon
                       className={cn(

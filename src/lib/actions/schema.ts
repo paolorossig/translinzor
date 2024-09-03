@@ -19,7 +19,7 @@ export const assignShipmentSchema = modifyShipmentSchema.extend({
 })
 
 export const createOrderSchema = z.object({
-  costumerId: z.string({ required_error: 'Requerido' }),
+  costumerId: z.coerce.number({ required_error: 'Requerido' }),
   shipmentId: z.number({ required_error: 'Requerido' }),
   clientOrderId: z.coerce.number({ required_error: 'Requerido' }),
   orderNumber: z.string({ required_error: 'Requerido' }),

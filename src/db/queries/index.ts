@@ -46,6 +46,7 @@ export async function getCostumers({
 } = {}) {
   return await db.query.costumers.findMany({
     columns: {
+      id: true,
       internalCode: true,
       name: true,
       channel: true,

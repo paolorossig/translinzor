@@ -22,10 +22,11 @@ type OrderColumns = ColumnDef<ShipmentById['orders'][number]>[]
 
 const columns: OrderColumns = [
   {
-    accessorKey: 'costumer.name',
+    accessorKey: 'costumerId',
     header: 'Cliente',
+    cell: ({ row }) => row.original.costumer.name,
     filterFn: (row, id, value) => {
-      return (value as string).includes(row.getValue(id))
+      return (value as string[]).map(Number).includes(row.getValue(id))
     },
   },
   {

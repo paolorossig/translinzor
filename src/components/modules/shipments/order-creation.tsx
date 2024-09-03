@@ -55,7 +55,9 @@ export function OrderCreation({ shipmentId, costumers }: OrderCreationProps) {
 
   const getCostumers = useAction(getCostumersAction, {
     onSuccess: ({ data }) => {
-      if (data) setOptions(data.map((c) => ({ value: c.name, label: c.name })))
+      if (data) {
+        setOptions(data.map((c) => ({ value: c.id.toString(), label: c.name })))
+      }
       setLoading(false)
     },
     onError: () => setLoading(false),
@@ -108,6 +110,10 @@ export function OrderCreation({ shipmentId, costumers }: OrderCreationProps) {
                       setSearchQuery={setSearchQuery}
                       value={field.value}
                       onValueChange={field.onChange}
+                      defaultValue={
+                        options.find((o) => o.value === String(field.value))
+                          ?.label
+                      }
                     />
                   </FormControl>
                   <FormMessage />

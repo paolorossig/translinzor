@@ -19,9 +19,9 @@ export default async function ShipmentPage({
   const shipment = await getShipmentById(Number(shipmentId))
 
   const costumers = shipment.orders.reduce((acc, curr) => {
-    const costumerName = curr.costumer.name
-    if (!acc.some((c) => c.label === costumerName)) {
-      acc.push({ value: costumerName, label: costumerName })
+    const costumer = curr.costumer
+    if (!acc.some((c) => c.label === costumer.name)) {
+      acc.push({ value: costumer.id.toString(), label: costumer.name })
     }
     return acc
   }, [] as Option[])
