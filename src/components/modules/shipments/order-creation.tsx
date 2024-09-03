@@ -97,7 +97,7 @@ export function OrderCreation({ shipmentId, costumers }: OrderCreationProps) {
         <SheetHeader>
           <SheetTitle className="text-primary">Nueva orden</SheetTitle>
           <SheetDescription>
-            Esta acción creará una nueva orden de envío en el actual entrega.
+            Esta acción creará una nueva orden de envío en la actual entrega.
           </SheetDescription>
         </SheetHeader>
         <Form {...form}>
