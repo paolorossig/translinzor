@@ -5,7 +5,7 @@ import {
   OrderStatus,
 } from '@/components/modules/shipments/order-status'
 import { db } from '@/db'
-import { costumers, orders, shipments } from '@/db/schema'
+import { costumers, orders, shipments, type CreateOrder } from '@/db/schema'
 import { groupBy } from '@/lib/utils'
 import {
   mapUploadRowToCreateOrder,
@@ -131,6 +131,10 @@ export async function startShipment({ shipmentId }: { shipmentId: number }) {
 
 export async function deleteShipment({ shipmentId }: { shipmentId: number }) {
   await db.delete(shipments).where(eq(shipments.id, shipmentId))
+}
+
+export async function createOrder(params: CreateOrder) {
+  await db.insert(orders).values(params)
 }
 
 interface UpdateOrderStatusParams {

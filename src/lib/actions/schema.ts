@@ -26,7 +26,7 @@ export const createOrderSchema = z.object({
   guideNumber: z.string({ required_error: 'Requerido' }),
   destinationAddress: z.string({ required_error: 'Requerido' }),
   destinationDistrict: z.string({ required_error: 'Requerido' }),
-  totalValue: z.coerce.number({ required_error: 'Requerido' }),
+  totalValue: z.string({ required_error: 'Requerido' }),
 })
 
 export const updateOrderStatusSchema = z

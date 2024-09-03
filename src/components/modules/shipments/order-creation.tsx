@@ -6,6 +6,7 @@ import { useDebounce } from '@uidotdev/usehooks'
 import { PlusIcon } from 'lucide-react'
 import { useAction } from 'next-safe-action/hooks'
 import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 import { z } from 'zod'
 
 import Autocomplete from '@/components/autocomplete'
@@ -27,7 +28,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet'
-import { getCostumersAction } from '@/lib/actions'
+import { createOrderAction, getCostumersAction } from '@/lib/actions'
 import { createOrderSchema } from '@/lib/actions/schema'
 import type { Option } from '@/types'
 
@@ -45,11 +46,21 @@ export function OrderCreation({ shipmentId, costumers }: OrderCreationProps) {
   const [options, setOptions] = useState<Option[]>(costumers)
 
   const debouncedSearchTerm = useDebounce(searchQuery, 300)
+  const defaultValues = { shipmentId }
 
   const form = useForm<CreateOrderInput>({
     resolver: zodResolver(createOrderSchema),
-    defaultValues: {
-      shipmentId,
+    defaultValues,
+  })
+
+  const createOrder = useAction(createOrderAction, {
+    onSuccess: () => {
+      toast.success('Orden creada correctamente')
+      form.reset(defaultValues)
+      setOpen(false)
+    },
+    onError: ({ error }) => {
+      toast.error(error.serverError ?? 'Error al crear la orden')
     },
   })
 
@@ -91,7 +102,7 @@ export function OrderCreation({ shipmentId, costumers }: OrderCreationProps) {
         </SheetHeader>
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit((data) => console.log(data))}
+            onSubmit={form.handleSubmit(createOrder.execute)}
             className="my-6 space-y-4"
           >
             <FormField
@@ -201,7 +212,9 @@ export function OrderCreation({ shipmentId, costumers }: OrderCreationProps) {
               )}
             />
             <div className="flex justify-end">
-              <Button type="submit">Guardar</Button>
+              <Button type="submit" disabled={createOrder.isExecuting}>
+                Guardar
+              </Button>
             </div>
           </form>
         </Form>
