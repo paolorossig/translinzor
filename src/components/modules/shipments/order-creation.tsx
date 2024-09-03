@@ -1,8 +1,10 @@
 'use client'
 
-import { startTransition, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useDebounce } from '@uidotdev/usehooks'
 import { PlusIcon } from 'lucide-react'
+import { useAction } from 'next-safe-action/hooks'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -41,6 +43,8 @@ export function OrderCreation({ shipmentId, costumers }: OrderCreationProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [options, setOptions] = useState<Option[]>(costumers)
 
+  const debouncedSearchTerm = useDebounce(searchQuery, 300)
+
   const form = useForm<CreateOrderInput>({
     resolver: zodResolver(createOrderSchema),
     defaultValues: {
@@ -48,18 +52,20 @@ export function OrderCreation({ shipmentId, costumers }: OrderCreationProps) {
     },
   })
 
+  const getCostumers = useAction(getCostumersAction, {
+    onSuccess: ({ data }) => {
+      if (data) setOptions(data.map((c) => ({ value: c.name, label: c.name })))
+    },
+  })
+
   useEffect(() => {
-    startTransition(async () => {
-      if (!searchQuery) {
-        setOptions(costumers)
-        return
-      }
-      const response = await getCostumersAction({ search: searchQuery })
-      if (response?.data) {
-        setOptions(response.data.map((c) => ({ value: c.name, label: c.name })))
-      }
-    })
-  }, [costumers, searchQuery])
+    if (debouncedSearchTerm) {
+      getCostumers.execute({ search: debouncedSearchTerm, limit: 5 })
+    } else {
+      setOptions(costumers)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [costumers, debouncedSearchTerm])
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>

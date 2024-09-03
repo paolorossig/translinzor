@@ -20,7 +20,7 @@ import { cn } from '@/lib/utils'
 import type { Option } from '@/types'
 
 interface AutocompleteProps {
-  options: Option[]
+  options?: Option[]
   value?: string
   onValueChange?: (value: string) => void
   placeholder?: string
@@ -31,12 +31,12 @@ interface AutocompleteProps {
 }
 
 export default function Autocomplete({
-  options,
   value,
   onValueChange,
-  placeholder,
   searchQuery,
   setSearchQuery,
+  placeholder,
+  options = [],
   isLoading = false,
   shouldFilter = true,
 }: AutocompleteProps) {
@@ -50,7 +50,7 @@ export default function Autocomplete({
           className={cn('justify-between', !value && 'text-muted-foreground')}
         >
           {value
-            ? options?.find((option) => option.value === value)?.label
+            ? options.find((option) => option.value === value)?.label
             : placeholder}
           {isLoading ? (
             <Loader2Icon className="ml-2 h-4 w-4 shrink-0 animate-spin opacity-50" />
@@ -78,7 +78,7 @@ export default function Autocomplete({
                 <Skeleton className="h-8 rounded-sm" />
               </div>
             ) : (
-              options?.map((option) => {
+              options.map((option) => {
                 const Icon = option.icon ? Icons[option.icon] : null
                 return (
                   <CommandItem
