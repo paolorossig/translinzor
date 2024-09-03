@@ -26,7 +26,7 @@ export default async function DashboardLayout({
 
   return (
     <div className="h-full bg-background text-foreground">
-      <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
+      <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:mt-4 lg:flex lg:w-72 lg:flex-col lg:py-px">
         <Sidebar displayName={displayName} userNavigation={userNavigation} />
       </div>
       <div className="fixed inset-x-0 top-0 h-full bg-card lg:ml-72 lg:mr-4 lg:mt-4 lg:rounded-t-2xl lg:border-x lg:border-t">

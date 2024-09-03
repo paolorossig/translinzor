@@ -6,12 +6,14 @@ import {
   assignShipment,
   createBulkShipments,
   createCostumer,
+  createOrder,
   deleteOrders,
   deleteShipment,
   startShipment,
   updateOrderStatus,
 } from '@/db/mutations'
 import {
+  getCostumers,
   getDriversAndTransportAvailability,
   getOrderStatusOptions,
 } from '@/db/queries'
@@ -22,8 +24,10 @@ import {
   assignShipmentSchema,
   createBulkShipmentsSchema,
   createCostumerSchema,
+  createOrderSchema,
   deleteOrdersSchema,
   getAvailabilitySchema,
+  getCostumersSchema,
   modifyShipmentSchema,
   updateMultipleOrderStatusSchema,
   updateOrderStatusSchema,
@@ -61,6 +65,14 @@ export const deleteShipmentAction = adminActionClient
   .schema(modifyShipmentSchema)
   .action(async ({ parsedInput }) => {
     await deleteShipment(parsedInput)
+
+    revalidatePath('/shipments')
+  })
+
+export const createOrderAction = adminActionClient
+  .schema(createOrderSchema)
+  .action(async ({ parsedInput }) => {
+    await createOrder(parsedInput)
 
     revalidatePath('/shipments')
   })
@@ -124,4 +136,10 @@ export const getOrderStatusOptionsAction = adminActionClient
   .schema(modifyShipmentSchema)
   .action(async ({ parsedInput }) => {
     return await getOrderStatusOptions(parsedInput.shipmentId)
+  })
+
+export const getCostumersAction = adminActionClient
+  .schema(getCostumersSchema)
+  .action(async ({ parsedInput }) => {
+    return await getCostumers(parsedInput)
   })

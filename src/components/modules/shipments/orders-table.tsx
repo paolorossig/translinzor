@@ -40,23 +40,36 @@ import {
 } from '@/lib/actions'
 import type { Option } from '@/types'
 
+import { OrderCreation } from './order-creation'
 import { OrderStatus, orderStatusOptions } from './order-status'
 
 interface OrdersTableProps {
   costumers: Option[]
+  shipmentId: number
+  isAdmin?: boolean
 }
 
-export function OrdersTable({ costumers }: OrdersTableProps) {
+export function OrdersTable({
+  costumers,
+  shipmentId,
+  isAdmin,
+}: OrdersTableProps) {
   return (
     <>
-      <DataTableHeader>
+      <DataTableHeader
+        actionArea={
+          isAdmin && (
+            <OrderCreation shipmentId={shipmentId} costumers={costumers} />
+          )
+        }
+      >
         <DataTableFilterInput
           columnName="orderNumber"
           placeholder="Filtrar órdenes..."
         />
         <div className="flex w-full space-x-2 sm:w-fit">
           <DataTableFacetedFilter
-            columnName="costumer_name"
+            columnName="costumerId"
             title="Cliente"
             options={costumers}
           />
