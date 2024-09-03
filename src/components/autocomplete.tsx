@@ -65,7 +65,6 @@ export default function Autocomplete({
             placeholder="Buscar..."
             value={searchQuery}
             onValueChange={setSearchQuery}
-            disabled={isLoading}
           />
           {!isLoading && (
             <CommandEmpty>No se han encontrado resultados.</CommandEmpty>

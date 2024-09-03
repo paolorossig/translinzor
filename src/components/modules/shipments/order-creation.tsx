@@ -41,6 +41,7 @@ interface OrderCreationProps {
 export function OrderCreation({ shipmentId, costumers }: OrderCreationProps) {
   const [open, setOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
+  const [loading, setLoading] = useState(false)
   const [options, setOptions] = useState<Option[]>(costumers)
 
   const debouncedSearchTerm = useDebounce(searchQuery, 300)
@@ -55,14 +56,18 @@ export function OrderCreation({ shipmentId, costumers }: OrderCreationProps) {
   const getCostumers = useAction(getCostumersAction, {
     onSuccess: ({ data }) => {
       if (data) setOptions(data.map((c) => ({ value: c.name, label: c.name })))
+      setLoading(false)
     },
+    onError: () => setLoading(false),
   })
 
   useEffect(() => {
     if (debouncedSearchTerm) {
+      setLoading(true)
       getCostumers.execute({ search: debouncedSearchTerm, limit: 5 })
     } else {
       setOptions(costumers)
+      setLoading(false)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [costumers, debouncedSearchTerm])
@@ -95,13 +100,14 @@ export function OrderCreation({ shipmentId, costumers }: OrderCreationProps) {
                   <FormLabel className="text-primary">Cliente</FormLabel>
                   <FormControl>
                     <Autocomplete
-                      value={field.value}
-                      onValueChange={field.onChange}
                       options={options}
                       placeholder="Selecciona un cliente"
+                      isLoading={loading}
                       shouldFilter={false}
                       searchQuery={searchQuery}
                       setSearchQuery={setSearchQuery}
+                      value={field.value}
+                      onValueChange={field.onChange}
                     />
                   </FormControl>
                   <FormMessage />
