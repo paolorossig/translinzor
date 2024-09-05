@@ -3,7 +3,7 @@
 /* eslint-disable @next/next/no-img-element */
 import Link from 'next/link'
 import { useRouter, useSelectedLayoutSegment } from 'next/navigation'
-import { LogOutIcon, SettingsIcon } from 'lucide-react'
+import { ArrowUpRightIcon, LogOutIcon } from 'lucide-react'
 
 import { Icons } from '@/components/icons'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -51,11 +51,14 @@ export default function Sidebar({ displayName, userNavigation }: SidebarProps) {
       <nav className="flex flex-1 flex-col">
         <ul role="list" className="flex flex-1 flex-col gap-y-7">
           <li>
-            <ul role="list" className="-mx-2 space-y-1">
+            <ul role="list" className="flex flex-col gap-y-1">
               {userNavigation.map((item) => {
                 if (item.separator) {
                   return (
-                    <li key={item.name} className="pt-3 tracking-tight">
+                    <li
+                      key={item.name}
+                      className="mt-8 p-2 font-semibold tracking-tight text-gray-700"
+                    >
                       {item.name}
                     </li>
                   )
@@ -90,16 +93,15 @@ export default function Sidebar({ displayName, userNavigation }: SidebarProps) {
             </ul>
           </li>
           <li className="mt-auto">
-            <a
-              href="#"
-              className="group -mx-2 hidden items-center gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 hover:text-primary"
+            <Link
+              href="/tracker"
+              className="group flex items-center justify-center gap-x-3 rounded-md border bg-white p-2 text-sm font-semibold leading-6 text-gray-400 text-primary hover:border-primary hover:text-primary dark:border-zinc-800 dark:bg-zinc-900"
             >
-              <SettingsIcon
-                className="h-5 w-5 shrink-0 text-gray-400 group-hover:text-primary"
-                aria-hidden="true"
-              />
-              Ajustes
-            </a>
+              <span className="relative">
+                Ir al Tracker
+                <ArrowUpRightIcon className="absolute -right-4 top-0 h-3 w-3" />
+              </span>
+            </Link>
             <div className="mt-4 flex items-center border-t p-1 pt-4">
               <Avatar className="h-7 w-7">
                 <AvatarFallback className="bg-[#2B65AD] text-sm text-white">
