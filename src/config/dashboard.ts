@@ -10,6 +10,7 @@ export const dashboardConfig: DashboardConfig = {
     admin: [
       { name: 'Dashboard', href: '/', icon: 'home' },
       { name: 'Entregas', href: '/shipments', icon: 'baggageClaim' },
+      { name: 'Reportes', href: '/reports', icon: 'pieChart' },
       { name: 'Maestros', separator: true },
       { name: 'Clientes', href: '/costumers', icon: 'contact' },
       { name: 'Operaciones', href: '/operations', icon: 'car' },
