@@ -57,7 +57,7 @@ export default async function DashboardLayout({
           </div>
           <ThemeToggle />
         </header>
-        <main className="h-[calc(100%-5rem)] bg-card py-2 text-card-foreground">
+        <main className="h-[calc(100%-5rem)] bg-card py-2 text-primary">
           <div className="mx-auto h-full max-w-7xl overflow-y-auto px-4 sm:px-6 lg:px-8">
             {children}
           </div>

@@ -63,7 +63,7 @@ const columns: ShipmentColumns = [
     header: 'Fecha de entrega',
     cell: ({ row }) => {
       return (
-        <div className="flex items-center space-x-1 text-card-foreground">
+        <div className="flex items-center space-x-1">
           <CalendarIcon className="h-4 w-4" />
           <span>
             {new Date(row.getValue('deliveryDate')).toLocaleDateString('es')}

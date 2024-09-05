@@ -50,7 +50,7 @@ function MetricCard({ title, value, detail, icon: CardIcon }: MetricCardProps) {
         <CardIcon className="h-4 w-4" />
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold">
+        <div className="text-2xl font-bold text-primary">
           {new Intl.NumberFormat().format(value)}
         </div>
         <p className="text-xs text-gray-500">{detail}</p>
