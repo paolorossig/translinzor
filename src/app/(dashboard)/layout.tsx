@@ -12,7 +12,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet'
-import { dashboardConfig } from '@/config/dashboard'
+import { navigationByUserRole } from '@/config/dashboard'
 import { getUser } from '@/lib/auth/server'
 
 export default async function DashboardLayout({
@@ -22,7 +22,7 @@ export default async function DashboardLayout({
 }) {
   const user = await getUser()
   const { displayName, role } = user!
-  const userNavigation = dashboardConfig.navigationByUserRole[role]
+  const userNavigation = navigationByUserRole[role]
 
   return (
     <div className="h-full bg-background text-foreground">
