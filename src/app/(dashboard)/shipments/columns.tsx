@@ -8,6 +8,7 @@ import {
   CalendarIcon,
   EyeIcon,
   MoreHorizontalIcon,
+  PackageIcon,
   TrashIcon,
 } from 'lucide-react'
 import { useAction } from 'next-safe-action/hooks'
@@ -36,6 +37,7 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { Progress } from '@/components/ui/progress'
 import {
   Sheet,
   SheetContent,
@@ -43,6 +45,12 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 import type { ShipmentsByClient } from '@/db/queries'
 import { deleteShipmentAction, startShipmentAction } from '@/lib/actions'
 import { cn } from '@/lib/utils'
@@ -90,28 +98,75 @@ const columns: ShipmentColumns = [
     },
   },
   {
-    id: 'summary',
-    header: 'Resumen',
+    id: 'status',
+    header: 'Estado',
     cell: ({ row }) => {
       const { delivered, refused, total } = row.original.ordersSummary
       const finalized = delivered + refused
-      const finalizedRate = Math.round((finalized / total) * 100)
+
+      const status =
+        finalized === 0
+          ? 'Programada'
+          : finalized < total
+            ? 'En tránsito'
+            : 'Finalizada'
 
       return (
-        <div className="flex items-center space-x-2">
-          <Badge
-            className={cn('text-nowrap', {
-              'bg-red-400 hover:bg-red-400': finalizedRate >= 0,
-              'bg-yellow-400 hover:bg-yellow-400': finalizedRate >= 50,
-              'bg-green-400 hover:bg-green-400': finalizedRate >= 80,
+        <Badge
+          variant={
+            status === 'Finalizada'
+              ? 'default'
+              : status === 'En tránsito'
+                ? 'outline'
+                : 'secondary'
+          }
+        >
+          {status}
+        </Badge>
+      )
+    },
+  },
+  {
+    accessorKey: 'ordersSummary',
+    header: 'Resumen',
+    cell: ({ row }) => {
+      const summary = row.original.ordersSummary
+      return (
+        <TooltipProvider delayDuration={300}>
+          <Tooltip>
+            <TooltipTrigger>
+              <div className="flex items-center truncate">
+                <PackageIcon className="mr-2 h-4 w-4" />
+                {summary.total} órdenes
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Entregadas: {summary.delivered}</p>
+              <p>Rechazadas: {summary.refused}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      )
+    },
+  },
+  {
+    id: 'effectiveness-rate',
+    header: 'Efectividad',
+    cell: ({ row }) => {
+      const { delivered, total } = row.original.ordersSummary
+      const effectivenessRate = Math.round((delivered / total) * 100)
+      return (
+        <div className="flex w-24 items-center justify-between">
+          <Progress
+            value={effectivenessRate}
+            className="w-12"
+            indicatorClassName={cn({
+              'bg-red-400': effectivenessRate >= 0,
+              'bg-yellow-400': effectivenessRate >= 50,
+              'bg-green-400': effectivenessRate >= 80,
             })}
-          >
-            {finalizedRate} %
-          </Badge>
-          <span className="text-nowrap text-card-foreground">
-            {finalized}/{total}{' '}
-            {total > 1 ? 'órdenes finalizadas' : 'orden finzalizada'}
-          </span>
+          />
+          <span className="font-medium">{effectivenessRate}%</span>
         </div>
       )
     },
