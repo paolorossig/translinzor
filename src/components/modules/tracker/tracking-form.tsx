@@ -19,7 +19,9 @@ export default function TrackingForm() {
   return (
     <form className="space-y-4" onSubmit={handleSubmit}>
       <div className="grid gap-2">
-        <Label htmlFor="tracking-number">Número de seguimiento</Label>
+        <Label htmlFor="tracking-number" className="text-primary">
+          Número de seguimiento
+        </Label>
         <Input
           id="tracking-number"
           type="text"

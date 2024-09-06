@@ -10,13 +10,17 @@ import {
 } from '@/components/ui/data-table'
 import { getCostumers } from '@/db/queries'
 import { getUser } from '@/lib/auth/server'
-import { channelOptions } from '@/lib/constants'
+import { uniqueValues } from '@/lib/utils'
 
 import { columns } from './columns'
 
 export default async function CostumersPage() {
   const user = await getUser()
   const data = await getCostumers({ clientId: user?.clientId })
+
+  const channelOptions = uniqueValues(data, (c) => c.channel).flatMap((c) => {
+    return c ? { label: c, value: c } : []
+  })
 
   return (
     <>

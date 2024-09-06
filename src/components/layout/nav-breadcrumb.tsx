@@ -6,7 +6,7 @@ import { Fragment } from 'react'
 import { ChevronRightIcon, HomeIcon } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
-import { segmentLabelMap } from '@/lib/constants'
+import { segmentLabelMap } from '@/config/dashboard'
 
 export default function NavBreadcrumb() {
   const pathname = usePathname()

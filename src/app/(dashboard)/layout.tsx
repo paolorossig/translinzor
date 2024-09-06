@@ -12,7 +12,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet'
-import { dashboardConfig } from '@/config/dashboard'
+import { navigationByUserRole } from '@/config/dashboard'
 import { getUser } from '@/lib/auth/server'
 
 export default async function DashboardLayout({
@@ -22,7 +22,7 @@ export default async function DashboardLayout({
 }) {
   const user = await getUser()
   const { displayName, role } = user!
-  const userNavigation = dashboardConfig.navigationByUserRole[role]
+  const userNavigation = navigationByUserRole[role]
 
   return (
     <div className="h-full bg-background text-foreground">
@@ -57,7 +57,7 @@ export default async function DashboardLayout({
           </div>
           <ThemeToggle />
         </header>
-        <main className="h-[calc(100%-5rem)] bg-card py-2 text-card-foreground">
+        <main className="h-[calc(100%-5rem)] bg-card py-2 text-primary">
           <div className="mx-auto h-full max-w-7xl overflow-y-auto px-4 sm:px-6 lg:px-8">
             {children}
           </div>

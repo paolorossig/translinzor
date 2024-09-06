@@ -192,21 +192,22 @@ export async function trackOrder(code: string) {
   }
 }
 
-export async function getMetrics() {
-  const totalShipments = await db
-    .select({ count: count(shipments.id) })
+export async function getTotalsMetrics() {
+  const [shipmentTotals] = await db
+    .select({
+      shipments: count(shipments.id),
+      days: countDistinct(shipments.deliveryDate),
+    })
     .from(shipments)
 
-  const totalOrders = await db.select({ count: count(orders.id) }).from(orders)
-
-  const totalDaysWithShipments = await db
-    .select({ count: countDistinct(shipments.deliveryDate) })
-    .from(shipments)
+  const [orderTotals] = await db
+    .select({ count: count(orders.id) })
+    .from(orders)
 
   return {
-    totalShipments: totalShipments[0]?.count ?? 0,
-    totalOrders: totalOrders[0]?.count ?? 0,
-    totalDaysWithShipments: totalDaysWithShipments[0]?.count ?? 0,
+    shipments: shipmentTotals?.shipments ?? 0,
+    orders: orderTotals?.count ?? 0,
+    daysWithShipments: shipmentTotals?.days ?? 0,
   }
 }
 
@@ -249,4 +250,19 @@ export async function getShipmentMetrics(
       ),
     )
     .groupBy(shipments[params.aggregator])
+}
+
+export async function getCostumerMetrics(params?: { limit?: number }) {
+  const { limit = 10 } = params ?? {}
+
+  return await db
+    .select({
+      costumer: costumers.name,
+      orders: count(orders.id),
+    })
+    .from(orders)
+    .innerJoin(costumers, eq(orders.costumerId, costumers.id))
+    .groupBy(costumers.name)
+    .orderBy(desc(count(orders.id)))
+    .limit(limit)
 }

@@ -132,10 +132,10 @@ EffectivenessChart.displayName = 'EffectivenessChart'
 
 function EmptyState() {
   return (
-    <div className="grid h-[350px] place-content-center">
+    <div className="ml-6 grid h-[350px] place-content-center sm:ml-0">
       <Alert>
         <AlertCircleIcon className="h-4 w-4" />
-        <AlertTitle>Sin resultados</AlertTitle>
+        <AlertTitle className="text-primary">Sin resultados</AlertTitle>
         <AlertDescription>
           No hay datos de efectividad para mostrar con los filtros
           seleccionados.
