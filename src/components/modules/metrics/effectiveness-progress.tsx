@@ -49,7 +49,7 @@ export function EffectivenessProgress({
 
   return (
     <Card className="flex flex-col">
-      <CardHeader className="items-center">
+      <CardHeader className="items-center text-primary">
         <CardTitle>Efectividad</CardTitle>
         {description && <CardDescription>{description}</CardDescription>}
       </CardHeader>
@@ -86,7 +86,7 @@ export function EffectivenessProgress({
                         <tspan
                           x={viewBox.cx}
                           y={viewBox.cy}
-                          className="fill-foreground text-4xl font-bold"
+                          className="fill-primary text-4xl font-bold"
                         >
                           <tspan>{chartData[0]?.value.toLocaleString()}</tspan>
                           <tspan className="fill-muted-foreground text-sm">
@@ -103,7 +103,7 @@ export function EffectivenessProgress({
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
-        <div className="flex items-center gap-2 font-medium leading-none">
+        <div className="flex items-center gap-2 font-medium leading-none text-primary">
           vs {l1mValue}% este mes
           <TrendingIcon className="h-4 w-4" />
         </div>

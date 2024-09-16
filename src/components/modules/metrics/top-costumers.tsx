@@ -30,7 +30,7 @@ export function TopCostumers({ description, data }: TopCostumersProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Clientes Top</CardTitle>
+        <CardTitle className="text-primary">Clientes Top</CardTitle>
         {description && <CardDescription>{description}</CardDescription>}
       </CardHeader>
       <CardContent>
@@ -54,7 +54,12 @@ export function TopCostumers({ description, data }: TopCostumersProps) {
               cursor={false}
               content={<ChartTooltipContent hideLabel />}
             />
-            <Bar dataKey="orders" layout="vertical" radius={5} />
+            <Bar
+              dataKey="orders"
+              layout="vertical"
+              radius={5}
+              fill="hsl(var(--primary))"
+            />
           </BarChart>
         </ChartContainer>
       </CardContent>

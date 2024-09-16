@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { AuthError } from '@supabase/supabase-js'
 import { Loader2Icon } from 'lucide-react'
 import { useForm } from 'react-hook-form'
-import * as z from 'zod'
+import { z } from 'zod'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -79,7 +79,7 @@ export function LoginForm() {
               <FormControl>
                 <Input
                   type="email"
-                  placeholder="name@example.com"
+                  placeholder="hola@email.com"
                   autoCapitalize="none"
                   autoComplete="email"
                   autoCorrect="off"
@@ -101,7 +101,7 @@ export function LoginForm() {
               <FormControl>
                 <Input
                   type="password"
-                  placeholder="password"
+                  placeholder="contraseña"
                   autoCapitalize="none"
                   autoComplete="off"
                   autoCorrect="off"
