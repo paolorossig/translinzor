@@ -8,8 +8,8 @@ import {
   getCostumerMetrics,
   getShipmentMetrics,
   getTotalsMetrics,
-} from '@/db/queries'
-import { formatDateRange } from '@/lib/utils'
+} from '@/server/db/queries'
+import { formatDateRange } from '@/utils/dates'
 
 export default async function Home() {
   const today = new Date()

@@ -9,8 +9,8 @@ import { Icons } from '@/components/icons'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/client'
-import { cn } from '@/lib/utils'
 import type { UserNavigation } from '@/types'
+import { cn } from '@/utils'
 
 interface SidebarProps {
   displayName: string

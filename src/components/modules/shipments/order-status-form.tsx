@@ -22,8 +22,8 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import {
   getOrderStatusOptionsAction,
   updateOrderStatusAction,
-} from '@/lib/actions'
-import { updateOrderStatusSchema } from '@/lib/actions/schema'
+} from '@/server/actions'
+import { updateOrderStatusSchema } from '@/server/actions/schema'
 import type { Option } from '@/types'
 
 import { OrderStatus } from './order-status'

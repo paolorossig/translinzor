@@ -3,8 +3,8 @@ import {
   DataTablePagination,
   DataTableWrapper,
 } from '@/components/ui/data-table'
-import { db } from '@/db'
-import { drivers, transportUnits } from '@/db/schema'
+import { db } from '@/server/db'
+import { drivers, transportUnits } from '@/server/db/schema'
 
 import { driversColumns, transportUnitsColumns } from './columns'
 

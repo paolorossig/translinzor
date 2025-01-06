@@ -4,13 +4,18 @@ import {
   isOrderFinalized,
   OrderStatus,
 } from '@/components/modules/shipments/order-status'
-import { db } from '@/db'
-import { costumers, orders, shipments, type CreateOrder } from '@/db/schema'
-import { groupBy } from '@/lib/utils'
 import {
   mapUploadRowToCreateOrder,
   type ShipmentBulkUploadRow,
 } from '@/lib/validations/shipments'
+import { db } from '@/server/db'
+import {
+  costumers,
+  orders,
+  shipments,
+  type CreateOrder,
+} from '@/server/db/schema'
+import { groupBy } from '@/utils'
 
 interface CreateBulkShipmentsParams {
   userId: string

@@ -16,8 +16,8 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover'
 import { Skeleton } from '@/components/ui/skeleton'
-import { cn } from '@/lib/utils'
 import type { Option } from '@/types'
+import { cn } from '@/utils'
 
 interface AutocompleteProps {
   options?: Option[]

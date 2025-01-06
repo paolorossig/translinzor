@@ -7,8 +7,8 @@ import {
   DataTableResetFilter,
   DataTableWrapper,
 } from '@/components/ui/data-table'
-import { getShipmentsByClientId } from '@/db/queries'
-import { getUser } from '@/lib/auth/server'
+import { getUser } from '@/server/auth'
+import { getShipmentsByClientId } from '@/server/db/queries'
 
 import { adminColumns, clientColumns } from './columns'
 

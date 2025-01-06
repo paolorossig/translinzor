@@ -37,7 +37,7 @@ import { Separator } from '@/components/ui/separator'
 import {
   deleteOrdersAction,
   updateMultipleOrderStatusAction,
-} from '@/lib/actions'
+} from '@/server/actions'
 import type { Option } from '@/types'
 
 import { OrderCreation } from './order-creation'

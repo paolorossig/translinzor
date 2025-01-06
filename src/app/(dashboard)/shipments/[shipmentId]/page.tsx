@@ -2,8 +2,8 @@ import { CalendarIcon, CarIcon, LayersIcon, UserRoundIcon } from 'lucide-react'
 
 import { OrdersTable } from '@/components/modules/shipments/orders-table'
 import { DataTableWrapper } from '@/components/ui/data-table'
-import { getShipmentById } from '@/db/queries'
-import { getUser } from '@/lib/auth/server'
+import { getUser } from '@/server/auth'
+import { getShipmentById } from '@/server/db/queries'
 import type { Option } from '@/types'
 
 import { adminColumns, clientColumns } from './columns'

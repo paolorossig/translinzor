@@ -17,8 +17,8 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
-import { assignShipmentAction, getAvailabilityAction } from '@/lib/actions'
-import { assignShipmentSchema } from '@/lib/actions/schema'
+import { assignShipmentAction, getAvailabilityAction } from '@/server/actions'
+import { assignShipmentSchema } from '@/server/actions/schema'
 import { Option } from '@/types'
 
 type AssignShipmentInput = z.infer<typeof assignShipmentSchema>

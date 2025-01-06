@@ -1,11 +1,12 @@
 import { createSafeActionClient } from 'next-safe-action'
 
-import { getUser } from '@/lib/auth/server'
+import { getUser } from '@/server/auth'
 
 const DEFAULT_SERVER_ERROR_MESSAGE = 'Algo salió mal al ejecutar la operación.'
 
 export const actionClient = createSafeActionClient({
-  handleReturnedServerError(e) {
+  handleServerError(e) {
+    console.error(e.message)
     if (e instanceof Error) return e.message
     return DEFAULT_SERVER_ERROR_MESSAGE
   },

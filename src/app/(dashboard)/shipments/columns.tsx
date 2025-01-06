@@ -51,9 +51,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import type { ShipmentsByClient } from '@/db/queries'
-import { deleteShipmentAction, startShipmentAction } from '@/lib/actions'
-import { cn } from '@/lib/utils'
+import { deleteShipmentAction, startShipmentAction } from '@/server/actions'
+import type { ShipmentsByClient } from '@/server/db/queries'
+import { cn } from '@/utils'
 
 type ShipmentColumns = ColumnDef<ShipmentsByClient[number]>[]
 

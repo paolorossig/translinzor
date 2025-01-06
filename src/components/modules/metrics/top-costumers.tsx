@@ -15,7 +15,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart'
-import { getCostumerMetrics } from '@/db/queries'
+import { getCostumerMetrics } from '@/server/db/queries'
 
 const chartConfig = {
   orders: { label: 'Ordenes' },

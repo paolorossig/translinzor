@@ -2,7 +2,7 @@
 
 import DropzoneComponent, { type DropzoneOptions } from 'react-dropzone'
 
-import { cn } from '@/lib/utils'
+import { cn } from '@/utils'
 
 const defaultMaxFileSize = 1048576 // 1MB
 

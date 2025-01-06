@@ -5,7 +5,7 @@ import { ChevronRightIcon } from 'lucide-react'
 import { LoginForm } from '@/components/auth/login-form'
 import { Icons } from '@/components/icons'
 import { Button } from '@/components/ui/button'
-import { getUser } from '@/lib/auth/server'
+import { getUser } from '@/server/auth'
 
 export default async function LoginPage() {
   const user = await getUser()

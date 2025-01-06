@@ -3,7 +3,7 @@
 import type { ColumnDef } from '@tanstack/react-table'
 
 import { HeaderWithSorting } from '@/components/ui/data-table'
-import type { Driver, TransportUnit } from '@/db/schema'
+import type { Driver, TransportUnit } from '@/server/db/schema'
 
 export const transportUnitsColumns: ColumnDef<TransportUnit>[] = [
   {

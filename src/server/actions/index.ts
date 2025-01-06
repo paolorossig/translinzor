@@ -11,12 +11,12 @@ import {
   deleteShipment,
   startShipment,
   updateOrderStatus,
-} from '@/db/mutations'
+} from '@/server/db/mutations'
 import {
   getCostumers,
   getDriversAndTransportAvailability,
   getOrderStatusOptions,
-} from '@/db/queries'
+} from '@/server/db/queries'
 import { Option } from '@/types'
 
 import { adminActionClient } from './safe-action'

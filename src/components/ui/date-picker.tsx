@@ -11,7 +11,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import { cn, formatDate } from '@/lib/utils'
+import { cn } from '@/utils'
+import { formatDate } from '@/utils/dates'
 
 interface DatePickerProps {
   date: Date | undefined

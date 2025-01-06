@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
-import type { CreateOrder } from '@/db/schema'
-import { removeAccents } from '@/lib/utils'
+import type { CreateOrder } from '@/server/db/schema'
+import { removeAccents } from '@/utils'
 
 export const shipmentBulkUploadSchema = z.object({
   route: z.string(),
