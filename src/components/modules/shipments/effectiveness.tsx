@@ -74,6 +74,7 @@ function EffectivenessWrapper({
 }: EffectivenessProps) {
   const [params, setParams] = useQueryStates(searchParamsParser, {
     startTransition,
+    shallow: false,
   })
   const range = { from: params.from, to: params.to }
 

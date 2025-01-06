@@ -57,14 +57,14 @@ export default async function LoginPage() {
       <p className="px-8 text-center text-sm text-muted-foreground">
         Al hacer clic en continuar, aceptas nuestros{' '}
         <Link
-          href="/terms"
+          href="#"
           className="underline underline-offset-4 hover:text-primary"
         >
           Términos de servicio
         </Link>{' '}
         y{' '}
         <Link
-          href="/privacy"
+          href="#"
           className="underline underline-offset-4 hover:text-primary"
         >
           Políticas de privacidad
