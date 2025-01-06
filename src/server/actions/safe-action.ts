@@ -1,13 +1,14 @@
 import { createSafeActionClient } from 'next-safe-action'
 
 import { getUser } from '@/server/auth'
+import { KnownError } from '@/server/errors'
 
 const DEFAULT_SERVER_ERROR_MESSAGE = 'Algo salió mal al ejecutar la operación.'
 
 export const actionClient = createSafeActionClient({
   handleServerError(e) {
     console.error(e.message)
-    if (e instanceof Error) return e.message
+    if (e instanceof KnownError) return e.message
     return DEFAULT_SERVER_ERROR_MESSAGE
   },
 })
@@ -25,13 +26,13 @@ export const authActionClient = actionClient
   })
   .use(async ({ next }) => {
     const user = await getUser()
-    if (!user) throw new Error('No autorizado')
+    if (!user) throw new KnownError('UNAUTHORIZED')
 
     return next({ ctx: { user } })
   })
 
 export const adminActionClient = authActionClient.use(async ({ next, ctx }) => {
-  if (!ctx.user.isAdmin) throw new Error('No autorizado')
+  if (!ctx.user.isAdmin) throw new KnownError('INSUFFICIENT_PRIVILEGES')
 
   return next()
 })
