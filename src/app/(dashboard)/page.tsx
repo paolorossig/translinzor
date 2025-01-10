@@ -43,9 +43,10 @@ export default async function Home() {
     { count: 0, delivered: 0 },
   )
 
-  const l3mEffectiveness = Math.round(
-    (l3mTotals.delivered / l3mTotals.count) * 100,
-  )
+  const l3mEffectiveness = l3mTotals.count
+    ? Math.round((l3mTotals.delivered / l3mTotals.count) * 100)
+    : 100
+
   const l1mEffectiveness = l1mTotals.count
     ? Math.round((l1mTotals.delivered / l1mTotals.count) * 100)
     : 100
