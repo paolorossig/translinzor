@@ -63,9 +63,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { createContext } from '@/lib/context'
-import { cn } from '@/lib/utils'
 import type { Option } from '@/types'
+import { cn } from '@/utils'
+import { createContext } from '@/utils/context'
 
 interface DataTableContext<TData, TValue> {
   table: TableType<TData>

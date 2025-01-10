@@ -1,5 +1,5 @@
-import { db } from '@/db'
 import { createClient } from '@/lib/supabase/server'
+import { db } from '@/server/db'
 
 export async function getSession() {
   const supabase = createClient()

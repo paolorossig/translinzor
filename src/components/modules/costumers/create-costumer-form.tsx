@@ -16,9 +16,9 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { clientIds } from '@/config/clients'
-import { createCostumerAction } from '@/lib/actions'
-import { createCostumerSchema } from '@/lib/actions/schema'
+import { clientIds } from '@/lib/constants'
+import { createCostumerAction } from '@/server/actions'
+import { createCostumerSchema } from '@/server/actions/schema'
 
 type CreateCostumerInput = z.infer<typeof createCostumerSchema>
 

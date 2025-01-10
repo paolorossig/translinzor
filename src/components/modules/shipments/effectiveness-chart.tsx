@@ -19,9 +19,9 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart'
-import type { getShipmentMetrics } from '@/db/queries'
 import { useMediaQuery } from '@/lib/hooks/use-media-query'
-import { toPercent } from '@/lib/utils'
+import type { getShipmentMetrics } from '@/server/db/queries'
+import { toPercent } from '@/utils'
 
 const X_AXIS_LABELS = {
   route: 'Ruta',

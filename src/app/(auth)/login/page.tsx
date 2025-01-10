@@ -5,7 +5,7 @@ import { ChevronRightIcon } from 'lucide-react'
 import { LoginForm } from '@/components/auth/login-form'
 import { Icons } from '@/components/icons'
 import { Button } from '@/components/ui/button'
-import { getUser } from '@/lib/auth/server'
+import { getUser } from '@/server/auth'
 
 export default async function LoginPage() {
   const user = await getUser()
@@ -57,14 +57,14 @@ export default async function LoginPage() {
       <p className="px-8 text-center text-sm text-muted-foreground">
         Al hacer clic en continuar, aceptas nuestros{' '}
         <Link
-          href="/terms"
+          href="#"
           className="underline underline-offset-4 hover:text-primary"
         >
           Términos de servicio
         </Link>{' '}
         y{' '}
         <Link
-          href="/privacy"
+          href="#"
           className="underline underline-offset-4 hover:text-primary"
         >
           Políticas de privacidad

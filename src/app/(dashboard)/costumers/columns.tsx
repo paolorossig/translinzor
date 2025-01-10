@@ -3,7 +3,7 @@
 import type { ColumnDef } from '@tanstack/react-table'
 
 import { HeaderWithSorting } from '@/components/ui/data-table'
-import type { CostumersByClient } from '@/db/queries'
+import type { CostumersByClient } from '@/server/db/queries'
 
 export const columns: ColumnDef<CostumersByClient[number]>[] = [
   {

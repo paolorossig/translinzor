@@ -4,13 +4,19 @@ import {
   isOrderFinalized,
   OrderStatus,
 } from '@/components/modules/shipments/order-status'
-import { db } from '@/db'
-import { costumers, orders, shipments, type CreateOrder } from '@/db/schema'
-import { groupBy } from '@/lib/utils'
 import {
   mapUploadRowToCreateOrder,
   type ShipmentBulkUploadRow,
 } from '@/lib/validations/shipments'
+import { db } from '@/server/db'
+import {
+  costumers,
+  orders,
+  shipments,
+  type CreateOrder,
+} from '@/server/db/schema'
+import { KnownError } from '@/server/errors'
+import { groupBy } from '@/utils'
 
 interface CreateBulkShipmentsParams {
   userId: string
@@ -67,9 +73,8 @@ export async function createBulkShipments({
         })
         .returning({ id: shipments.id })
 
-      if (!createdShipment) {
-        throw new Error('create shipment failed')
-      }
+      if (!createdShipment) throw new KnownError('CREATE_SHIPMENT_ERROR')
+
       console.log('created shipment id:', createdShipment.id)
 
       await tx.insert(orders).values(
@@ -109,9 +114,9 @@ export async function startShipment({ shipmentId }: { shipmentId: number }) {
   })
 
   if (!shipment) {
-    throw new Error('El envío no existe')
+    throw new KnownError('SHIPMENT_NOT_FOUND')
   } else if (shipment.startedAt) {
-    throw new Error('El envío ya ha sido iniciado')
+    throw new KnownError('SHIPMENT_ALREADY_STARTED')
   }
 
   await db.transaction(async (tx) => {
@@ -148,13 +153,8 @@ export async function updateOrderStatus(params: UpdateOrderStatusParams) {
     where: eq(orders.id, params.orderId),
   })
 
-  if (!order) {
-    throw new Error('El pedido no existe')
-  }
-
-  if (isOrderFinalized(order)) {
-    throw new Error('El pedido ya ha sido finalizado')
-  }
+  if (!order) throw new KnownError('ORDER_NOT_FOUND')
+  if (isOrderFinalized(order)) throw new KnownError('ORDER_ALREADY_FINISHED')
 
   await db
     .update(orders)
@@ -192,9 +192,7 @@ export async function createCostumer(params: CreateCostumerParams) {
       ),
   })
 
-  if (costumer) {
-    throw new Error('El cliente ya existe en la base de datos')
-  }
+  if (costumer) throw new KnownError('COSTUMER_ALREADY_EXISTS')
 
   await db.insert(costumers).values({
     clientId: params.clientId,

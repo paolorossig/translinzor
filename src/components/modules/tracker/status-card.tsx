@@ -4,8 +4,8 @@ import {
   orderStatusOptions,
 } from '@/components/modules/shipments/order-status'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { trackOrder } from '@/db/queries'
-import { cn } from '@/lib/utils'
+import { trackOrder } from '@/server/db/queries'
+import { cn } from '@/utils'
 
 interface StatusCardProps {
   code: string

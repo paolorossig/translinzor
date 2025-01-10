@@ -1,4 +1,3 @@
-import { clsx, type ClassValue } from 'clsx'
 import {
   endOfMonth,
   endOfQuarter,
@@ -13,86 +12,8 @@ import {
 } from 'date-fns'
 import { formatWithOptions } from 'date-fns/fp'
 import { es } from 'date-fns/locale'
-import { twMerge } from 'tailwind-merge'
-import * as xlsx from 'xlsx'
 
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
-}
-
-export function wait(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms))
-}
-
-export function capitalize(str: string) {
-  return str.charAt(0).toUpperCase() + str.slice(1)
-}
-
-export function removeAccents(str: string) {
-  return str.normalize('NFD').replace(/\p{Diacritic}/gu, '')
-}
-
-export function roundNumber(num: number, dec = 0) {
-  return Math.round(num * Math.pow(10, dec)) / Math.pow(10, dec)
-}
-
-export function toPercent(decimal: number, fixed = 0) {
-  return `${roundNumber(decimal * 100, fixed)}%`
-}
-
-export function uniqueValues<T>(arr: T[]): T[]
-export function uniqueValues<T, K>(arr: T[], mapFn: (value: T) => K): K[]
-export function uniqueValues<T, K>(
-  arr: T[],
-  mapFn?: (value: T) => K,
-): K[] | T[] {
-  if (mapFn) {
-    const mappedArr = arr.map(mapFn)
-    return Array.from(new Set(mappedArr))
-  }
-  return Array.from(new Set(arr))
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type AnyObject = Record<string, any>
-
-export function flattenObject(ob: AnyObject): AnyObject {
-  const toReturn: AnyObject = {}
-  for (const i in ob) {
-    if (!ob.hasOwnProperty(i)) continue
-    if (typeof ob[i] === 'object' && ob[i] !== null) {
-      const flatObject = flattenObject(ob[i] as AnyObject)
-      for (const x in flatObject) {
-        if (!flatObject.hasOwnProperty(x)) continue
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        toReturn[i + '.' + x] = flatObject[x]
-      }
-    } else {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      toReturn[i] = ob[i]
-    }
-  }
-  return toReturn
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function groupBy<T>(arr: T[], fn: (item: T) => any) {
-  return arr.reduce<Record<string, T[]>>((prev, curr) => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const groupKey = fn(curr)
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const group = prev[groupKey] ?? []
-    group.push(curr)
-    return { ...prev, [groupKey]: group }
-  }, {})
-}
-
-export function downloadExcel(data: AnyObject[], fileName: string) {
-  const worksheet = xlsx.utils.json_to_sheet(data)
-  const workbook = xlsx.utils.book_new()
-  xlsx.utils.book_append_sheet(workbook, worksheet)
-  xlsx.writeFile(workbook, fileName)
-}
+import { capitalize } from '.'
 
 export function formatDate(date: Date) {
   const format = formatWithOptions({ locale: es })

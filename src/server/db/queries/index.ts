@@ -17,7 +17,7 @@ import {
   getOrderStatus,
   isOrderFinalized,
 } from '@/components/modules/shipments/order-status'
-import { db } from '@/db'
+import { db } from '@/server/db'
 import {
   costumers,
   drivers,
@@ -25,7 +25,7 @@ import {
   shipments,
   transportUnits,
   users,
-} from '@/db/schema'
+} from '@/server/db/schema'
 import type { Option } from '@/types'
 
 export async function getUsers() {

@@ -1,4 +1,4 @@
-import type { Order } from '@/db/schema'
+import type { Order } from '@/server/db/schema'
 import type { Option } from '@/types'
 
 export enum OrderStatus {

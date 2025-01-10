@@ -16,7 +16,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import type { ShipmentById } from '@/db/queries'
+import type { ShipmentById } from '@/server/db/queries'
 
 type OrderColumns = ColumnDef<ShipmentById['orders'][number]>[]
 

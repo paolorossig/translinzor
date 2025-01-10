@@ -1,5 +1,5 @@
 import { DataTable, DataTableWrapper } from '@/components/ui/data-table'
-import { getUsers } from '@/db/queries'
+import { getUsers } from '@/server/db/queries'
 
 import { columns } from './columns'
 

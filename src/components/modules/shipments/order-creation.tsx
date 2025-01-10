@@ -28,8 +28,8 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet'
-import { createOrderAction, getCostumersAction } from '@/lib/actions'
-import { createOrderSchema } from '@/lib/actions/schema'
+import { createOrderAction, getCostumersAction } from '@/server/actions'
+import { createOrderSchema } from '@/server/actions/schema'
 import type { Option } from '@/types'
 
 type CreateOrderInput = z.infer<typeof createOrderSchema>

@@ -1,4 +1,4 @@
-import type { UserRole } from '@/db/schema'
+import type { UserRole } from '@/server/db/schema'
 import type { UserNavigation } from '@/types'
 
 export const navigationByUserRole: Record<UserRole, UserNavigation> = {
@@ -25,4 +25,8 @@ export const segmentLabelMap: Record<string, string> = {
   operations: 'Operaciones',
   reports: 'Reportes',
   users: 'Usuarios',
+}
+
+export const clientIds = {
+  laSirena: process.env.NEXT_PUBLIC_LA_SIRENA_CLIENT_ID!,
 }

@@ -8,9 +8,9 @@ import {
   DataTableResetFilter,
   DataTableWrapper,
 } from '@/components/ui/data-table'
-import { getCostumers } from '@/db/queries'
-import { getUser } from '@/lib/auth/server'
-import { uniqueValues } from '@/lib/utils'
+import { getUser } from '@/server/auth'
+import { getCostumers } from '@/server/db/queries'
+import { uniqueValues } from '@/utils'
 
 import { columns } from './columns'
 

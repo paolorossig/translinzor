@@ -4,9 +4,9 @@ import {
   Effectiveness,
   EffectivenessSkeleton,
 } from '@/components/modules/shipments'
-import { getShipmentMetrics } from '@/db/queries'
-import { getUser } from '@/lib/auth/server'
 import { searchParamsCache } from '@/lib/validations/params'
+import { getUser } from '@/server/auth'
+import { getShipmentMetrics } from '@/server/db/queries'
 import type { SearchParams } from '@/types'
 
 interface ReportsPageProps {

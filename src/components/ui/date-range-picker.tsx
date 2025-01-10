@@ -12,7 +12,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import { cn, formatDate, formatDateRange } from '@/lib/utils'
+import { cn } from '@/utils'
+import { formatDate, formatDateRange } from '@/utils/dates'
 
 interface DateRangePickerProps {
   range: DateRange | undefined

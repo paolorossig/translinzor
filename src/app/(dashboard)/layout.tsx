@@ -12,8 +12,8 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet'
-import { navigationByUserRole } from '@/config/dashboard'
-import { getUser } from '@/lib/auth/server'
+import { navigationByUserRole } from '@/lib/constants'
+import { getUser } from '@/server/auth'
 
 export default async function DashboardLayout({
   children,

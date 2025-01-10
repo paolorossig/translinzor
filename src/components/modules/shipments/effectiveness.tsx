@@ -23,8 +23,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { AnyObject, downloadExcel, flattenObject } from '@/lib/utils'
 import { searchParamsParser } from '@/lib/validations/params'
+import { downloadExcel, flattenObject, type AnyObject } from '@/utils/excel'
 
 import {
   EffectivenessChart,
@@ -74,6 +74,7 @@ function EffectivenessWrapper({
 }: EffectivenessProps) {
   const [params, setParams] = useQueryStates(searchParamsParser, {
     startTransition,
+    shallow: false,
   })
   const range = { from: params.from, to: params.to }
 
