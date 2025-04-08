@@ -1,6 +1,13 @@
+import type { Metadata } from 'next'
+
 import Header from '@/components/layout/header'
 import StatusCard from '@/components/modules/tracker/status-card'
 import TrackingForm from '@/components/modules/tracker/tracking-form'
+
+export const metadata: Metadata = {
+  title: 'Tracker',
+  description: 'Rastrea tu envío con Transportes Linzor',
+}
 
 interface TrackerPageProps {
   searchParams: {
