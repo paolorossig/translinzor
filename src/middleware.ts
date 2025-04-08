@@ -4,7 +4,7 @@ import { updateSession } from '@/lib/supabase/middleware'
 import { createClient } from '@/lib/supabase/server'
 
 export async function middleware(request: NextRequest) {
-  const response = await updateSession(request, NextResponse.next({ request }))
+  const response = await updateSession(request)
 
   const supabase = createClient()
   const nextUrl = request.nextUrl
